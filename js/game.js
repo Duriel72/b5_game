@@ -590,17 +590,32 @@ const Game = (() => {
         list.push(makeShip('minbari', 'enemy', { hpMul, dmgMul: dmgMul * 0.9 }));
         budget = Math.max(0, budget - SHIP_TYPES.minbari.threat);
       }
-      // az első Árny hajó után a Minbarik már csak szövetségesként jönnek
-      const pool = Object.keys(SHIP_TYPES).filter(k => {
+      // Frakciótéma: a földi hajók csak egymással jönnek; Narn és Centauri soha nem
+      // kerül egy ellenséges flottába (melléjük Drazi és kalóz társulhat).
+      const THEMES = {
+        earth: ['Földi Szövetség'],
+        narn: ['Narn Rezsim', 'Drazi Szabadság', 'Kalózok'],
+        centauri: ['Centauri Köztársaság', 'Drazi Szabadság', 'Kalózok'],
+        raiders: ['Kalózok', 'Drazi Szabadság'],
+      };
+      const usable = k => {
         const T = SHIP_TYPES[k];
-        return !T.boss && !T.shadowOnly && !T.civilian && T.minWave && T.minWave <= n && !(k === 'minbari' && S.shadowSeen);
-      });
+        return !T.boss && !T.shadowOnly && !T.civilian && T.minWave && T.minWave <= n && k !== 'minbari';
+      };
+      const minbariHere = list.some(s => s.type === 'minbari');
+      const themes = Object.keys(THEMES).filter(th =>
+        !(th === 'earth' && minbariHere) &&
+        Object.keys(SHIP_TYPES).some(k => usable(k) && THEMES[th].includes(SHIP_TYPES[k].faction)));
+      S.waveTheme = pickRandom(themes.length ? themes : ['raiders']);
+      const pool = Object.keys(SHIP_TYPES).filter(k => usable(k) && THEMES[S.waveTheme].includes(SHIP_TYPES[k].faction));
       let guard = 0;
       while (budget > 0.6 && list.length < 9 && guard++ < 50) {
-        const fits = pool.filter(k => SHIP_TYPES[k].threat <= budget + 0.4);
+        // nehéz hajóból (pl. csatahordozó) legfeljebb 2 egy hullámban – változatosabb flották
+        const fits = pool.filter(k => SHIP_TYPES[k].threat <= budget + 0.4 && (SHIP_TYPES[k].threat < 3.5 || list.filter(s => s.type === k).length < 2));
         if (!fits.length) break;
         // nagyobb hajók esélyesebbek, ahogy nő a hullámszám
-        const weights = fits.map(k => 1 + SHIP_TYPES[k].threat * Math.min(1, n / 10));
+        // a téma fő faja kétszeres súllyal: a Drazi és kalóz hajók csak kísérők
+        const weights = fits.map(k => (1 + SHIP_TYPES[k].threat * Math.min(1, n / 10)) * (SHIP_TYPES[k].faction === THEMES[S.waveTheme][0] ? 2 : 1));
         let r = Math.random() * weights.reduce((a, b) => a + b, 0);
         let k = fits[0];
         for (let i = 0; i < fits.length; i++) { r -= weights[i]; if (r <= 0) { k = fits[i]; break; } }

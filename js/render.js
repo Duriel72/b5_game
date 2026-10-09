@@ -794,6 +794,81 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
         if (Math.sin(t * 4 + seed) > 0.4) glow(50, 0, 3, '#ffe08a', 1);
         break;
       }
+      // ---------------------------------------------------------------- kalóz elfogó
+      case 'raiderinterceptor': {
+        // Ikertörzsű, V alakú vadász: két előre nyúló törzsgerenda, középen pilótafülke.
+        if (eng) { glow(-18, -9, 7 * flick, '#ff6b5a'); glow(-18, 9, 7 * flick, '#ff6b5a'); }
+        for (const sy of [-1, 1]) {
+          ctx.fillStyle = vgrad('#2a1416', '#9c2f3a', 4);
+          path([32, 9 * sy, 26, 6 * sy, -16, 7 * sy, -18, 11 * sy, -16, 13 * sy, 20, 12 * sy]); ctx.fill();
+          ctx.strokeStyle = 'rgba(255,140,120,0.45)'; ctx.lineWidth = 0.7;
+          ctx.beginPath(); ctx.moveTo(28, 9.5 * sy); ctx.lineTo(-14, 10 * sy); ctx.stroke();
+        }
+        ctx.fillStyle = vgrad('#1d1416', '#6d2a30', 7);
+        path([10, 0, 0, -7, -14, -7, -10, 0, -14, 7, 0, 7]); ctx.fill();
+        ctx.fillStyle = '#ffcf9a'; ctx.beginPath(); ctx.ellipse(2, 0, 3, 1.6, 0, 0, TAU); ctx.fill();
+        break;
+      }
+      // ---------------------------------------------------------------- kalóz ágyúnaszád
+      case 'raidergunship': {
+        // Felfegyverzett teherhajó: tömbös raktérmodulok eltérő színű lemezekkel,
+        // ráhegesztett lövegtornyok és rakétasínek, rozsdafoltok.
+        if (eng) { glow(-40, -4, 9 * flick, '#ffb070'); glow(-40, 4, 9 * flick, '#ffb070'); }
+        const plates = ['#6b5a46', '#7d4a32', '#545a5f', '#8a6a3c'];
+        for (let i = 0; i < 4; i++) {
+          ctx.fillStyle = vgrad('#2e2822', plates[i], 9);
+          ctx.fillRect(-30 + i * 13, -8 - (i % 2), 12, 16 + (i % 2) * 2);
+        }
+        ctx.fillStyle = vgrad('#3a332b', '#a08a6a', 6);
+        path([36, -3, 30, -6, 22, -6, 22, 6, 30, 6, 36, 3]); ctx.fill();
+        ctx.fillStyle = '#3b3530'; ctx.fillRect(-38, -6, 8, 12);
+        // rozsda és hegesztési varratok
+        ctx.fillStyle = 'rgba(150,70,30,0.55)';
+        for (const p of pattern('rgrust', 10, q => ({ x: -28 + q() * 50, y: -7 + q() * 14, r: 0.8 + q() * 1.8 }))) { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill(); }
+        ctx.strokeStyle = 'rgba(20,16,12,0.7)'; ctx.lineWidth = 0.6;
+        for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(-30 + i * 13, -9); ctx.lineTo(-30 + i * 13, 9); ctx.stroke(); }
+        // lövegtornyok és rakétasínek
+        ctx.fillStyle = '#2b2622';
+        for (const sy of [-1, 1]) {
+          ctx.beginPath(); ctx.arc(14, 8 * sy, 2.4, 0, TAU); ctx.fill();
+          ctx.strokeStyle = '#2b2622'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(14, 8 * sy); ctx.lineTo(24, 8 * sy); ctx.stroke();
+          ctx.fillStyle = '#9a9184'; ctx.fillRect(4, 9.5 * sy - (sy < 0 ? 2 : 0), 12, 2); ctx.fillStyle = '#2b2622';
+        }
+        ctx.fillStyle = '#ffcf7a'; ctx.fillRect(28, -1, 3, 2);
+        break;
+      }
+      // ---------------------------------------------------------------- kalóz csatahordozó
+      case 'raiderwagon': {
+        // „Battlewagon”: nagy, szögletes, rozsdás anyahajó; elöl sötét hangárszáj,
+        // oldalt hajtóműgondolák, tetején antennák és lövegtornyok.
+        if (eng) for (const y of [-14, -5, 5, 14]) glow(-50, y, 8 * flick, '#ffb070');
+        for (const sy of [-1, 1]) {
+          ctx.fillStyle = vgrad('#3a3229', '#8a7458', 6);
+          ctx.fillRect(-48, 9 * sy - 6 + (sy > 0 ? 0 : 0), 30, 12);
+        }
+        const hull = new Path2D();
+        [[46, -9], [40, -14], [10, -16], [-6, -12], [-40, -12], [-44, -8], [-44, 8], [-40, 12], [-6, 12], [10, 16], [40, 14], [46, 9]]
+          .forEach(([x, y], i) => (i ? hull.lineTo(x, y) : hull.moveTo(x, y)));
+        hull.closePath();
+        ctx.fillStyle = vgrad('#3d352c', '#9a8466', 16); ctx.fill(hull);
+        ctx.save(); ctx.clip(hull);
+        ctx.strokeStyle = 'rgba(25,20,16,0.7)'; ctx.lineWidth = 0.7;
+        for (let x = -40; x < 46; x += 7) { ctx.beginPath(); ctx.moveTo(x, -16); ctx.lineTo(x, 16); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(-44, -5); ctx.lineTo(46, -5); ctx.moveTo(-44, 5); ctx.lineTo(46, 5); ctx.stroke();
+        ctx.fillStyle = 'rgba(140,60,25,0.5)';
+        for (const p of pattern('rwrust', 18, q => ({ x: -40 + q() * 84, y: -14 + q() * 28, r: 1 + q() * 2.5 }))) { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill(); }
+        ctx.restore();
+        // hangárszáj elöl
+        ctx.fillStyle = '#120e0b'; ctx.fillRect(36, -6, 10, 12);
+        ctx.fillStyle = 'rgba(255,150,80,0.35)'; ctx.fillRect(36, -6, 2, 12);
+        // lövegtornyok, antennák
+        ctx.fillStyle = '#2a241f';
+        for (const [x, y] of [[20, -10], [20, 10], [-2, -9], [-2, 9], [-24, 0]]) { ctx.beginPath(); ctx.arc(x, y, 2.6, 0, TAU); ctx.fill(); }
+        ctx.strokeStyle = '#8a8070'; ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.moveTo(-14, -12); ctx.lineTo(-18, -22); ctx.moveTo(-20, 12); ctx.lineTo(-24, 21); ctx.stroke();
+        if (Math.sin(t * 4 + seed) > 0.5) glow(-18, -22, 3, '#ff3b3b', 1);
+        break;
+      }
       // ---------------------------------------------------------------- kalóz Delta-V
       case 'raider': {
         // Kalóz delta-vadász: lapos, homokszínű háromszög sötét sávokkal.

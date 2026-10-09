@@ -38,6 +38,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   a Minbarik már csak szövetségesként érkeznek.
 - **Szövetségesek** az 5. hullámtól, ~30% eséllyel érkeznek kék ugróponton az állomás mellé (ritkán kettő is).
   Amíg nem veszed át őket, minden kör végén önállóan lőnek az ellenségre.
+- **Frakcióhullámok:** a földi hajók csak egymással jönnek; Narn és Centauri soha nem kerül egy ellenséges flottába
+  (melléjük Drazi és kalóz társulhat); vannak tiszta kalózhullámok is. Nehéz típusból legfeljebb 2 jön egy hullámban.
+- **Kalózok:** Delta-V vadász, gyors V alakú **elfogó**, toldozott **ágyúnaszád** rakétasortűzzel és a vadászrajt indító
+  **csatahordozó** („Battlewagon”).
 - **Kereskedő konvoj:** a 3. hullámtól ~15% eséllyel harc helyett kereskedők érkeznek (kék ugrópont): kreditet hoznak,
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.
 - **Gazdaság:** a kreditbevétel a hullámszámmal nő (képletek: `js/data.js` → `ECON`).
@@ -53,7 +57,7 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 | Statikus képek | A sorozatbeli hajók sziluettjeit követő, kódból rajzolt animált hajók (Fehércsillag, Sharlin, G'Quan, Primus, Vorchan, Altarian, csatahordozó, Omega, Nova, Hyperion, Starfury, Delta-V, Napsólyom, Árny cirkáló, Árny felderítő), lézerek, robbanások, ugrópontok |
 | Videó az állomás pusztulásáról | Valós idejű, kihagyható pusztulási jelenet |
 | 100 pont minden hajóért | Típusfüggő pontérték (45–800) |
-| Hajótípusok (6) | A doksi 6 típusa az eredeti értékekkel + Centauri Vorchan, Altarian romboló és csatahordozó, Földi Hyperion, Nova és Starfury, Drazi napsólyom, Árny cirkáló (főellenség) és Árny felderítő – 15 típus (+ civil kereskedő) |
+| Hajótípusok (6) | A doksi 6 típusa az eredeti értékekkel + Centauri Vorchan, Altarian romboló és csatahordozó, Földi Hyperion, Nova és Starfury, Drazi napsólyom, Árny cirkáló (főellenség), Árny felderítő és három új kalóztípus – 18 típus (+ civil kereskedő) |
 | Egyszerű MI (testre lő, inkább az állomásra) | Nehézségtől függő MI: célzott alrendszer-lövés, a leggyengébb hajó kiszemelése, képességek |
 | Javítás/fejlesztés gombok | Teljes bolt: részleges/teljes javítás, szintlépés, hajógyár, leszerelés, 4 állomásfejlesztés |
 | Mentés / betöltés | 3 mentési hely + automatikus mentés minden kör elején |

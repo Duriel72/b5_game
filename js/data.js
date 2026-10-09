@@ -121,6 +121,30 @@ const SHIP_TYPES = {
     desc: 'Békés teherhajó. Kereskedő konvojként érkezik: kreditet hoz, javít, majd harc nélkül továbbáll.',
     names: ['Ikarus', 'Sárga Csillag', 'Ceti Kereskedő', 'Babylon Expressz', 'Vén Teknős', 'Arany Rakomány'],
   },
+  raidergunship: {
+    name: 'Kalóz ágyúnaszád', cls: 'cirkáló', scale: 0.85, sys: 18, hull: 86, firepower: 18,
+    points: 100,
+    beam: '#ff6b4a', ability: 'overload', threat: 2, minWave: 2,
+    faction: 'Kalózok',
+    desc: 'Felfegyverzett, toldozott-foltozott teherhajó ráhegesztett lövegekkel és rakétákkal.',
+    names: ['Rozsdás Szög', 'Zsákmány', 'Csempész', 'Vasmacska', 'Sötét Rakomány', 'Kalózhajó'],
+  },
+  raiderinterceptor: {
+    name: 'Kalóz elfogó', cls: 'vadász', scale: 0.95, sys: 16, hull: 58, firepower: 16,
+    points: 65,
+    beam: '#ff4d5e', ability: 'evade', threat: 1.3, minWave: 3,
+    faction: 'Kalózok',
+    desc: 'Gyors, ikertörzsű, V alakú vadász. Lecsap és elsuhan.',
+    names: ['Villám', 'Darázs', 'Késpenge', 'Sólyomszem', 'Vörös Árny', 'Fenevad'],
+  },
+  raiderwagon: {
+    name: 'Kalóz csatahordozó', cls: 'csatahajó', scale: 1.1, sys: 26, hull: 145, firepower: 20,
+    points: 190,
+    beam: '#ffa060', ability: 'barrage', threat: 3.6, minWave: 4,
+    faction: 'Kalózok',
+    desc: 'A kalózok anyahajója („Battlewagon”): rozsdás, nehéz hordozó, amely vadászrajokat indít.',
+    names: ['Vén Bárka', 'Kalózkirály', 'Vasököl', 'Fekete Lobogó', 'Tolvajfészek'],
+  },
   raider: {
     name: 'Kalóz vadász', cls: 'vadász', sys: 15, hull: 60, firepower: 13,
     points: 50,
@@ -253,13 +277,16 @@ const WEAPON_DEFS = {
     primary: { name: 'Impulzusfegyverek', kind: 'pulse', color: '#ffb070', shots: 3, origins: [[8, -16], [8, 16]] },
     special: { name: 'Rakéták', kind: 'missile', color: '#ffffff', shots: 2, mult: 1.8, cd: 3, origins: [[0, -10], [0, 10]], desc: 'ívelő pályájú rakétapár' },
   },
-  merchant: {
-    name: 'Kereskedő teherhajó', cls: 'cirkáló', scale: 0.9, sys: 10, hull: 60, firepower: 0,
-    points: 0, civilian: true,
-    beam: '#ffffff', ability: 'evade', threat: 0,
-    faction: 'Szabad kereskedők',
-    desc: 'Békés teherhajó. Kereskedő konvojként érkezik: kreditet hoz, javít, majd harc nélkül továbbáll.',
-    names: ['Ikarus', 'Sárga Csillag', 'Ceti Kereskedő', 'Babylon Expressz', 'Vén Teknős', 'Arany Rakomány'],
+  raidergunship: {
+    primary: { name: 'Toldott lézerágyúk', kind: 'pulse', color: '#ff7b4a', shots: 3, origins: [[30, -4], [30, 4]] },
+    special: { name: 'Rakétasortűz', kind: 'missile', color: '#ffffff', shots: 3, mult: 1.8, cd: 3, origins: [[10, -8], [10, 8]], desc: 'három ívelő rakéta egyszerre' },
+  },
+  raiderinterceptor: {
+    primary: { name: 'Ikerlézerek', kind: 'pulse', color: '#ff4d5e', shots: 2, origins: [[30, -9], [30, 9]] },
+  },
+  raiderwagon: {
+    primary: { name: 'Lövegtornyok', kind: 'bolt', color: '#ffa060', shots: 2, origins: [[40, -10], [40, 10]] },
+    special: { name: 'Kalóz vadászraj', kind: 'swarm', color: '#ff6b5a', mult: 2.0, cd: 4, origins: [[46, 0]], desc: 'a hangárból kirajzó Delta-V vadászok' },
   },
   raider: {
     primary: { name: 'Impulzuslézerek', kind: 'pulse', color: '#ff4d5e', shots: 2, origins: [[30, 0]] },

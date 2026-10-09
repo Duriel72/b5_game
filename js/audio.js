@@ -133,6 +133,7 @@ const SFX = (() => {
   const FAMILY = {
     earth: 'ef', hyperion: 'ef', nova: 'ef', starfury: 'ef', station: 'ef',
     whitestar: 'mb', minbari: 'mb', narn: 'narn', drazi: 'dr', raider: 'rd',
+    raidergunship: 'rd', raiderinterceptor: 'rd', raiderwagon: 'rd',
     centauri: 'cen', vorchan: 'cen', altarian: 'cen', centcarrier: 'cen',
     shadow: 'sh', shadowscout: 'sh',
   };
