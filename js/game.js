@@ -21,9 +21,10 @@ const Game = (() => {
   // javítás: önjavító (passzív) típusok, illetve kézi javítás – ehhez a reaktor kell
   const hasRegen = s => !!REGEN[s.type];
   const damaged = (s, k) => (k === 'hull' ? s.hull < s.maxHull : s.sys[k] < s.maxSys[k]);
-  // kézi javítás: kell működő reaktor, és a javítás töltési ideje (rcd) le kell teljen
+  // kézi javítás: a töltési idő (rcd) le kell teljen; ellenséges hajónak működő reaktor is kell,
+  // a saját hajókon (pl. elfoglalás után) a legénység reaktor nélkül is javíthat
   const repairStats = s => REPAIR_BY_FACTION[SHIP_TYPES[s.type].faction] || REPAIR_DEFAULT;
-  const canManualRepair = s => alive(s) && !hasRegen(s) && s.sys.reactor > 0 && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  const canManualRepair = s => alive(s) && !hasRegen(s) && (s.sys.reactor > 0 || s.side === 'player') && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
   // a hajó összállapota (0..1): test és a négy alrendszer átlaga
   const condition = s => (s.hull / s.maxHull + SYS_KEYS.reduce((a, k) => a + s.sys[k] / s.maxSys[k], 0)) / 5;
   const repairEff = s => REPAIR_MIN_EFF + (1 - REPAIR_MIN_EFF) * condition(s);
