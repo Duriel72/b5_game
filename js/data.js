@@ -29,6 +29,7 @@ const SHIP_TYPES = {
     name: 'Fehércsillag', cls: 'cirkáló', sys: 30, hull: 120, firepower: 25,
     points: 220,
     beam: '#cbb2ff', ability: 'precision', threat: 3, price: 650,
+    accBonus: 0.1, evasionPierce: 0.6,   // fejlett célzás: +10% találat, a célpont kitérésének 60%-át figyelmen kívül hagyja
     faction: 'Csillagvédelmi Szövetség',
     desc: 'Fürge, modern cirkáló. Az állomás első védelmi vonala – a kezdőhajód.',
     names: ['Fehércsillag', 'Fehércsillag-2', 'Fehércsillag-7', 'Fehércsillag-9', 'Fehércsillag-14', 'Fehércsillag-16'],

@@ -1259,15 +1259,71 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
       glow(152, 0, 6, '#66ccff', blink);
       glow(120, 0, 10, '#ffe08a', 0.3 + 0.2 * Math.sin(t * 1.3));
     }
-    // pajzs
-    if (game && !part && game.station.shield > 0) {
-      const a = 0.05 + 0.1 * (game.station.shield / game.station.maxShield);
-      ctx.strokeStyle = `rgba(110,200,255,${a + 0.04 * Math.sin(t * 2)})`;
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.ellipse(-25, 0, 190, 98, 0, 0, TAU); ctx.stroke();
-      ctx.fillStyle = `rgba(110,200,255,${a * 0.25})`;
-      ctx.fill();
+    // pajzs: vékony réteg az állomás körvonala mentén; minél gyengébb, annál több helyen szakad meg
+    if (game && !part && game.station.shield > 0) drawShieldLayer(game.station.shield / game.station.maxShield, 1, null);
+  }
+
+  // ---------------------------------------------------------------- pajzsréteg
+  // Az állomás sziluettjét követő zárt körvonal (helyi koordinátákban), lekerekítve
+  // és egyenletes szakaszokra bontva. Minden szakasznak van egy „tartóssága”:
+  // a pajzs arányánál gyengébb szakaszok kialszanak – így a sérülés csomós lyukakként látszik.
+  let shieldSegs = null;
+  function shieldOutline() {
+    if (shieldSegs) return shieldSegs;
+    const top = [[162, 0], [152, -6], [126, -18], [104, -23], [96, -27], [70, -29], [58, -33], [-72, -33], [-84, -28], [-100, -18],
+      [-108, -18], [-112, -28], [-114, -87], [-170, -87], [-173, -28], [-182, -15], [-196, -14], [-207, -7], [-220, 0]];
+    let poly = [...top, ...top.slice(1, -1).reverse().map(([x, y]) => [x, -y])];
+    for (let it = 0; it < 3; it++) {                       // Chaikin-lekerekítés
+      const out = [];
+      for (let i = 0; i < poly.length; i++) {
+        const [ax, ay] = poly[i], [bx, by] = poly[(i + 1) % poly.length];
+        out.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25], [ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75]);
+      }
+      poly = out;
     }
+    // egyenletes újramintavételezés ívhossz szerint
+    const N = 180, pts = [];
+    let total = 0;
+    const lens = poly.map((p, i) => { const q = poly[(i + 1) % poly.length]; const l = Math.hypot(q[0] - p[0], q[1] - p[1]); total += l; return l; });
+    let seg = 0, acc = 0;
+    for (let k = 0; k < N; k++) {
+      const target = k / N * total;
+      while (acc + lens[seg] < target) { acc += lens[seg]; seg++; }
+      const f = (target - acc) / lens[seg], p = poly[seg], q = poly[(seg + 1) % poly.length];
+      pts.push([p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f]);
+    }
+    // tartósság: lassan változó „zaj”, hogy a lyukak csoportosan nyíljanak
+    const hold = pts.map((_, i) => {
+      const v = 0.5 + 0.28 * Math.sin(i * 0.23 + 1.1) + 0.17 * Math.sin(i * 0.61 + 2.7) + 0.05 * Math.sin(i * 1.9);
+      return Math.min(0.985, Math.max(0.02, v));
+    });
+    shieldSegs = { pts, hold };
+    return shieldSegs;
+  }
+
+  // ratio: pajzs aránya, boost: fényerő-szorzó, impact: becsapódás helyi koordinátában (vagy null)
+  function drawShieldLayer(ratio, boost, impact) {
+    const { pts, hold } = shieldOutline();
+    const n = pts.length, sc = Math.max(0.2, (layout && layout.station.s) || 1);
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.lineWidth = (pass ? 1.1 : 3.4) / sc;
+      for (let i = 0; i < n; i++) {
+        if (hold[i] >= ratio) continue;
+        const p = pts[i], q = pts[(i + 1) % n];
+        let a = (pass ? 0.42 : 0.1) * (0.72 + 0.28 * Math.sin(i * 0.45 - time * 2.6)) * boost;
+        if (impact) {
+          const d = Math.hypot(p[0] - impact[0], p[1] - impact[1]);
+          a = (pass ? 0.08 : 0.03) * boost + Math.max(0, 1 - d / 70) * (pass ? 1 : 0.45) * boost;
+        }
+        if (a < 0.01) continue;
+        ctx.strokeStyle = `rgba(120,210,255,${Math.min(1, a)})`;
+        ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
   function stationPoint(random = true) {
@@ -1461,21 +1517,21 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
     });
   }
 
-  function shieldFlash(p) {
+  // Pajzstalálat: a réteg a becsapódás környékén felvillan, apró fényfolttal
+  function shieldFlash(p, ratio = 1) {
     const st = layout.station;
+    const dx = (p.x - st.x) / st.s, dy = (p.y - st.y) / st.s, c = Math.cos(-st.rot), s = Math.sin(-st.rot);
+    const local = [dx * c - dy * s, dx * s + dy * c];
     addEffect({
-      t: 0, dur: 0.5, update(dt) { this.t += dt; return this.t < this.dur; },
+      t: 0, dur: 0.55, update(dt) { this.t += dt; return this.t < this.dur; },
       draw() {
         const k = this.t / this.dur;
         ctx.save();
         ctx.translate(st.x, st.y); ctx.rotate(st.rot); ctx.scale(st.s, st.s);
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.strokeStyle = `rgba(140,220,255,${0.8 * (1 - k)})`;
-        ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.ellipse(-25, 0, 190, 98, 0, 0, TAU); ctx.stroke();
+        drawShieldLayer(Math.max(ratio, 0.02), 1 - k, local);
         ctx.restore();
         ctx.globalCompositeOperation = 'lighter';
-        glow(p.x, p.y, 30 * layout.unit, '#8cdcff', 1 - k);
+        glow(p.x, p.y, 14 * layout.unit, '#8cdcff', 0.8 * (1 - k));
         ctx.globalCompositeOperation = 'source-over';
       },
     });

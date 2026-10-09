@@ -24,7 +24,8 @@ const Game = (() => {
   // kézi javítás: a töltési idő (rcd) le kell teljen; ellenséges hajónak működő reaktor is kell,
   // a saját hajókon (pl. elfoglalás után) a legénység reaktor nélkül is javíthat
   const repairStats = s => REPAIR_BY_FACTION[SHIP_TYPES[s.type].faction] || REPAIR_DEFAULT;
-  const canManualRepair = s => alive(s) && !hasRegen(s) && (s.sys.reactor > 0 || s.side === 'player') && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  // a vadász osztályú hajók nem tudnak javítani
+  const canManualRepair = s => alive(s) && !hasRegen(s) && SHIP_TYPES[s.type].cls !== 'vadász' && (s.sys.reactor > 0 || s.side === 'player') && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
   // a hajó összállapota (0..1): test és a négy alrendszer átlaga
   const condition = s => (s.hull / s.maxHull + SYS_KEYS.reduce((a, k) => a + s.sys[k] / s.maxSys[k], 0)) / 5;
   const repairEff = s => REPAIR_MIN_EFF + (1 - REPAIR_MIN_EFF) * condition(s);
@@ -90,7 +91,9 @@ const Game = (() => {
   function hitChance(att, tgt, subKey = 'hull') {
     const { sens } = attStats(att);
     if (tgt === STATION) return clamp(0.6 + 0.37 * sens, 0.3, 0.97);
-    let c = 0.6 + 0.35 * sens - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt);
+    // egyes hajók (pl. Fehércsillag) pontosabbak, és a célpont kitérésének egy részét is „átlátják”
+    const AT = att === STATION ? {} : SHIP_TYPES[att.type];
+    let c = 0.6 + 0.35 * sens - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt) * (1 - (AT.evasionPierce || 0)) + (AT.accBonus || 0);
     if (isDisabled(tgt)) c += 0.25;
     if (att === STATION) c = 0.85 - evasion(tgt) * 0.5;
     return clamp(c, 0.05, 0.97);
@@ -178,7 +181,7 @@ const Game = (() => {
 
     if (tgt === STATION) {
       const r = damageStation(dmg);
-      if (r.absorbed > 0) { R.shieldFlash(to); SFX.play('shieldHit'); }
+      if (r.absorbed > 0) { R.shieldFlash(to, S.station.shield / S.station.maxShield); SFX.play('shieldHit'); }
       if (r.hullDmg > 0) { R.burst(to.x, to.y, 0.8); SFX.play('hit'); R.shake(3); }
       R.floatText(to.x, to.y, `${crit ? t('f.crit') : ''}-${dmg}`, r.hullDmg > 0 ? '#fca5a5' : '#93c5fd', crit);
       if (!o.quiet) hooks.log(t('g.hitStation', { a: attName, d: dmg, s: r.absorbed ? t('g.shieldPart', { n: Math.round(r.absorbed) }) : '' }), 'bad');

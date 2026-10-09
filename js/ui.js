@@ -242,7 +242,7 @@ const UI = (() => {
           <span>${t('cat.primary')}</span><span>${esc(D(W.primary.name))}</span>
           <span>${t('cat.special')}</span><span>${W.special ? esc(t('cat.specialVal', { name: D(W.special.name), m: W.special.mult, cd: W.special.cd })) : '—'}</span>
           <span>${t('cat.ability')}</span><span>${esc(D(ab.name))}</span>
-          <span>${t('cat.repair')}</span><span>${REGEN[k] ? t('cat.repairRegen') : (rs => esc(t('cat.repairManualStats', { s: Math.round(rs.sys * 100), h: Math.round(rs.hull * 100), cd: rs.cd })))(REPAIR_BY_FACTION[T.faction] || REPAIR_DEFAULT)}</span>
+          <span>${t('cat.repair')}</span><span>${REGEN[k] ? t('cat.repairRegen') : T.cls === 'vadász' ? t('cat.repairNone') : (rs => esc(t('cat.repairManualStats', { s: Math.round(rs.sys * 100), h: Math.round(rs.hull * 100), cd: rs.cd })))(REPAIR_BY_FACTION[T.faction] || REPAIR_DEFAULT)}</span>
           <span>${t('cat.points')}</span><span>${T.points} / ${T.noCapture ? '—' : Math.round(T.points * SCORE.captureMult)}</span>
           ${T.price && PLAYER_BUYABLE.includes(k) ? `<span>${t('cat.price')}</span><span class="cost">${T.price} ¢</span>` : ''}
         </div>`;

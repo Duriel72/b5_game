@@ -47,7 +47,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   is, ha a reaktora működik –, utána töltési idő következik. Fajonként: Centauri (+45%/+22%, 2 kör) › Földi (+40/+20%, 2)
   › Narn (+35/+17%, 3) › Drazi (+30/+15%, 3) › kalóz (+25/+12%, 4). Minél sérültebb a hajó, annál kevésbé hatékony
   a javítás (kb. 45%-ig); ez az önjavításra is igaz. Az ellenség is dönthet a javítás mellett.
+  A vadász osztályú hajók (Starfury, Drazi, kalóz vadászok) nem javíthatnak.
   A védelmi rács nem lő fegyvertelen hajóra.
+- **Fehércsillag:** fejlett célzás – +10% találati esély, és a célpont kitérésének 60%-át figyelmen kívül hagyja.
+- **Pajzs:** vékony réteg az állomás körvonala mentén; minél gyengébb, annál több helyen szakad meg.
 - **Kereskedő konvoj:** a 3. hullámtól ~15% eséllyel harc helyett kereskedők érkeznek (kék ugrópont): kreditet hoznak,
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.
 - **Gazdaság:** a kreditbevétel a hullámszámmal nő (képletek: `js/data.js` → `ECON`).
