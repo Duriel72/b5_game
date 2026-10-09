@@ -21,7 +21,12 @@ const Game = (() => {
   // javítás: önjavító (passzív) típusok, illetve kézi javítás – ehhez a reaktor kell
   const hasRegen = s => !!REGEN[s.type];
   const damaged = (s, k) => (k === 'hull' ? s.hull < s.maxHull : s.sys[k] < s.maxSys[k]);
-  const canManualRepair = s => alive(s) && !hasRegen(s) && s.sys.reactor > 0 && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  // kézi javítás: kell működő reaktor, és a javítás töltési ideje (rcd) le kell teljen
+  const repairStats = s => REPAIR_BY_FACTION[SHIP_TYPES[s.type].faction] || REPAIR_DEFAULT;
+  const canManualRepair = s => alive(s) && !hasRegen(s) && s.sys.reactor > 0 && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  // a hajó összállapota (0..1): test és a négy alrendszer átlaga
+  const condition = s => (s.hull / s.maxHull + SYS_KEYS.reduce((a, k) => a + s.sys[k] / s.maxSys[k], 0)) / 5;
+  const repairEff = s => REPAIR_MIN_EFF + (1 - REPAIR_MIN_EFF) * condition(s);
   // a hajó tud-e valamit kezdeni ebben a körben (lőni vagy javítani)
   const canTakeAction = s => canAct(s) || canManualRepair(s);
   const capturable = s => {
@@ -343,7 +348,8 @@ const Game = (() => {
 
   // ------------------------------------------------------------ javítás
   function repairAmount(s, k) {
-    return k === 'hull' ? Math.round(s.maxHull * REPAIR.hull) : Math.round(s.maxSys[k] * REPAIR.sys);
+    const st = repairStats(s), eff = repairEff(s);
+    return k === 'hull' ? Math.max(1, Math.round(s.maxHull * st.hull * eff)) : Math.max(1, Math.round(s.maxSys[k] * st.sys * eff));
   }
   function applyRepair(s, k, amount) {
     if (k === 'hull') { const b = s.hull; s.hull = Math.min(s.maxHull, s.hull + amount); return Math.round(s.hull - b); }
@@ -362,6 +368,7 @@ const Game = (() => {
     try {
       a.acted = true;
       const n = applyRepair(a, subKey, repairAmount(a, subKey));
+      a.rcd = repairStats(a).cd;
       SFX.play('repair');
       showRepair(a, subKey, n);
       hooks.log(t('g.repair', { a: NM(a.name), p: subKey === 'hull' ? D('Test').toLowerCase() : D(SUB_BY_KEY[subKey].label).toLowerCase(), n }), 'ability');
@@ -383,8 +390,9 @@ const Game = (() => {
     const low = order.filter(k => s.sys[k] < s.maxSys[k] * 0.2).sort((x, y) => s.sys[x] / s.maxSys[x] - s.sys[y] / s.maxSys[y])[0];
     const k = zero || low;
     let n;
-    if (k) n = applyRepair(s, k, Math.max(4, Math.round(s.maxSys[k] * rg.sys)));
-    else if (s.hull < s.maxHull) n = applyRepair(s, 'hull', Math.max(3, Math.round(s.maxHull * rg.hull)));
+    const eff = repairEff(s);
+    if (k) n = applyRepair(s, k, Math.max(3, Math.round(s.maxSys[k] * rg.sys * eff)));
+    else if (s.hull < s.maxHull) n = applyRepair(s, 'hull', Math.max(2, Math.round(s.maxHull * rg.hull * eff)));
     if (n > 0) showRepair(s, k || 'hull', n);
   }
 
@@ -470,6 +478,7 @@ const Game = (() => {
     const fix = aiRepairChoice(e);
     if (fix) {
       const n = applyRepair(e, fix, repairAmount(e, fix));
+      e.rcd = repairStats(e).cd;
       SFX.play('repair');
       showRepair(e, fix, n);
       hooks.log(t('g.repair', { a: NM(e.name), p: fix === 'hull' ? D('Test').toLowerCase() : D(SUB_BY_KEY[fix].label).toLowerCase(), n }), 'warn');
@@ -622,6 +631,7 @@ const Game = (() => {
       s.acted = false; s.evade = false;
       if (s.cd > 0) s.cd--;
       if (s.wcd > 0) s.wcd--;
+      if (s.rcd > 0) s.rcd--;
       regenTick(s);
     }
     const st = S.station;
@@ -778,7 +788,7 @@ const Game = (() => {
     hooks.log(t('g.merchantLeft'), 'miss');
     await wait(900);
     S.phase = 'shop';
-    for (const s of S.player) { s.acted = false; s.cd = 0; s.wcd = 0; s.evade = false; }
+    for (const s of S.player) { s.acted = false; s.cd = 0; s.wcd = 0; s.rcd = 0; s.evade = false; }
     autosave();
     hooks.update();
     hooks.shop({ wave: S.wave, merchant: { credits: cr, hull: fix } });
@@ -847,7 +857,7 @@ const Game = (() => {
     for (const s of S.player) {
       s.hull = Math.min(s.maxHull, Math.round(s.hull + (s.maxHull - s.hull) * 0.2));
       for (const k of SYS_KEYS) s.sys[k] = Math.min(s.maxSys[k], Math.round(s.sys[k] + (s.maxSys[k] - s.sys[k]) * 0.25));
-      s.acted = false; s.cd = 0; s.wcd = 0; s.evade = false;
+      s.acted = false; s.cd = 0; s.wcd = 0; s.rcd = 0; s.evade = false;
     }
     // a pajzs a hullámok között csak részben töltődik vissza (a hiány fele)
     S.station.shield = Math.round(S.station.shield + (S.station.maxShield - S.station.shield) * 0.5);
@@ -972,7 +982,7 @@ const Game = (() => {
     get state() { return S; }, get busy() { return busy; },
     newGame, load, serialize, autosave, startWave,
     playerAttack, capture, passRound, cycle, select, canPlayerAttack,
-    isDisabled, canAct, canTakeAction, canManualRepair, hasRegen, damaged, repairAmount, playerRepair, capturable, captureChance, captureBlocked, fleetCap, scrapValue, lastStandIn, weaponDef, specialReady, ratio, hitChance, expectedDamage, critChance, byId, hostiles,
+    isDisabled, canAct, canTakeAction, canManualRepair, repairStats, repairEff, hasRegen, damaged, repairAmount, playerRepair, capturable, captureChance, captureBlocked, fleetCap, scrapValue, lastStandIn, weaponDef, specialReady, ratio, hitChance, expectedDamage, critChance, byId, hostiles,
     repairCost, upgradeCost, shop,
     end() { S = null; busy = false; },
   };

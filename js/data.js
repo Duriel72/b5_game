@@ -225,7 +225,18 @@ const REGEN = {
   shadow: { sys: 0.18, hull: 0.04 },
   shadowscout: { sys: 0.18, hull: 0.04 },
 };
-const REPAIR = { sys: 0.4, hull: 0.2 };   // kézi javítás egy akcióval (a maximum aránya)
+// Kézi javítás fajonként: alrendszer / test (a maximum aránya), és töltési idő körökben.
+// Sorrend: Centauri (legjobb) → Földi → Narn → Drazi → Kalóz (leggyengébb).
+const REPAIR_BY_FACTION = {
+  'Centauri Köztársaság': { sys: 0.45, hull: 0.22, cd: 2 },
+  'Földi Szövetség':      { sys: 0.40, hull: 0.20, cd: 2 },
+  'Narn Rezsim':          { sys: 0.35, hull: 0.17, cd: 3 },
+  'Drazi Szabadság':      { sys: 0.30, hull: 0.15, cd: 3 },
+  'Kalózok':              { sys: 0.25, hull: 0.12, cd: 4 },
+};
+const REPAIR_DEFAULT = { sys: 0.3, hull: 0.15, cd: 3 };
+// minél sérültebb a hajó, annál kevésbé hatékony a javítás: hatékonyság = MIN + (1 − MIN) × állapot
+const REPAIR_MIN_EFF = 0.45;
 
 // Gazdaság – a hullámszámmal arányosan nő (n = hullám száma)
 const ECON = {

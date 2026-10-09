@@ -43,8 +43,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 - **Kalózok:** Delta-V vadász, gyors V alakú **elfogó**, toldozott **ágyúnaszád** rakétasortűzzel és a vadászrajt indító
   **csatahordozó** („Battlewagon”).
 - **Javítás:** a Minbari, a Fehércsillag és az Árny hajók minden kör elején maguktól javulnak (először a 0%-os,
-  majd a 20% alatti alrendszert, végül a testet). A többi hajó lövés helyett kézzel javíthat (`R`: test +20%,
-  alrendszer +40%) – kilőtt fegyverzettel is, ha a reaktora működik; az ellenség is dönthet a javítás mellett.
+  majd a 20% alatti alrendszert, végül a testet). A többi hajó lövés helyett kézzel javíthat (`R`) – kilőtt fegyverzettel
+  is, ha a reaktora működik –, utána töltési idő következik. Fajonként: Centauri (+45%/+22%, 2 kör) › Földi (+40/+20%, 2)
+  › Narn (+35/+17%, 3) › Drazi (+30/+15%, 3) › kalóz (+25/+12%, 4). Minél sérültebb a hajó, annál kevésbé hatékony
+  a javítás (kb. 45%-ig); ez az önjavításra is igaz. Az ellenség is dönthet a javítás mellett.
   A védelmi rács nem lő fegyvertelen hajóra.
 - **Kereskedő konvoj:** a 3. hullámtól ~15% eséllyel harc helyett kereskedők érkeznek (kék ugrópont): kreditet hoznak,
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.

@@ -242,7 +242,7 @@ const UI = (() => {
           <span>${t('cat.primary')}</span><span>${esc(D(W.primary.name))}</span>
           <span>${t('cat.special')}</span><span>${W.special ? esc(t('cat.specialVal', { name: D(W.special.name), m: W.special.mult, cd: W.special.cd })) : '—'}</span>
           <span>${t('cat.ability')}</span><span>${esc(D(ab.name))}</span>
-          <span>${t('cat.repair')}</span><span>${REGEN[k] ? t('cat.repairRegen') : t('cat.repairManual')}</span>
+          <span>${t('cat.repair')}</span><span>${REGEN[k] ? t('cat.repairRegen') : (rs => esc(t('cat.repairManualStats', { s: Math.round(rs.sys * 100), h: Math.round(rs.hull * 100), cd: rs.cd })))(REPAIR_BY_FACTION[T.faction] || REPAIR_DEFAULT)}</span>
           <span>${t('cat.points')}</span><span>${T.points} / ${T.noCapture ? '—' : Math.round(T.points * SCORE.captureMult)}</span>
           ${T.price && PLAYER_BUYABLE.includes(k) ? `<span>${t('cat.price')}</span><span class="cost">${T.price} ¢</span>` : ''}
         </div>`;
@@ -488,7 +488,12 @@ const UI = (() => {
       + wbtn('special', wdefs.special, { info: wdefs.special ? (a.wcd > 0 ? esc(t('w.inTurns', { n: a.wcd })) : `<kbd>G</kbd> ${esc(t('w.ready', { m: wdefs.special.mult }))}`) : '', dis: !canAtk || !Game.specialReady(a) })
       + (a && a.side === 'player' && Game.hasRegen(a)
         ? `<button class="wbtn" disabled title="${esc(t('rep.regenTitle'))}"><i class="wsw" style="background:#86efac"></i><span class="wn">${t('rep.regen')}</span><span class="wi">${t('rep.passive')}</span></button>`
-        : `<button class="wbtn ${weapon === 'repair' ? 'on' : ''}" data-weapon="repair" ${canFix ? '' : 'disabled'} title="${esc(t('rep.title'))}"><i class="wsw" style="background:#86efac"></i><span class="wn">🔧 ${t('rep.btn')}</span><span class="wi"><kbd>R</kbd> ${t('rep.instead')}</span></button>`);
+        : (() => {
+          const rs = a && a.side === 'player' ? Game.repairStats(a) : null;
+          const info = a && a.rcd > 0 ? esc(t('w.inTurns', { n: a.rcd })) : `<kbd>R</kbd> ${t('rep.instead')}`;
+          const title = rs ? `${t('rep.title')} ${t('rep.stats', { s: Math.round(rs.sys * 100), h: Math.round(rs.hull * 100), cd: rs.cd, e: Math.round(Game.repairEff(a) * 100) })}` : t('rep.title');
+          return `<button class="wbtn ${weapon === 'repair' ? 'on' : ''}" data-weapon="repair" ${canFix ? '' : 'disabled'} title="${esc(title)}"><i class="wsw" style="background:#86efac"></i><span class="wn">🔧 ${t('rep.btn')}</span><span class="wi">${info}</span></button>`;
+        })());
     subBox.innerHTML = SUBSYSTEMS.map((sub, i) => {
       if (weapon === 'repair') {
         const cur = sub.key === 'hull' ? a.hull : a.sys[sub.key], max = sub.key === 'hull' ? a.maxHull : a.maxSys[sub.key];
@@ -529,7 +534,7 @@ const UI = (() => {
     let sub = '';
     if (Game.busy) sub = t('act.busy');
     else if (S.phase !== 'battle') sub = '';
-    else if (weapon === 'repair') sub = t('rep.pick', { name: NM(a.name) });
+    else if (weapon === 'repair') sub = t('rep.pick', { name: NM(a.name) }) + ' ' + t('rep.eff', { e: Math.round(Game.repairEff(a) * 100) });
     else if (weapon === 'special') sub = t('act.pick', { name: D(wdefs.special.name) });
     else if (armed) sub = t('act.pick', { name: D(ABILITIES[SHIP_TYPES[a.type].ability].name) });
     else if (tg && tg.side === 'ally') sub = t('act.ally');
