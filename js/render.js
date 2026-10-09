@@ -193,11 +193,11 @@ const R = (() => {
     const L = { top, bottom, fh, cy, unit, slots: new Map() };
     if (mode === 'menu') {
       const u = clamp(Math.min(W / 1100, H / 700), 0.5, 1.6);
-      L.station = { x: W * 0.5, y: H * 0.66, s: u * 1.25, rot: -0.12 };
+      L.station = { x: W * 0.5, y: H * 0.66, s: u * 1.1, rot: -0.12 };
       L.unit = u;
       return L;
     }
-    L.station = { x: W * 0.16, y: cy + fh * 0.04, s: unit * 0.86, rot: -0.08 };
+    L.station = { x: W * 0.175, y: cy + fh * 0.04, s: unit * 1.08, rot: -0.07 };
     if (!game) return L;
     const pl = game.player;
     const n = pl.length;
@@ -208,7 +208,7 @@ const R = (() => {
       const k = cols === 1 ? i : Math.floor(i / 2);
       const cnt = cols === 1 ? n : (c === 0 ? Math.ceil(n / 2) : Math.floor(n / 2));
       const step = Math.min(fh / (perCol + 0.4), 135 * unit);
-      const x = W * (cols === 1 ? 0.35 : (c === 0 ? 0.31 : 0.39));
+      const x = W * (cols === 1 ? 0.4 : (c === 0 ? 0.36 : 0.44));
       const y = cy + (k - (cnt - 1) / 2) * step + (c === 1 ? step * 0.25 : 0);
       L.slots.set(s.id, { x, y, face: 1 });
     });
@@ -1159,105 +1159,104 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
   }
 
   function drawStationBody(game, part) {
-    // A sorozatbeli Babylon 5 oldalnézetben (orr = +x):
-    // hátul reaktor, gerinc rakománykonténerekkel és kék napelem-„legyezők”,
-    // középen a hosszú, bézs forgó henger, elöl a parancsnoki gömb,
-    // a dokkoló a forgó nyílással és az előre mutató tüske.
-    // part: null = egész, 'front' / 'rear' a pusztulási jelenethez (vágás x = -20-nál)
+    // Babylon 5 oldalnézetben a kapott tervrajz alapján (orr = +x, kb. 400 egység hosszú):
+    // hátul sötét bronz reaktorblokk, vékony gerinc karimával, rácsos szakasz, kúpos átmenet;
+    // a fő henger hátsó részén alul-felül 3-3 keskeny kék napelem; kékes-levendula,
+    // szegmentált fő henger világos középsávval és vörösesbarna konténersorral a tetején;
+    // elöl nagyobb dob, parancsnoki gömb, keskeny nyak, dokkolóvilla, hegyes orr és hosszú antenna.
+    // part: null = egész, 'front' / 'rear' a pusztulási jelenethez (vágás x = 20-nál)
     const t = time;
-    const R0 = 26;
+    const SPLIT = 20;
     const rear = part !== 'front', front = part !== 'rear';
+    const hullG = (h, a = '#363955', b = '#8f93c4', c = '#c9ccd9') => {
+      const g = ctx.createLinearGradient(0, -h, 0, h);
+      g.addColorStop(0, a); g.addColorStop(0.32, b); g.addColorStop(0.5, c); g.addColorStop(0.68, b); g.addColorStop(1, a);
+      return g;
+    };
     if (rear) {
-      // napelem-legyezők (alul-felül négy-négy keskeny panel)
-      for (const sy of [-1, 1]) {
-        for (let i = 0; i < 4; i++) {
-          const x = -162 + i * 13;
-          const lean = (i - 1.5) * 1.5;
-          ctx.strokeStyle = 'rgba(150,160,175,0.8)'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(x, 4 * sy); ctx.lineTo(x + lean, 14 * sy); ctx.stroke();
-          const pg = ctx.createLinearGradient(x - 5, 0, x + 5, 0);
-          pg.addColorStop(0, '#16325a'); pg.addColorStop(0.5, '#4f8fd6'); pg.addColorStop(1, '#16325a');
+      // napelemek (a henger hátsó részén, alul-felül 3-3 keskeny rombusz)
+      for (const px of [-42, -27, -13]) {
+        for (const sy of [-1, 1]) {
+          ctx.strokeStyle = '#8b8fa3'; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.moveTo(px, 17 * sy); ctx.lineTo(px, 21 * sy); ctx.stroke();
+          const pg = ctx.createLinearGradient(px - 5, 0, px + 5, 0);
+          pg.addColorStop(0, '#14295c'); pg.addColorStop(0.5, '#3b6ed6'); pg.addColorStop(1, '#14295c');
           ctx.fillStyle = pg;
-          path([x + lean, 14 * sy, x + lean - 5, 40 * sy, x + lean * 3, 80 * sy, x + lean + 5, 40 * sy]);
+          path([px - 1.6, 21 * sy, px - 4.6, 36 * sy, px - 2, 53 * sy, px + 2, 53 * sy, px + 4.6, 36 * sy, px + 1.6, 21 * sy]);
           ctx.fill();
-          ctx.strokeStyle = 'rgba(150,200,255,0.45)'; ctx.lineWidth = 0.6;
-          for (let k = 1; k < 7; k++) {
-            const y = (14 + k * 9.5) * sy;
-            const w = k < 3 ? k * 1.8 : (7 - k) * 1.3 + 1;
-            ctx.beginPath(); ctx.moveTo(x + lean - w, y); ctx.lineTo(x + lean + w, y); ctx.stroke();
-          }
+          ctx.strokeStyle = 'rgba(15,25,60,0.8)'; ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(px, 22 * sy); ctx.lineTo(px, 52 * sy); ctx.stroke();
+          for (let k = 26; k < 52; k += 5) { ctx.beginPath(); ctx.moveTo(px - 4, k * sy); ctx.lineTo(px + 4, k * sy); ctx.stroke(); }
         }
       }
-      // hátsó gerinc és rakománykonténerek
-      ctx.fillStyle = vgrad('#3f444c', '#a6adb6', 6);
-      ctx.fillRect(-182, -5, 90, 10);
-      for (let x = -152; x < -100; x += 7) {
-        ctx.fillStyle = (x / 7) % 2 ? '#7a3328' : '#8e4a30';
-        ctx.fillRect(x, -11, 6, 6);
-      }
-      // reaktor és antennatüske
-      const rg = ctx.createRadialGradient(-186, -3, 1, -184, 0, 10);
-      rg.addColorStop(0, '#e8ebef'); rg.addColorStop(1, '#4b5563');
-      ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(-184, 0, 9, 0, TAU); ctx.fill();
-      ctx.strokeStyle = '#9aa3ae'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(-193, 0); ctx.lineTo(-212, 0); ctx.stroke();
-      // zéró-g átmeneti szakasz
-      ctx.fillStyle = vgrad('#4a4f57', '#bfc5cc', 22);
-      path([-94, -12, -72, -22, -72, 22, -94, 12]); ctx.fill();
+      // reaktorblokk (bronz) és hátsó gerinc karimával
+      ctx.fillStyle = vgrad('#2a2018', '#8a6a44', 9); ctx.fillRect(-200, -9, 22, 18);
+      ctx.fillStyle = '#5b4630'; for (let x = -198; x < -180; x += 4) ctx.fillRect(x, -9, 1.2, 18);
+      ctx.fillStyle = vgrad('#2a2c35', '#7d8193', 4.5); ctx.fillRect(-178, -4.5, 33, 9);
+      ctx.fillStyle = vgrad('#2f313c', '#9a9eb2', 11); ctx.fillRect(-147, -11, 7, 22);
+      // rácsos szakasz
+      ctx.fillStyle = vgrad('#1e2028', '#555a6c', 9); ctx.fillRect(-140, -9, 53, 18);
+      ctx.strokeStyle = 'rgba(150,155,175,0.45)'; ctx.lineWidth = 0.6;
+      for (let x = -140; x < -87; x += 7) { ctx.beginPath(); ctx.moveTo(x, -9); ctx.lineTo(x + 7, 9); ctx.moveTo(x, 9); ctx.lineTo(x + 7, -9); ctx.stroke(); }
+      // kúpos átmenet a fő hengerbe
+      ctx.fillStyle = vgrad('#15161c', '#4a4d5e', 20);
+      path([-87, -9, -44, -20, -44, 20, -87, 9]); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,205,220,0.35)'; ctx.lineWidth = 0.8;
+      for (const f of [0.3, 0.6]) { const x = -87 + 43 * f, h = 9 + 11 * f; ctx.beginPath(); ctx.moveTo(x, -h); ctx.lineTo(x, h); ctx.stroke(); }
+      ctx.fillStyle = '#2d5bb8'; ctx.fillRect(-45, -20, 1.5, 40);
     }
-    // fő forgó henger
-    const x0 = part === 'front' ? -20 : -72, x1 = part === 'rear' ? -20 : 56;
-    const hg = ctx.createLinearGradient(0, -R0, 0, R0);
-    hg.addColorStop(0, '#4f4b43'); hg.addColorStop(0.3, '#cfc7b2'); hg.addColorStop(0.5, '#e4ddca');
-    hg.addColorStop(0.75, '#a49d8b'); hg.addColorStop(1, '#45413a');
-    ctx.fillStyle = hg;
+    // fő henger (szegmentált, kékes-levendula, világos középsáv), forgó panelvonalakkal
+    const x0 = part === 'front' ? SPLIT : -44, x1 = part === 'rear' ? SPLIT : 87, R0 = 17.5;
+    ctx.fillStyle = hullG(R0);
     ctx.fillRect(x0, -R0, x1 - x0, R0 * 2);
     ctx.save();
     ctx.beginPath(); ctx.rect(x0, -R0, x1 - x0, R0 * 2); ctx.clip();
-    for (let k = 0; k < 16; k++) {
-      const ph = k / 16 * TAU + t * 0.25;
+    for (let k = 0; k < 12; k++) {
+      const ph = k / 12 * TAU + t * 0.25;
       const c = Math.cos(ph);
       if (c < 0) continue;
       const y = Math.sin(ph) * R0;
-      ctx.strokeStyle = `rgba(40,38,32,${0.2 + 0.4 * c})`; ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(30,32,50,${0.15 + 0.35 * c})`; ctx.lineWidth = 0.9;
       ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
-      ctx.fillStyle = `rgba(255,225,150,${0.55 * c})`;
-      for (let x = x0 + 4; x < x1; x += 9) {
-        if (((x * 7 + k * 13) | 0) % 4 === 0) ctx.fillRect(x, y - 0.7, 2.5, 1.4);
-      }
+      ctx.fillStyle = `rgba(255,225,160,${0.45 * c})`;
+      for (let x = x0 + 3; x < x1; x += 8) if (((x * 7 + k * 13) | 0) % 4 === 0) ctx.fillRect(x, y - 0.5, 2, 1);
     }
-    // panelosztások
-    ctx.strokeStyle = 'rgba(60,56,48,0.45)'; ctx.lineWidth = 0.8;
-    for (let x = -66; x < 56; x += 8) { ctx.beginPath(); ctx.moveTo(x, -R0); ctx.lineTo(x, R0); ctx.stroke(); }
+    ctx.strokeStyle = 'rgba(40,42,60,0.5)'; ctx.lineWidth = 0.6;
+    for (let x = -40; x < 87; x += 6) { ctx.beginPath(); ctx.moveTo(x, -R0); ctx.lineTo(x, R0); ctx.stroke(); }
     ctx.restore();
-    // vastagabb szekciógyűrűk
-    for (const x of [-70, -44, -18, 8, 34, 54]) {
+    // szegmensgyűrűk
+    for (const x of [-44, -6, 30, 62, 87]) {
       if (x < x0 - 3 || x > x1 + 3) continue;
-      ctx.fillStyle = vgrad('#5d5a52', '#d6cfbc', R0 + 3);
-      ctx.fillRect(x - 3, -R0 - 3, 6, R0 * 2 + 6);
+      ctx.fillStyle = hullG(R0 + 2, '#2c2e44', '#7c80ad', '#b9bcca');
+      ctx.fillRect(x - 2.5, -R0 - 2, 5, R0 * 2 + 4);
+    }
+    // konténersor a tetején
+    for (let x = -7; x < 69; x += 12.5) {
+      if (x + 8 < x0 || x > x1) continue;
+      ctx.fillStyle = vgrad('#4a2219', '#9a4a36', 3); ctx.fillRect(x, -R0 - 5, 8, 5);
     }
     if (front) {
-      // nyak, parancsnoki gömb, dokkoló, tüske
-      ctx.fillStyle = vgrad('#4b5058', '#c3c9d0', 15);
-      ctx.fillRect(56, -14, 14, 28);
-      const sg = ctx.createRadialGradient(78, -8, 2, 82, 0, 21);
-      sg.addColorStop(0, '#f1ece0'); sg.addColorStop(0.6, '#a9a395'); sg.addColorStop(1, '#4a463e');
-      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(82, 0, 20, 0, TAU); ctx.fill();
-      ctx.strokeStyle = 'rgba(60,56,48,0.5)'; ctx.lineWidth = 0.8;
-      ctx.beginPath(); ctx.ellipse(82, 0, 6, 20, 0, 0, TAU); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(62, 0); ctx.lineTo(102, 0); ctx.stroke();
-      ctx.fillStyle = vgrad('#454a52', '#c9ced5', 13);
-      ctx.fillRect(100, -13, 18, 26);
-      // forgó dokkolótárcsa a nyílással
-      ctx.fillStyle = '#3a3f46'; ctx.fillRect(118, -14, 5, 28);
-      const slot = Math.cos(t * 0.6);
-      ctx.fillStyle = `rgba(255,235,170,${0.55 + 0.35 * Math.abs(slot)})`;
-      ctx.fillRect(119, -6 * Math.abs(slot) - 1, 3, 12 * Math.abs(slot) + 2);
-      ctx.strokeStyle = '#a7aeb7'; ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.moveTo(123, 0); ctx.lineTo(152, 0); ctx.stroke();
-      const blink = Math.sin(t * 4) > 0.6 ? 1 : 0.15;
-      glow(152, 0, 6, '#66ccff', blink);
-      glow(120, 0, 10, '#ffe08a', 0.3 + 0.2 * Math.sin(t * 1.3));
+      // elülső dob
+      ctx.fillStyle = hullG(18.5); ctx.fillRect(87, -18.5, 29, 37);
+      ctx.strokeStyle = 'rgba(40,42,60,0.55)'; ctx.lineWidth = 0.6;
+      for (let x = 92; x < 116; x += 6) { ctx.beginPath(); ctx.moveTo(x, -18.5); ctx.lineTo(x, 18.5); ctx.stroke(); }
+      // parancsnoki gömb
+      const sg = ctx.createRadialGradient(122, -6, 2, 125, 0, 16);
+      sg.addColorStop(0, '#e6e8f2'); sg.addColorStop(0.55, '#8f93c4'); sg.addColorStop(1, '#2c2e44');
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.ellipse(125, 0, 11, 15, 0, 0, TAU); ctx.fill();
+      // nyak, dokkolóvilla, orr
+      ctx.fillStyle = vgrad('#2a2c38', '#9a9eb2', 7); ctx.fillRect(135, -7, 36, 14);
+      ctx.fillStyle = '#b8424a'; ctx.fillRect(150, -2, 14, 1.2);
+      ctx.fillStyle = vgrad('#22242e', '#8c90a4', 9); ctx.fillRect(171, -9, 7, 18);
+      const blink = Math.sin(t * 1.3) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(255,230,160,${0.4 + 0.5 * blink})`; ctx.fillRect(173, -4, 3, 8);
+      ctx.fillStyle = vgrad('#3a3c4a', '#c4c7d6', 5);
+      path([178, -6, 202, -1, 202, 1, 178, 6]); ctx.fill();
+      // hosszú antenna fent
+      ctx.strokeStyle = '#9a9eb2'; ctx.lineWidth = 0.9;
+      ctx.beginPath(); ctx.moveTo(128, -15); ctx.lineTo(132, -18); ctx.lineTo(205, -18); ctx.stroke();
+      const b2 = Math.sin(t * 4) > 0.6 ? 1 : 0.15;
+      glow(205, -18, 4, '#66ccff', b2);
     }
     // pajzs: vékony réteg az állomás körvonala mentén; minél gyengébb, annál több helyen szakad meg
     if (game && !part && game.station.shield > 0) drawShieldLayer(game.station.shield / game.station.maxShield, 1, null);
@@ -1270,8 +1269,8 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
   let shieldSegs = null;
   function shieldOutline() {
     if (shieldSegs) return shieldSegs;
-    const top = [[162, 0], [152, -6], [126, -18], [104, -23], [96, -27], [70, -29], [58, -33], [-72, -33], [-84, -28], [-100, -18],
-      [-108, -18], [-112, -28], [-114, -87], [-170, -87], [-173, -28], [-182, -15], [-196, -14], [-207, -7], [-220, 0]];
+    const top = [[208, 0], [200, -4], [181, -12], [172, -13], [160, -11], [138, -11], [137, -20], [118, -22], [88, -23], [-6, -23],
+      [-7, -57], [-48, -57], [-50, -24], [-88, -14], [-139, -14], [-140, -15], [-149, -15], [-151, -9], [-177, -9], [-179, -13], [-203, -13], [-209, 0]];
     let poly = [...top, ...top.slice(1, -1).reverse().map(([x, y]) => [x, -y])];
     for (let it = 0; it < 3; it++) {                       // Chaikin-lekerekítés
       const out = [];
@@ -1328,8 +1327,8 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
 
   function stationPoint(random = true) {
     const st = layout.station;
-    const lx = random ? rand(-170, 110) : 150;
-    const ly = random ? rand(-18, 18) : 0;
+    const lx = random ? rand(-190, 175) : 202;
+    const ly = random ? rand(-14, 14) : 0;
     const c = Math.cos(st.rot), s = Math.sin(st.rot);
     return { x: st.x + (lx * c - ly * s) * st.s, y: st.y + (lx * s + ly * c) * st.s };
   }
