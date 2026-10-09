@@ -5,7 +5,7 @@ Körökre osztott űrcsatás védekezős játék. Az eredeti egyetemi projekt (C
 
 ## Indítás
 
-- **Online / mobilon:** a GitHub Pages címen (lásd lent); telefonon a böngésző menüjéből „Hozzáadás a kezdőképernyőhöz”
+- **Online / mobilon:** https://duriel72.github.io/b5_game/ ; telefonon a böngésző menüjéből „Hozzáadás a kezdőképernyőhöz”
   → teljes képernyős, offline is futó alkalmazás. Fekvő tájolásban a legkényelmesebb.
 - **Asztali gépen:** dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra). dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra).
 - **Szerverrel (opcionális):** `node serve.js`, majd http://localhost:5500
@@ -95,11 +95,11 @@ Nem kereskedelmi rajongói projekt. A Babylon 5 a Warner Bros. védjegye.
 
 ## Közzététel GitHub Pages-en
 
-1. GitHubon hozz létre egy üres, nyilvános tárolót (pl. `b5-defend-the-station`).
-2. Ebben a mappában: `git remote add origin https://github.com/<felhasználónév>/b5-defend-the-station.git`,
+1. GitHubon hozz létre egy üres, nyilvános tárolót (ez a játék: `Duriel72/b5_game`).
+2. Ebben a mappában: `git remote add origin https://github.com/Duriel72/b5_game.git`,
    majd `git push -u origin main`.
 3. A tárolóban: **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`** → Save.
-4. Pár perc múlva elérhető: `https://<felhasználónév>.github.io/b5-defend-the-station/`
+4. Pár perc múlva elérhető: `https://duriel72.github.io/b5_game/`
 
 Frissítéskor a `sw.js`-ben érdemes növelni a `VERSION` értékét, hogy a telepített változat is frissüljön.
 Az alkalmazásikonok újragenerálása: `node tools/make-icons.js`.
