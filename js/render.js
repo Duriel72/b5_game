@@ -1236,30 +1236,48 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
       ctx.fillStyle = vgrad('#4a2219', '#9a4a36', 3); ctx.fillRect(x, -R0 - 5, 8, 5);
     }
     if (front) {
-      // elülső dob
+      // elülső dob (minden változatban azonos)
       ctx.fillStyle = hullG(18.5); ctx.fillRect(87, -18.5, 29, 37);
       ctx.strokeStyle = 'rgba(40,42,60,0.55)'; ctx.lineWidth = 0.6;
       for (let x = 92; x < 116; x += 6) { ctx.beginPath(); ctx.moveTo(x, -18.5); ctx.lineTo(x, 18.5); ctx.stroke(); }
-      // parancsnoki gömb
-      const sg = ctx.createRadialGradient(122, -6, 2, 125, 0, 16);
-      sg.addColorStop(0, '#e6e8f2'); sg.addColorStop(0.55, '#8f93c4'); sg.addColorStop(1, '#2c2e44');
-      ctx.fillStyle = sg; ctx.beginPath(); ctx.ellipse(125, 0, 11, 15, 0, 0, TAU); ctx.fill();
-      // nyak, dokkolóvilla, orr
-      ctx.fillStyle = vgrad('#2a2c38', '#9a9eb2', 7); ctx.fillRect(135, -7, 36, 14);
-      ctx.fillStyle = '#b8424a'; ctx.fillRect(150, -2, 14, 1.2);
-      ctx.fillStyle = vgrad('#22242e', '#8c90a4', 9); ctx.fillRect(171, -9, 7, 18);
-      const blink = Math.sin(t * 1.3) * 0.5 + 0.5;
-      ctx.fillStyle = `rgba(255,230,160,${0.4 + 0.5 * blink})`; ctx.fillRect(173, -4, 3, 8);
-      ctx.fillStyle = vgrad('#3a3c4a', '#c4c7d6', 5);
-      path([178, -6, 202, -1, 202, 1, 178, 6]); ctx.fill();
-      // hosszú antenna fent
-      ctx.strokeStyle = '#9a9eb2'; ctx.lineWidth = 0.9;
-      ctx.beginPath(); ctx.moveTo(128, -15); ctx.lineTo(132, -18); ctx.lineTo(205, -18); ctx.stroke();
-      const b2 = Math.sin(t * 4) > 0.6 ? 1 : 0.15;
-      glow(205, -18, 4, '#66ccff', b2);
+      drawStationFront(t);
     }
     // pajzs: vékony réteg az állomás körvonala mentén; minél gyengébb, annál több helyen szakad meg
     if (game && !part && game.station.shield > 0) drawShieldLayer(game.station.shield / game.station.maxShield, 1, null);
+  }
+
+  // ---------------------------------------------------------------- állomás orra
+  // A tervrajz szerint elöl gömb van (nem hegyes orr): parancsnoki gömb → vörös fényes nyak →
+  // kis elülső gömb dokkológyűrűvel; felül hosszú villa nyúlik előre, már a dob tetejétől indulva.
+  function sphere(x, y, rx, ry, light = '#eceef6') {
+    const g = ctx.createRadialGradient(x - rx * 0.35, y - ry * 0.4, 1, x, y, Math.max(rx, ry));
+    g.addColorStop(0, light); g.addColorStop(0.55, '#8f93c4'); g.addColorStop(1, '#2c2e44');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, TAU); ctx.fill();
+  }
+  // villa: lapos gerenda, a végén két ág (oldalnézetben egymás fölött), kék jelzőfénnyel
+  function fork(x0, x1, y, th = 3, tine = 14, spread = 5) {
+    ctx.fillStyle = vgrad('#3a3c4a', '#b4b8c8', th);
+    ctx.fillRect(x0, y - th / 2, x1 - x0, th);
+    ctx.strokeStyle = '#2a2c36'; ctx.lineWidth = 0.5;
+    for (let x = x0 + 6; x < x1; x += 8) { ctx.beginPath(); ctx.moveTo(x, y - th / 2); ctx.lineTo(x, y + th / 2); ctx.stroke(); }
+    ctx.fillStyle = vgrad('#3a3c4a', '#c4c7d6', 2);
+    path([x1, y - th / 2, x1 + tine, y - spread / 2 - 0.8, x1 + tine, y - spread / 2 + 0.6, x1 + 2, y]); ctx.fill();
+    path([x1, y + th / 2, x1 + tine, y + spread / 2 + 0.8, x1 + tine, y + spread / 2 - 0.6, x1 + 2, y]); ctx.fill();
+    glow(x1 + tine, y - spread / 2, 3, '#66ccff', Math.sin(time * 4) > 0.6 ? 1 : 0.15);
+  }
+  function drawStationFront(t) {
+    const blink = Math.sin(t * 1.3) * 0.5 + 0.5;
+    // villa a dob tetejétől, tartókkal
+    ctx.strokeStyle = '#8c90a4'; ctx.lineWidth = 1.6;
+    for (const x of [100, 118, 140]) { ctx.beginPath(); ctx.moveTo(x, x < 116 ? -18.5 : -10); ctx.lineTo(x + 2, -20.5); ctx.stroke(); }
+    fork(96, 198, -21.5, 2.8, 15, 6);
+    // parancsnoki gömb, nyak vörös fénypontokkal, kis elülső gömb dokkológyűrűvel
+    sphere(124, 0, 12, 14);
+    ctx.fillStyle = vgrad('#2a2c38', '#9a9eb2', 6); ctx.fillRect(135, -6, 18, 12);
+    ctx.fillStyle = '#b8424a'; for (let x = 137; x < 152; x += 4) ctx.fillRect(x, -1.5, 2, 1.2);
+    sphere(162, 0, 10, 10);
+    ctx.fillStyle = vgrad('#22242e', '#9a9eb2', 11); ctx.fillRect(171, -11, 3, 22);
+    ctx.fillStyle = `rgba(255,230,160,${0.4 + 0.5 * blink})`; ctx.fillRect(171.5, -3, 2, 6);
   }
 
   // ---------------------------------------------------------------- pajzsréteg
@@ -1269,7 +1287,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
   let shieldSegs = null;
   function shieldOutline() {
     if (shieldSegs) return shieldSegs;
-    const top = [[208, 0], [200, -4], [181, -12], [172, -13], [160, -11], [138, -11], [137, -20], [118, -22], [88, -23], [-6, -23],
+    const top = [[180, 0], [179, -14], [170, -15], [158, -12], [150, -9], [137, -16], [124, -18], [118, -22], [88, -23], [-6, -23],
       [-7, -57], [-48, -57], [-50, -24], [-88, -14], [-139, -14], [-140, -15], [-149, -15], [-151, -9], [-177, -9], [-179, -13], [-203, -13], [-209, 0]];
     let poly = [...top, ...top.slice(1, -1).reverse().map(([x, y]) => [x, -y])];
     for (let it = 0; it < 3; it++) {                       // Chaikin-lekerekítés
@@ -1327,7 +1345,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
 
   function stationPoint(random = true) {
     const st = layout.station;
-    const lx = random ? rand(-190, 175) : 202;
+    const lx = random ? rand(-190, 170) : 176;
     const ly = random ? rand(-14, 14) : 0;
     const c = Math.cos(st.rot), s = Math.sin(st.rot);
     return { x: st.x + (lx * c - ly * s) * st.s, y: st.y + (lx * s + ly * c) * st.s };
