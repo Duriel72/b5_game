@@ -328,13 +328,11 @@ const R = (() => {
           ctx.restore();
         };
         const silver = (h) => vgrad('#3d2a9a', '#8a72e6', h);   // lila márvány alapszín
-        // farokpengék és tüskék
+        // farokpengék
         for (const sy of [-1, 1]) {
           const blade = new Path2D();
           blade.moveTo(-12, 3.5 * sy); blade.lineTo(-30, 7.5 * sy); blade.lineTo(-52, 6.5 * sy); blade.lineTo(-30, 4 * sy); blade.closePath();
           ctx.fillStyle = silver(8); ctx.fill(blade); marble(blade, 'wsb' + sy, 10);
-          ctx.strokeStyle = '#7d8296'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(-34, 2 * sy); ctx.lineTo(-54, 3 * sy); ctx.stroke();
         }
         // sarlókarok (elülső ív a gondoláig, hátsó ív vissza a törzshöz – köztük nyílás)
         for (const sy of [-1, 1]) {
