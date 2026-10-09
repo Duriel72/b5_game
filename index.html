@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#04050d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B5 Defend">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <title>Babylon 5 – Defend The Station</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23070a1a'/%3E%3Crect x='10' y='26' width='38' height='12' rx='2' fill='%23c7ced8'/%3E%3Ccircle cx='10' cy='32' r='7' fill='%239aa3ae'/%3E%3Cpath d='M48 26 L56 29 L56 35 L48 38Z' fill='%23d6dbe2'/%3E%3Ccircle cx='58' cy='32' r='2.5' fill='%2366ccff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="cv"></canvas>
+
+  <!-- ===== Felső sáv ===== -->
+  <header id="hud-top" class="hud hidden">
+    <div class="ht-block">
+      <div class="ht-label" data-i18n="hud.wave">Hullám</div><div class="ht-val" id="ht-wave">1</div>
+    </div>
+    <div class="ht-block">
+      <div class="ht-label" data-i18n="hud.round">Kör</div><div class="ht-val" id="ht-round">1</div>
+    </div>
+    <div class="ht-station">
+      <div class="ht-label" data-i18n="hud.station">Babylon 5 állomás</div>
+      <div class="sbar"><div class="sbar-fill shield" id="ht-shield"></div><span id="ht-shield-t"></span></div>
+      <div class="sbar"><div class="sbar-fill hull" id="ht-hull"></div><span id="ht-hull-t"></span></div>
+    </div>
+    <div class="ht-block">
+      <div class="ht-label" data-i18n="hud.score">Pontszám</div><div class="ht-val" id="ht-score">0</div>
+    </div>
+    <div class="ht-block">
+      <div class="ht-label" data-i18n="hud.credits">Kredit</div><div class="ht-val gold" id="ht-credits">0</div>
+    </div>
+    <button class="icon-btn" id="btn-pause" data-i18n-title="hud.menu" title="Menü (Esc)">☰</button>
+  </header>
+
+  <div id="log" class="hidden collapsed">
+    <button id="log-toggle" data-i18n-title="log.title" title="Napló lenyitása / becsukása (L)"><span data-i18n="log.toggle">Napló</span><span class="lt-arrow">▾</span></button>
+    <div id="log-lines"></div>
+  </div>
+  <div id="hint" class="hidden"></div>
+
+  <!-- ===== Alsó harci panel ===== -->
+  <footer id="hud-bottom" class="hud hidden">
+    <section class="card own" id="card-own"></section>
+    <section class="actions" id="actions">
+      <div class="act-title"><span data-i18n="act.title">Támadás célpontja</span><span class="act-sub" id="act-sub"></span></div>
+      <div class="weap-row" id="weap-row"></div>
+      <div class="sub-btns" id="sub-btns"></div>
+      <div class="act-row">
+        <button class="btn ability" id="btn-ability"></button>
+        <button class="btn capture" id="btn-capture"><kbd>C</kbd> <span data-i18n="btn.capture">Elfoglalás</span></button>
+        <button class="btn end" id="btn-end"><kbd>Space</kbd> <span data-i18n="btn.end">Kör vége</span></button>
+      </div>
+    </section>
+    <section class="card foe" id="card-foe"></section>
+  </footer>
+
+  <div id="rotate-hint"><span data-i18n="rotate.hint">Fordítsd fekvő helyzetbe a telefont a kényelmesebb játékhoz.</span><button class="btn small" id="rotate-ok" data-i18n="btn.ok">Értem</button></div>
+  <div id="banner"></div>
+  <div id="toast"></div>
+  <button id="cine-skip" class="btn ghost hidden" data-i18n="cine.skip">Átugrás ▶▶</button>
+
+  <!-- ===== Képernyők ===== -->
+  <div class="screen" id="scr-menu">
+    <div class="menu-wrap">
+      <div class="logo">
+        <div class="logo-top">BABYLON 5</div>
+        <div class="logo-main">DEFEND THE STATION</div>
+        <div class="logo-sub" data-i18n="logo.sub">„Az utolsó, legjobb reményünk a békére.”</div>
+      </div>
+      <nav class="menu-btns" id="menu-btns"></nav>
+      <div class="menu-foot">
+        <span data-i18n="foot.1">Eredeti egyetemi projekt: Tóth Gábor András (C#, x86) · Modern kiadás: HTML5 Canvas, offline is fut</span><br>
+        <span class="muted" data-i18n="foot.2">Nem kereskedelmi rajongói projekt. A Babylon 5 a Warner Bros. védjegye.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-new">
+    <div class="panel">
+      <h2 data-i18n="new.title">Új játék</h2>
+      <label class="field"><span data-i18n="new.name">Parancsnok neve</span><input id="in-name" maxlength="24" data-i18n-ph="defaultName" placeholder="Sheridan kapitány" autocomplete="off"></label>
+      <div class="field"><span data-i18n="new.diff">Nehézségi szint</span></div>
+      <div class="diff-grid" id="diff-grid"></div>
+      <div class="panel-btns">
+        <button class="btn ghost" data-back data-i18n="btn.back">Vissza</button>
+        <button class="btn primary" id="btn-start" data-i18n="new.start">Indulás ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-slots">
+    <div class="panel">
+      <h2 id="slots-title">Betöltés</h2>
+      <div class="slots" id="slots"></div>
+      <div class="panel-btns"><button class="btn ghost" data-back data-i18n="btn.back">Vissza</button></div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-scores">
+    <div class="panel">
+      <h2 data-i18n="scores.title">Ranglista</h2>
+      <div id="scores"></div>
+      <div class="panel-btns">
+        <button class="btn ghost danger" id="btn-clear-scores" data-i18n="scores.clear">Ranglista törlése</button>
+        <button class="btn ghost" data-back data-i18n="btn.back">Vissza</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-catalog">
+    <div class="panel wide">
+      <h2 data-i18n="cat.title">Hajókatalógus</h2>
+      <div class="catalog" id="catalog"></div>
+      <div class="panel-btns"><button class="btn ghost" data-back data-i18n="btn.back">Vissza</button></div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-help">
+    <div class="panel wide help" id="help"></div>
+  </div>
+
+  <div class="screen modal" id="scr-settings">
+    <div class="panel">
+      <h2 data-i18n="set.title">Beállítások</h2>
+      <div class="field row"><span data-i18n="set.lang">Nyelv</span><div class="lang-sw" id="set-lang"><button class="btn small" data-lang="hu">Magyar</button><button class="btn small" data-lang="en">English</button></div></div>
+      <label class="field row"><span data-i18n="set.vol">Hangerő</span><input type="range" id="set-vol" min="0" max="1" step="0.05"></label>
+      <label class="field row check"><input type="checkbox" id="set-music"><span data-i18n="set.music">Háttérzene (ambient)</span></label>
+      <label class="field row check"><input type="checkbox" id="set-fast"><span data-i18n="set.fast">Gyors animációk (2×)</span></label>
+      <label class="field row check"><input type="checkbox" id="set-shake"><span data-i18n="set.shake">Képernyőrázkódás</span></label>
+      <div class="panel-btns"><button class="btn primary" data-back data-i18n="set.done">Kész</button></div>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-pause">
+    <div class="panel narrow">
+      <h2 data-i18n="pause.title">Szünet</h2>
+      <nav class="menu-btns" id="pause-btns"></nav>
+    </div>
+  </div>
+
+  <div class="screen modal" id="scr-shop">
+    <div class="panel wide shop" id="shop"></div>
+  </div>
+
+  <div class="screen modal" id="scr-over">
+    <div class="panel" id="over"></div>
+  </div>
+
+  <div class="screen modal" id="scr-confirm">
+    <div class="panel narrow">
+      <h2 id="confirm-title">Biztos?</h2>
+      <p id="confirm-text"></p>
+      <div class="panel-btns">
+        <button class="btn ghost" id="confirm-no" data-i18n="confirm.no">Mégse</button>
+        <button class="btn primary" id="confirm-yes" data-i18n="confirm.yes">Igen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
