@@ -201,7 +201,7 @@ const SUB_DMG = 0.6;      // alrendszerre mért lövés sebzésszorzója
 const STATION_UPGRADES = [
   { key: 'repair', name: 'Állomás javítása', desc: '+30% szerkezeti integritás', cost: () => 140 },
   { key: 'armor',  name: 'Páncélzat',        desc: '+250 max. szerkezet (és javítás)', cost: s => 220 + s.armorLvl * 140, max: 8, lvl: s => s.armorLvl },
-  { key: 'shield', name: 'Pajzsgenerátor',   desc: '+80 max. pajzs, gyorsabb töltődés', cost: s => 200 + s.shieldLvl * 130, max: 8, lvl: s => s.shieldLvl },
+  { key: 'shield', name: 'Pajzsgenerátor',   desc: '+50 max. pajzs, gyorsabb töltődés', cost: s => 200 + s.shieldLvl * 130, max: 8, lvl: s => s.shieldLvl },
   { key: 'command', name: 'Irányító központ', desc: '+1 hajóhely a flottában', cost: s => 400 + (s.cmdLvl || 0) * 260, max: 4, lvl: s => s.cmdLvl || 0 },
   { key: 'grid',   name: 'Védelmi rács',     desc: '+5 sebzés; 3. és 6. szinten +1 lövés', cost: s => 180 + s.gridLvl * 120, max: 8, lvl: s => s.gridLvl },
 ];
@@ -229,12 +229,12 @@ const REPAIR = { sys: 0.4, hull: 0.2 };   // kézi javítás egy akcióval (a ma
 
 // Gazdaság – a hullámszámmal arányosan nő (n = hullám száma)
 const ECON = {
-  kill: (threat, n) => (50 + threat * 50) * (1 + 0.05 * (n - 1)),        // elpusztított hajóért
-  capture: (threat, n) => (40 + threat * 30) * (1 + 0.05 * (n - 1)),     // elfoglalt hajóért
-  waveBonus: n => 150 + 40 * n + 1.2 * n * n,                            // visszavert hullámért
+  kill: (threat, n) => (50 + threat * 50) * (1 + 0.04 * (n - 1)),        // elpusztított hajóért
+  capture: (threat, n) => (40 + threat * 30) * (1 + 0.04 * (n - 1)),     // elfoglalt hajóért
+  waveBonus: n => 130 + 35 * n + 1.0 * n * n,                            // visszavert hullámért
   repairHull: 0.75, repairSys: 1.2,                                        // javítás kredit/életpont
   merchantChance: 0.15, merchantMinWave: 3,                                // kereskedő konvoj esélye
-  merchantCredits: n => 200 + 60 * n + 2 * n * n,
+  merchantCredits: n => 180 + 50 * n + 1.6 * n * n,
 };
 
 // ---------------------------------------------------------------------------

@@ -48,7 +48,7 @@ const STRINGS = {
     'sub.destroyed': 'kilőve', 'sub.attack': '{sub} támadása ({k})',
     'act.busy': 'Lövésváltás…', 'act.pick': '{name}: válaszd ki a célt!', 'act.ally': 'Szövetséges – vedd át az irányítását!',
     'shop.cleared': '{n}. hullám visszaverve!', 'shop.title': 'Javítás és fejlesztés', 'shop.bonus': 'Hullámbónusz: +{p} pont, +{c} kredit · ',
-    'shop.autorep': 'A hajók automatikusan kijavították a sérülések egy részét.', 'shop.gift': 'A Narn Rezsim küldött egy cirkálót: {name}!',
+    'shop.autorep': 'A hajók automatikusan kijavították a sérülések egy részét (az elfoglalt hajók kivételével), a pajzs félig visszatöltődött.', 'shop.gift': 'A Narn Rezsim küldött egy cirkálót: {name}!',
     'shop.credits': 'Kredit', 'shop.fleet': 'Flotta ({a}/{b})', 'shop.intact': 'Ép', 'shop.rep50': 'Javítás 50%', 'shop.fullIntact': 'Teljesen ép',
     'shop.full': 'Teljes', 'shop.upTitle': '+12% tűzerő, +10% test és alrendszerek', 'shop.max': 'Max. szint', 'shop.up': 'Fejlesztés',
     'shop.scrapTitle': 'A hajó kivétele a flottából kreditért (nem semmisül meg)', 'shop.scrap': 'Leszerelés', 'shop.cmd': 'Flotta: max. {n} hajó', 'shop.station': 'Babylon 5 állomás', 'shop.lsReady': '· Utolsó esély: elérhető', 'shop.lsWait': '· Utolsó esély: {n} hullám múlva', 'shop.structure': 'Szerkezet: {a} / {b}', 'shop.shield': 'Pajzs: {a}',
@@ -120,7 +120,7 @@ const STRINGS = {
     'sub.destroyed': 'destroyed', 'sub.attack': 'Attack {sub} ({k})',
     'act.busy': 'Exchange of fire…', 'act.pick': '{name}: choose the target!', 'act.ally': 'Ally – take command of it!',
     'shop.cleared': 'Wave {n} repelled!', 'shop.title': 'Repairs & upgrades', 'shop.bonus': 'Wave bonus: +{p} points, +{c} credits · ',
-    'shop.autorep': 'Your ships automatically repaired part of their damage.', 'shop.gift': 'The Narn Regime sent you a cruiser: {name}!',
+    'shop.autorep': 'Your ships automatically repaired part of their damage (except captured ships); shields recharged halfway.', 'shop.gift': 'The Narn Regime sent you a cruiser: {name}!',
     'shop.credits': 'Credits', 'shop.fleet': 'Fleet ({a}/{b})', 'shop.intact': 'Intact', 'shop.rep50': 'Repair 50%', 'shop.fullIntact': 'Fully intact',
     'shop.full': 'Full', 'shop.upTitle': '+12% firepower, +10% hull and subsystems', 'shop.max': 'Max level', 'shop.up': 'Upgrade',
     'shop.scrapTitle': 'Remove the ship from your fleet for credits (it is not destroyed)', 'shop.scrap': 'Decommission', 'shop.cmd': 'Fleet: max. {n} ships', 'shop.station': 'Babylon 5 station', 'shop.lsReady': '· Last chance: available', 'shop.lsWait': '· Last chance: in {n} waves', 'shop.structure': 'Structure: {a} / {b}', 'shop.shield': 'Shields: {a}',
@@ -211,7 +211,7 @@ const DATA_EN = {
   // állomásfejlesztések
   'Állomás javítása': 'Station repair', '+30% szerkezeti integritás': '+30% structural integrity',
   'Páncélzat': 'Armour plating', '+250 max. szerkezet (és javítás)': '+250 max structure (and repair)',
-  'Pajzsgenerátor': 'Shield generator', '+80 max. pajzs, gyorsabb töltődés': '+80 max shields, faster recharge',
+  'Pajzsgenerátor': 'Shield generator', '+50 max. pajzs, gyorsabb töltődés': '+50 max shields, faster recharge',
   'Védelmi rács': 'Defence grid', '+5 sebzés; 3. és 6. szinten +1 lövés': '+5 damage; +1 shot at levels 3 and 6',
   // fegyverek
   'Szárnyágyúk': 'Wing cannons', 'Fő fúziós ágyú': 'Main fusion cannon', 'az orr fő ágyújának folytonos zöld sugara': 'continuous green beam from the main bow gun',
@@ -303,7 +303,7 @@ function helpHtml(ctx) {
         <div>
           <h3>Capturing</h3>
           <ul>
-            <li>Destroy the <b>reactor</b>, or both the <b>weapons and the engines</b>, and the ship becomes capturable. Capture it with one of your ships that can still act (<kbd>C</kbd>). The more battered its hull, the easier the capture. If it fails, you can only try that ship again next turn.</li>
+            <li>Destroy the <b>reactor</b>, or both the <b>weapons and the engines</b>, and the ship becomes capturable. Capture it with one of your ships that can still act (<kbd>C</kbd>). The more battered its hull, the easier the capture. If it fails, you can only try that ship again next turn. A captured ship joins your fleet in the state you took it, and does not repair itself (not even self-repairing types): repair it manually or in the shop.</li>
             <li><span style="color:var(--green)">Allied</span> ships (from wave 5, arriving through a blue jump point next to the station) can be taken over immediately, without using an action. Until you do, they fire at the enemy on their own at the end of each turn; at the end of the wave they move on.</li>
             <li><b>Shadow ships</b> (cruisers and scouts) can never be captured – only destroyed.</li>
             <li>Your fleet can hold ${MAX_FLEET} ships by default; each level of the station's <b>Command centre</b> adds one more slot. In the shop you can <b>decommission</b> any ship for credits – it is not destroyed, it just leaves your fleet.</li>
@@ -370,7 +370,7 @@ function helpHtml(ctx) {
         <div>
           <h3>Elfoglalás</h3>
           <ul>
-            <li>Ha kilövöd a <b>reaktort</b>, vagy a <b>fegyverzetet és a hajtóművet</b> is, a hajó elfoglalhatóvá válik. Egy még cselekvőképes hajóddal foglalhatod el (<kbd>C</kbd>). Minél roncsabb a teste, annál könnyebb az elfoglalás. Ha nem sikerül, azt a hajót csak a következő körben próbálhatod újra.</li>
+            <li>Ha kilövöd a <b>reaktort</b>, vagy a <b>fegyverzetet és a hajtóművet</b> is, a hajó elfoglalhatóvá válik. Egy még cselekvőképes hajóddal foglalhatod el (<kbd>C</kbd>). Minél roncsabb a teste, annál könnyebb az elfoglalás. Ha nem sikerül, azt a hajót csak a következő körben próbálhatod újra. Az elfoglalt hajó a megszerzett állapotában kerül a flottádba, és nem javul magától (önjavító típusoknál sem): kézzel vagy a boltban kell javítani.</li>
             <li>A <span style="color:var(--green)">szövetséges</span> hajók (az 5. hullámtól, az állomás mellett, kék ugróponton érkeznek) azonnal átvehetők, ehhez nem kell akció. Amíg nem veszed át őket, minden kör végén önállóan lőnek az ellenségre; a hullám végén továbbállnak.</li>
             <li>Az <b>Árny hajókat</b> (cirkálót és felderítőt) soha nem lehet elfoglalni, csak elpusztítani.</li>
             <li>A flotta alapból legfeljebb ${MAX_FLEET} hajóból állhat; az állomás <b>Irányító központjának</b> fejlesztése szintenként +1 hajóhelyet ad. A boltban bármelyik hajót <b>leszerelheted</b> kreditért – ilyenkor nem semmisül meg, csak kikerül a flottából.</li>

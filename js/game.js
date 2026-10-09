@@ -19,7 +19,8 @@ const Game = (() => {
   const alive = s => s && s.hull > 0;
   const canAct = s => alive(s) && !isDisabled(s) && s.sys.weapons > 0;
   // javítás: önjavító (passzív) típusok, illetve kézi javítás – ehhez a reaktor kell
-  const hasRegen = s => !!REGEN[s.type];
+  // az elfoglalt hajó elveszíti az önjavítást (nálunk kézzel kell javítani)
+  const hasRegen = s => !!REGEN[s.type] && !s.captured;
   const damaged = (s, k) => (k === 'hull' ? s.hull < s.maxHull : s.sys[k] < s.maxSys[k]);
   const canManualRepair = s => alive(s) && !hasRegen(s) && s.sys.reactor > 0 && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
   // a hajó tud-e valamit kezdeni ebben a körben (lőni vagy javítani)
@@ -377,7 +378,7 @@ const Game = (() => {
   // Passzív önjavítás a kör elején: 0%-os alrendszer → 20% alatti → test
   function regenTick(s) {
     const rg = REGEN[s.type];
-    if (!rg || !alive(s)) return;
+    if (!rg || !hasRegen(s) || !alive(s)) return;   // az elfoglalt hajó nem önjavít
     const order = ['weapons', 'reactor', 'engines', 'sensors'];
     const zero = order.find(k => s.sys[k] <= 0);
     const low = order.filter(k => s.sys[k] < s.maxSys[k] * 0.2).sort((x, y) => s.sys[x] / s.maxSys[x] - s.sys[y] / s.maxSys[y])[0];
@@ -435,7 +436,7 @@ const Game = (() => {
         await afterPlayerAction();
         return;
       }
-      for (const k of SYS_KEYS) tgt.sys[k] = Math.max(tgt.sys[k], Math.round(tgt.maxSys[k] * 0.3));
+      tgt.captured = true;   // nem javul magától: kézzel vagy a boltban kell javítani
       tgt.firepower = +(SHIP_TYPES[tgt.type].firepower * Math.pow(1.12, tgt.level - 1)).toFixed(1);
       tgt.side = 'player'; tgt.acted = true; tgt.cd = 0; tgt.wcd = 0; tgt.evade = false;
       S.enemies = S.enemies.filter(x => x !== tgt);
@@ -625,7 +626,7 @@ const Game = (() => {
       regenTick(s);
     }
     const st = S.station;
-    st.shield = Math.min(st.maxShield, st.shield + st.maxShield * 0.06 + st.shieldLvl * 5);
+    st.shield = Math.min(st.maxShield, st.shield + st.maxShield * 0.05 + st.shieldLvl * 3);
     autoSelect();
     hooks.log(t('g.round', { n: S.round }), 'round');
     hooks.update();
@@ -845,11 +846,14 @@ const Game = (() => {
     S.enemies = [];
     // automatikus részleges javítás
     for (const s of S.player) {
-      s.hull = Math.min(s.maxHull, Math.round(s.hull + (s.maxHull - s.hull) * 0.2));
-      for (const k of SYS_KEYS) s.sys[k] = Math.min(s.maxSys[k], Math.round(s.sys[k] + (s.maxSys[k] - s.sys[k]) * 0.25));
+      if (!s.captured) {
+        s.hull = Math.min(s.maxHull, Math.round(s.hull + (s.maxHull - s.hull) * 0.2));
+        for (const k of SYS_KEYS) s.sys[k] = Math.min(s.maxSys[k], Math.round(s.sys[k] + (s.maxSys[k] - s.sys[k]) * 0.25));
+      }
       s.acted = false; s.cd = 0; s.wcd = 0; s.evade = false;
     }
-    S.station.shield = S.station.maxShield;
+    // a pajzs a hullámok között csak részben töltődik vissza (a hiány fele)
+    S.station.shield = Math.round(S.station.shield + (S.station.maxShield - S.station.shield) * 0.5);
     let gift = null;
     if (!S.player.length) {
       gift = makeShip('narn', 'player');
@@ -928,7 +932,7 @@ const Game = (() => {
       if (!spend(def.cost(st))) return;
       if (key === 'repair') st.hull = Math.min(st.maxHull, st.hull + st.maxHull * 0.3);
       if (key === 'armor') { st.armorLvl++; st.maxHull += 250; st.hull += 250; }
-      if (key === 'shield') { st.shieldLvl++; st.maxShield += 80; st.shield = st.maxShield; }
+      if (key === 'shield') { st.shieldLvl++; st.maxShield += 50; st.shield = Math.min(st.maxShield, st.shield + 50); }
       if (key === 'grid') { st.gridLvl++; st.grid += 5; }
       if (key === 'command') st.cmdLvl = (st.cmdLvl || 0) + 1;
       st.hull = Math.round(st.hull);
