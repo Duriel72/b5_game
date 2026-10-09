@@ -1125,7 +1125,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
       ctx.textAlign = 'center';
       let label = NM(ship.name);
       let col = ship.side === 'player' ? '#bfe6ff' : ship.side === 'ally' ? '#a7f3c0' : '#ffc2c2';
-      if (ship.side === 'player') label = (Game.canAct(ship) && !ship.acted ? '✓ ' : '· ') + label;
+      if (ship.side === 'player') label = (Game.canTakeAction(ship) && !ship.acted ? '✓ ' : '· ') + label;
       ctx.fillStyle = col;
       ctx.fillText(label, 0, y0 + 18);
       const cap = Game.capturable(ship);

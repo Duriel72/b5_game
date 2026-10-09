@@ -5,7 +5,7 @@
 // impulzusok és zúgó nehézlézerek, a Minbari fegyverek rezonáns, felfelé
 // szálló fúziós sugarak, a Narn lézerek mély morgások, a Centauri ionágyúk
 // recsegő lövedékek, az Árny hajók pedig vibráló, sikolyszerű hangot adnak.
-// Az ugrópont mély dübörgés egy „csengéssel” (a korai évadok jellegzetessége).
+// Az ugrópont mély, felfutó dübörgés.
 // ---------------------------------------------------------------------------
 
 const SFX = (() => {
@@ -121,12 +121,6 @@ const SFX = (() => {
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     src.connect(f); f.connect(g); out(g, o.rev ?? 0.4);
     src.start(t, Math.random()); src.stop(t + dur + 0.1);
-  }
-
-  // harangszerű „csengés” (ugrópont)
-  function bell(freq, delay = 0, dur = 1.4, peak = 0.08) {
-    [[1, 1], [2.76, 0.45], [5.4, 0.22], [8.9, 0.1]].forEach(([m, a]) =>
-      osc({ type: 'sine', f0: freq * m, dur: dur / Math.sqrt(m), peak: peak * a, attack: 0.003, delay, rev: 0.8 }));
   }
 
   // ------------------------------------------------------------ fegyverek
@@ -257,13 +251,17 @@ const SFX = (() => {
       // utórecsegés
       for (let i = 0; i < (big ? 6 : 3); i++) nz({ type: 'bandpass', f0: 1800 + Math.random() * 1500, q: 4, dur: 0.08, peak: 0.07, delay: 0.12 + Math.random() * d * 0.5, rev: 0.4 });
     },
-    // ugrópont: mély dübörgés + „csengés”; a kék (szövetséges) fényesebben cseng
+    // ugrópont: mély, felfutó dübörgés és örvénylő zúgás (a kék szövetséges kapu kicsit fényesebb)
     jump(blue = false) {
       nz({ type: 'lowpass', f0: 90, f1: 900, dur: 1.8, peak: 0.32, attack: 0.5, rev: 0.7 });
       osc({ type: 'sine', f0: 42, f1: 110, dur: 1.7, peak: 0.25, attack: 0.4, rev: 0.4 });
       osc({ type: 'sawtooth', f0: 55, f1: 160, dur: 1.5, peak: 0.04, attack: 0.4, filter: ['lowpass', 600, 1200] });
-      bell(blue ? 1568 : 1175, 0.18, 1.6, 0.07);
-      if (blue) bell(2093, 0.3, 1.2, 0.04);
+      nz({ type: 'bandpass', f0: 300, f1: blue ? 2600 : 1800, q: 3, dur: 1.6, peak: 0.08, attack: 0.5, rev: 0.8 });
+    },
+    // javítás: fémes kattogás és emelkedő zümmögés
+    repair() {
+      for (let i = 0; i < 3; i++) nz({ type: 'bandpass', f0: 2400, q: 8, dur: 0.05, peak: 0.08, delay: i * 0.09, rev: 0.2 });
+      osc({ type: 'triangle', f0: 300, f1: 620, dur: 0.45, peak: 0.06, delay: 0.1, rev: 0.4 });
     },
     click() { osc({ type: 'sine', f0: 1250, f1: 950, dur: 0.06, peak: 0.05, rev: 0.1 }); },
     select() { osc({ type: 'triangle', f0: 720, f1: 1080, dur: 0.08, peak: 0.06, rev: 0.2 }); },

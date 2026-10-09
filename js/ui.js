@@ -242,6 +242,7 @@ const UI = (() => {
           <span>${t('cat.primary')}</span><span>${esc(D(W.primary.name))}</span>
           <span>${t('cat.special')}</span><span>${W.special ? esc(t('cat.specialVal', { name: D(W.special.name), m: W.special.mult, cd: W.special.cd })) : '—'}</span>
           <span>${t('cat.ability')}</span><span>${esc(D(ab.name))}</span>
+          <span>${t('cat.repair')}</span><span>${REGEN[k] ? t('cat.repairRegen') : t('cat.repairManual')}</span>
           <span>${t('cat.points')}</span><span>${T.points} / ${T.noCapture ? '—' : Math.round(T.points * SCORE.captureMult)}</span>
           ${T.price && PLAYER_BUYABLE.includes(k) ? `<span>${t('cat.price')}</span><span class="cost">${T.price} ¢</span>` : ''}
         </div>`;
@@ -404,10 +405,10 @@ const UI = (() => {
     return `<div class="chips">${list.map(s => {
       const cls = ['chip'];
       if (s.id === selId) cls.push('sel');
-      if (side === 'player' && (s.acted || !Game.canAct(s))) cls.push('done');
+      if (side === 'player' && (s.acted || !Game.canTakeAction(s))) cls.push('done');
       if (s.side === 'enemy' && Game.capturable(s)) cls.push('dis');
       if (s.side === 'ally') cls.push('allyc');
-      const mark = side === 'player' ? (Game.canAct(s) && !s.acted ? '✓ ' : '') : s.side === 'ally' ? '★ ' : Game.isDisabled(s) ? '⛓ ' : '';
+      const mark = side === 'player' ? (Game.canTakeAction(s) && !s.acted ? '✓ ' : '') : s.side === 'ally' ? '★ ' : Game.isDisabled(s) ? '⛓ ' : '';
       return `<button class="${cls.join(' ')}" data-sel="${s.id}" title="${esc(NM(s.name))}">${mark}${esc(NM(s.name))}</button>`;
     }).join('')}</div>`;
   }
@@ -429,14 +430,14 @@ const UI = (() => {
 
     const a = Game.byId(S.selPlayer);
     const tg = Game.byId(S.selEnemy);
-    const ready = S.player.filter(s => Game.canAct(s) && !s.acted).length;
+    const ready = S.player.filter(s => Game.canTakeAction(s) && !s.acted).length;
 
     // saját kártya
     const own = $('#card-own');
     if (!S.player.length) own.innerHTML = `<div class="card-kicker"><span>${t('own.title')}</span></div><div class="empty">${esc(t('own.none'))}</div>`;
     else if (a && a.side === 'player') {
       const T = SHIP_TYPES[a.type];
-      const ok = Game.canAct(a) && !a.acted;
+      const ok = Game.canTakeAction(a) && !a.acted;
       own.innerHTML = `<div class="card-kicker"><span>${t('own.title')} · ${S.player.length}/${Game.fleetCap()}</span><span>${esc(t('own.ready', { n: ready }))}</span></div>
         ${chips(S.player, a.id, 'player')}
         <div class="card-head"><button class="arrow" data-cycle="player:-1" title="${esc(t('prev', { k: 'Q' }))}">◀</button>
@@ -445,7 +446,7 @@ const UI = (() => {
         <button class="arrow" data-cycle="player:1" title="${esc(t('next', { k: 'E' }))}">▶</button></div>
         ${shipBars(a)}
         <div class="card-foot"><span>${t('card.fp')} <b>${Math.round(Game.expectedDamage(a))}</b></span><span>${esc(D(ABILITIES[T.ability].name))}: <b>${a.cd ? esc(t('card.turns', { n: a.cd })) : t('card.ready')}</b></span>
-        ${Game.isDisabled(a) ? `<span class="badge red">${t('badge.disabled')}</span>` : a.acted ? `<span class="badge">${t('badge.acted')}</span>` : ''}</div>`;
+        ${Game.isDisabled(a) ? `<span class="badge red">${t('badge.disabled')}</span>` : a.acted ? `<span class="badge">${t('badge.acted')}</span>` : ''}${Game.hasRegen(a) ? `<span class="badge green">${t('badge.regen')}</span>` : ''}</div>`;
     }
 
     // ellenséges kártya
@@ -470,7 +471,12 @@ const UI = (() => {
     const canAtk = Game.canPlayerAttack();
     const subBox = $('#sub-btns');
     const wdefs = a && a.side === 'player' ? WEAPON_DEFS[a.type] || {} : {};
+    const canFix = !!(a && a.side === 'player' && !a.acted && !Game.busy && S.phase === 'battle' && Game.canManualRepair(a));
     if (weapon === 'special' && !(a && Game.specialReady(a) && canAtk)) weapon = 'primary';
+    if (weapon === 'repair' && !canFix) weapon = 'primary';
+    // ha a hajó nem tud lőni, de javítani igen, magától javító módba vált
+    if (canFix && !Game.canAct(a)) weapon = 'repair';
+    $('#actions').classList.toggle('repairing', weapon === 'repair');
     $('#actions').classList.toggle('armed', armed && canAtk);
     $('#actions').classList.toggle('special', weapon === 'special' && canAtk);
     const wbtn = (key, w, extra) => w
@@ -479,8 +485,19 @@ const UI = (() => {
           <span class="wn">${esc(D(w.name))}</span><span class="wi">${extra.info}</span></button>`
       : `<button class="wbtn" disabled><span class="wn muted">${t('w.none')}</span></button>`;
     $('#weap-row').innerHTML = wbtn('primary', wdefs.primary, { info: t('w.every'), dis: !canAtk })
-      + wbtn('special', wdefs.special, { info: wdefs.special ? (a.wcd > 0 ? esc(t('w.inTurns', { n: a.wcd })) : `<kbd>G</kbd> ${esc(t('w.ready', { m: wdefs.special.mult }))}`) : '', dis: !canAtk || !Game.specialReady(a) });
+      + wbtn('special', wdefs.special, { info: wdefs.special ? (a.wcd > 0 ? esc(t('w.inTurns', { n: a.wcd })) : `<kbd>G</kbd> ${esc(t('w.ready', { m: wdefs.special.mult }))}`) : '', dis: !canAtk || !Game.specialReady(a) })
+      + (a && a.side === 'player' && Game.hasRegen(a)
+        ? `<button class="wbtn" disabled title="${esc(t('rep.regenTitle'))}"><i class="wsw" style="background:#86efac"></i><span class="wn">${t('rep.regen')}</span><span class="wi">${t('rep.passive')}</span></button>`
+        : `<button class="wbtn ${weapon === 'repair' ? 'on' : ''}" data-weapon="repair" ${canFix ? '' : 'disabled'} title="${esc(t('rep.title'))}"><i class="wsw" style="background:#86efac"></i><span class="wn">🔧 ${t('rep.btn')}</span><span class="wi"><kbd>R</kbd> ${t('rep.instead')}</span></button>`);
     subBox.innerHTML = SUBSYSTEMS.map((sub, i) => {
+      if (weapon === 'repair') {
+        const cur = sub.key === 'hull' ? a.hull : a.sys[sub.key], max = sub.key === 'hull' ? a.maxHull : a.maxSys[sub.key];
+        const need = Game.damaged(a, sub.key);
+        const add = Math.min(max - cur, Game.repairAmount(a, sub.key));
+        return `<button class="sub-btn fix" data-sub="${sub.key}" ${need ? '' : 'disabled'} title="${esc(t('rep.part', { p: D(sub.label) }))}">
+          <div class="sb-top"><span>${sub.icon} ${esc(D(sub.label))}</span><span class="sb-k">${i + 1}</span></div>
+          <div class="sb-stat">${Math.round(cur)}/${max}${need ? ` · +${Math.round(add)}` : ''}</div><div class="sb-chance"><i style="width:${cur / max * 100}%"></i></div></button>`;
+      }
       let stat = '—', ch = 0, dis = !canAtk;
       if (a && tg && tg.side === 'enemy' && a.side === 'player') {
         ch = armed && SHIP_TYPES[a.type].ability === 'precision' ? 1 : Game.hitChance(a, tg, sub.key);
@@ -512,6 +529,7 @@ const UI = (() => {
     let sub = '';
     if (Game.busy) sub = t('act.busy');
     else if (S.phase !== 'battle') sub = '';
+    else if (weapon === 'repair') sub = t('rep.pick', { name: NM(a.name) });
     else if (weapon === 'special') sub = t('act.pick', { name: D(wdefs.special.name) });
     else if (armed) sub = t('act.pick', { name: D(ABILITIES[SHIP_TYPES[a.type].ability].name) });
     else if (tg && tg.side === 'ally') sub = t('act.ally');
@@ -533,6 +551,7 @@ const UI = (() => {
   }
 
   function attack(subKey) {
+    if (weapon === 'repair') { weapon = 'primary'; armed = false; Game.playerRepair(subKey); return; }
     const useAb = armed, useSpec = weapon === 'special';
     armed = false; weapon = 'primary';
     Game.playerAttack(subKey, useAb, useSpec);
@@ -541,6 +560,11 @@ const UI = (() => {
   function setWeapon(w) {
     const S = Game.state;
     const a = S && Game.byId(S.selPlayer);
+    if (w === 'repair') {
+      if (!(a && a.side === 'player' && !a.acted && Game.canManualRepair(a))) { SFX.play('error'); return; }
+      weapon = weapon === 'repair' ? 'primary' : 'repair';
+      armed = false; SFX.play('select'); update(); return;
+    }
     if (w === 'special' && !(a && Game.canPlayerAttack() && Game.specialReady(a))) {
       SFX.play('error');
       const sp = a && WEAPON_DEFS[a.type] && WEAPON_DEFS[a.type].special;
@@ -709,5 +733,6 @@ const UI = (() => {
     get settings() { return settings; },
     disarm() { armed = false; weapon = 'primary'; },
     toggleWeapon,
+    toggleRepair: () => setWeapon('repair'),
   };
 })();

@@ -372,3 +372,9 @@ input { -webkit-user-select: text; user-select: text; }
   .act-row .btn { min-height: 28px; padding: 4px 6px; }
   .card-head .arrow { width: 30px; height: 30px; min-height: 30px; }
 }
+
+/* ---------- javítás mód ---------- */
+.repairing .sub-btn:not(:disabled) { border-color: #86efac; background: linear-gradient(180deg, rgba(30, 120, 70, 0.4), rgba(10, 50, 30, 0.55)); }
+.sub-btn.fix .sb-stat { color: #bbf7d0; }
+.sub-btn.fix .sb-chance i { background: #86efac; }
+.weap-row { grid-template-columns: 1fr 1fr 1fr; }

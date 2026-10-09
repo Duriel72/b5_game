@@ -18,6 +18,12 @@ const Game = (() => {
   const isDisabled = s => s.sys.reactor <= 0 || (s.sys.weapons <= 0 && s.sys.engines <= 0);
   const alive = s => s && s.hull > 0;
   const canAct = s => alive(s) && !isDisabled(s) && s.sys.weapons > 0;
+  // javítás: önjavító (passzív) típusok, illetve kézi javítás – ehhez a reaktor kell
+  const hasRegen = s => !!REGEN[s.type];
+  const damaged = (s, k) => (k === 'hull' ? s.hull < s.maxHull : s.sys[k] < s.maxSys[k]);
+  const canManualRepair = s => alive(s) && !hasRegen(s) && s.sys.reactor > 0 && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  // a hajó tud-e valamit kezdeni ebben a körben (lőni vagy javítani)
+  const canTakeAction = s => canAct(s) || canManualRepair(s);
   const capturable = s => {
     if (!alive(s)) return false;
     // az Árny hajókat soha nem lehet elfoglalni, a civil kereskedőket sem
@@ -224,8 +230,8 @@ const Game = (() => {
   function autoSelect() {
     if (!S) return;
     const sp = byId(S.selPlayer);
-    if (!sp || sp.side !== 'player' || sp.acted || !canAct(sp)) {
-      const next = S.player.find(s => canAct(s) && !s.acted) || S.player[0];
+    if (!sp || sp.side !== 'player' || sp.acted || !canTakeAction(sp)) {
+      const next = S.player.find(s => canAct(s) && !s.acted) || S.player.find(s => canTakeAction(s) && !s.acted) || S.player[0];
       S.selPlayer = next ? next.id : null;
     }
     const se = byId(S.selEnemy);
@@ -329,10 +335,72 @@ const Game = (() => {
     if (!hostiles().length) return waveComplete();
     autoSelect();
     hooks.update();
-    if (!S.player.some(s => canAct(s) && !s.acted)) {
+    if (!S.player.some(s => canTakeAction(s) && !s.acted)) {
       await wait(350);
       await endRound();
     }
+  }
+
+  // ------------------------------------------------------------ javítás
+  function repairAmount(s, k) {
+    return k === 'hull' ? Math.round(s.maxHull * REPAIR.hull) : Math.round(s.maxSys[k] * REPAIR.sys);
+  }
+  function applyRepair(s, k, amount) {
+    if (k === 'hull') { const b = s.hull; s.hull = Math.min(s.maxHull, s.hull + amount); return Math.round(s.hull - b); }
+    const b = s.sys[k]; s.sys[k] = Math.min(s.maxSys[k], s.sys[k] + amount); return Math.round(s.sys[k] - b);
+  }
+  function showRepair(s, k, n) {
+    const p = R.shipPoint(s);
+    R.floatText(p.x, p.y - 24, `+${n} ${k === 'hull' ? D('TEST') : D(SUB_BY_KEY[k].short)}`, '#86efac');
+  }
+
+  // Kézi javítás lövés helyett (játékos)
+  async function playerRepair(subKey) {
+    const a = byId(S.selPlayer);
+    if (busy || !S || S.phase !== 'battle' || !a || a.side !== 'player' || a.acted || !canManualRepair(a) || !damaged(a, subKey)) { SFX.play('error'); return; }
+    busy = true;
+    try {
+      a.acted = true;
+      const n = applyRepair(a, subKey, repairAmount(a, subKey));
+      SFX.play('repair');
+      showRepair(a, subKey, n);
+      hooks.log(t('g.repair', { a: NM(a.name), p: subKey === 'hull' ? D('Test').toLowerCase() : D(SUB_BY_KEY[subKey].label).toLowerCase(), n }), 'ability');
+      hooks.update();
+      await wait(450);
+      await afterPlayerAction();
+    } finally {
+      busy = false;
+      hooks.update();
+    }
+  }
+
+  // Passzív önjavítás a kör elején: 0%-os alrendszer → 20% alatti → test
+  function regenTick(s) {
+    const rg = REGEN[s.type];
+    if (!rg || !alive(s)) return;
+    const order = ['weapons', 'reactor', 'engines', 'sensors'];
+    const zero = order.find(k => s.sys[k] <= 0);
+    const low = order.filter(k => s.sys[k] < s.maxSys[k] * 0.2).sort((x, y) => s.sys[x] / s.maxSys[x] - s.sys[y] / s.maxSys[y])[0];
+    const k = zero || low;
+    let n;
+    if (k) n = applyRepair(s, k, Math.max(4, Math.round(s.maxSys[k] * rg.sys)));
+    else if (s.hull < s.maxHull) n = applyRepair(s, 'hull', Math.max(3, Math.round(s.maxHull * rg.hull)));
+    if (n > 0) showRepair(s, k || 'hull', n);
+  }
+
+  // Ellenséges gépi döntés: javít vagy támad. Ha a fegyverzete 0, mindenképp javít
+  // (ha a reaktora működik); sérült reaktor/test esetén nehézségtől függően javíthat.
+  function aiRepairChoice(e) {
+    if (!canManualRepair(e)) return null;
+    const d = DF();
+    const care = 0.6 + 0.8 * d.smart;
+    if (e.sys.weapons <= 0) return 'weapons';
+    if (e.sys.engines <= 0 && e.sys.weapons <= 0) return 'engines';
+    if (e.sys.reactor < e.maxSys.reactor * 0.25 && Math.random() < 0.45 * care) return 'reactor';
+    if (e.hull < e.maxHull * 0.3 && Math.random() < 0.3 * care) return 'hull';
+    const weak = SYS_KEYS.filter(k => e.sys[k] < e.maxSys[k] * 0.2);
+    if (weak.length && Math.random() < 0.25 * care) return pickRandom(weak);
+    return null;
   }
 
   async function capture() {
@@ -398,7 +466,18 @@ const Game = (() => {
 
   // ------------------------------------------------------------ ellenséges MI
   async function enemyAct(e, provoker) {
-    if (!canAct(e) || S.phase !== 'battle') return;
+    if (S.phase !== 'battle' || !alive(e)) return;
+    const fix = aiRepairChoice(e);
+    if (fix) {
+      const n = applyRepair(e, fix, repairAmount(e, fix));
+      SFX.play('repair');
+      showRepair(e, fix, n);
+      hooks.log(t('g.repair', { a: NM(e.name), p: fix === 'hull' ? D('Test').toLowerCase() : D(SUB_BY_KEY[fix].label).toLowerCase(), n }), 'warn');
+      hooks.update();
+      await wait(350);
+      return;
+    }
+    if (!canAct(e)) return;
     const d = DF();
     const targets = S.player.filter(alive);
     let target = STATION;
@@ -408,7 +487,8 @@ const Game = (() => {
       else target = pickRandom(targets);
     }
     let sub = 'hull';
-    if (target !== STATION && Math.random() < d.smart * 0.5) {
+    // az ellenség a játékos alrendszereit is lövi (okosabb nehézségen gyakrabban)
+    if (target !== STATION && Math.random() < 0.25 + d.smart * 0.45) {
       const opts = ['weapons', 'reactor', 'engines'].filter(k => target.sys[k] > 0);
       if (opts.length) sub = pickRandom(opts);
     }
@@ -447,7 +527,7 @@ const Game = (() => {
     hooks.hint(t('hint.enemy'));
     for (const e of hostiles().slice()) {
       if (S.phase !== 'battle') return;
-      if (!alive(e) || e.acted || !canAct(e)) continue;
+      if (!alive(e) || e.acted || !canTakeAction(e)) continue;
       e.acted = true;
       await enemyAct(e, null);
       await wait(180);
@@ -466,7 +546,9 @@ const Game = (() => {
     // Védelmi rács
     const shots = 1 + (S.station.gridLvl >= 3 ? 1 : 0) + (S.station.gridLvl >= 6 ? 1 : 0);
     for (let i = 0; i < shots; i++) {
-      const hs = hostiles();
+      let hs = hostiles().filter(h => h.sys.weapons > 0);
+      // ha már csak fegyvertelen ellenség maradt és nincs akcióképes saját hajó, a rács lő (ne akadjon el a hullám)
+      if (!hs.length && !S.player.some(canTakeAction)) hs = hostiles();
       if (!hs.length) break;
       const tgt = hs.slice().sort((a, b) => a.hull - b.hull)[Math.random() < 0.5 ? 0 : Math.floor(Math.random() * hs.length)];
       const r = await fireShot(STATION, tgt, 'hull', { quiet: false });
@@ -479,7 +561,7 @@ const Game = (() => {
     startRound();
     hooks.hint('');
     await maybeLastStand();
-    if (!S.player.some(s => canAct(s))) {
+    if (!S.player.some(s => canTakeAction(s))) {
       hooks.toast(t('t.alone'));
       await wait(900);
       await endRound();
@@ -540,6 +622,7 @@ const Game = (() => {
       s.acted = false; s.evade = false;
       if (s.cd > 0) s.cd--;
       if (s.wcd > 0) s.wcd--;
+      regenTick(s);
     }
     const st = S.station;
     st.shield = Math.min(st.maxShield, st.shield + st.maxShield * 0.06 + st.shieldLvl * 5);
@@ -888,7 +971,7 @@ const Game = (() => {
     get state() { return S; }, get busy() { return busy; },
     newGame, load, serialize, autosave, startWave,
     playerAttack, capture, passRound, cycle, select, canPlayerAttack,
-    isDisabled, canAct, capturable, captureChance, captureBlocked, fleetCap, scrapValue, lastStandIn, weaponDef, specialReady, ratio, hitChance, expectedDamage, critChance, byId, hostiles,
+    isDisabled, canAct, canTakeAction, canManualRepair, hasRegen, damaged, repairAmount, playerRepair, capturable, captureChance, captureBlocked, fleetCap, scrapValue, lastStandIn, weaponDef, specialReady, ratio, hitChance, expectedDamage, critChance, byId, hostiles,
     repairCost, upgradeCost, shop,
     end() { S = null; busy = false; },
   };

@@ -73,6 +73,7 @@
     else if (k === 'f') UI.toggleArm();
     else if (k === 'l') UI.toggleLog();
     else if (k === 'g') UI.toggleWeapon();
+    else if (k === 'r') UI.toggleRepair();
     else if (k === 'c') Game.capture();
     else if (k === ' ') { e.preventDefault(); UI.disarm(); Game.passRound(); }
   });

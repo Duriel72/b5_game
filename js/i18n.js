@@ -77,7 +77,7 @@ const STRINGS = {
     'g.wave': '{w}. hullám: {n} ellenséges hajó érkezett az ugrópontból.', 'g.shadow': 'FIGYELEM: Árny cirkáló a szektorban!',
     'g.allyArr': 'Szövetséges hajó érkezett: {n} ({t}). Átveheted az irányítását – addig önállóan harcol.', 'g.waveDone': '{w}. hullám visszaverve! +{p} pont, +{c} kredit.',
     'g.left': '{n} továbbállt.', 't.noCredits': 'Nincs elég kredit.', 't.scrapped': '{n} leszerelve: +{c} kredit.', 't.fleetFull2': 'A flotta megtelt.',
-    'r.allyTake': 'SZÖVETSÉGES – ÁTVEHETŐ', 'r.capt': '⛓ ELFOGLALHATÓ', 'r.evade': 'KITÉRÉS',
+    'rep.btn': 'Javítás', 'rep.instead': 'lövés helyett', 'rep.title': 'A kiválasztott hajó lövés helyett megjavítja a testét vagy egy alrendszerét (kell hozzá működő reaktor).', 'rep.regen': 'Önjavító', 'rep.passive': 'passzív, minden körben', 'rep.regenTitle': 'Ez a hajó minden kör elején magától javul: először a 0%-os alrendszert, majd a 20% alattit, végül a testet.', 'rep.pick': '{name}: mit javítson?', 'rep.part': '{p} javítása', 'g.repair': '{a} javította: {p} (+{n}).', 'badge.regen': 'ÖNJAVÍTÓ', 'cat.repair': 'Javítás', 'cat.repairRegen': 'önjavító (passzív)', 'cat.repairManual': 'kézi (lövés helyett)', 'r.allyTake': 'SZÖVETSÉGES – ÁTVEHETŐ', 'r.capt': '⛓ ELFOGLALHATÓ', 'r.evade': 'KITÉRÉS',
   },
   en: {
     'menu.continue': 'Continue', 'menu.contSub': '{name} · wave {wave}', 'menu.new': 'New game', 'menu.load': 'Load game',
@@ -148,7 +148,7 @@ const STRINGS = {
     'g.wave': 'Wave {w}: {n} enemy ships emerged from the jump point.', 'g.shadow': 'WARNING: Shadow cruiser in the sector!',
     'g.allyArr': 'Allied ship arrived: {n} ({t}). Take command of it – until then it fights on its own.', 'g.waveDone': 'Wave {w} repelled! +{p} points, +{c} credits.',
     'g.left': '{n} has moved on.', 't.noCredits': 'Not enough credits.', 't.scrapped': '{n} scrapped: +{c} credits.', 't.fleetFull2': 'Your fleet is full.',
-    'r.allyTake': 'ALLY – TAKE COMMAND', 'r.capt': '⛓ CAPTURABLE', 'r.evade': 'EVADING',
+    'rep.btn': 'Repair', 'rep.instead': 'instead of firing', 'rep.title': 'The selected ship repairs its hull or a subsystem instead of firing (requires a working reactor).', 'rep.regen': 'Self-repair', 'rep.passive': 'passive, every turn', 'rep.regenTitle': 'This ship repairs itself at the start of every turn: first a subsystem at 0%, then one below 20%, finally the hull.', 'rep.pick': '{name}: what to repair?', 'rep.part': 'Repair {p}', 'g.repair': '{a} repaired its {p} (+{n}).', 'badge.regen': 'SELF-REPAIR', 'cat.repair': 'Repair', 'cat.repairRegen': 'self-repairing (passive)', 'cat.repairManual': 'manual (instead of firing)', 'r.allyTake': 'ALLY – TAKE COMMAND', 'r.capt': '⛓ CAPTURABLE', 'r.evade': 'EVADING',
   },
 };
 
@@ -314,6 +314,12 @@ function helpHtml(ctx) {
             <li>Every ship has a <b>primary weapon</b> (fires every turn), and most also have a <b>special weapon</b>: stronger, but it recharges for a few turns after firing (<kbd>G</kbd>).</li>
             <li>For example the White Star's wing cannons fire in pulses, while its main bow gun fires a continuous green beam; Earth ships' heavy lasers are red beams.</li>
           </ul>
+          <h3>Repairs</h3>
+          <ul>
+            <li><b>Minbari</b>, <b>White Star</b> and <b>Shadow</b> ships repair themselves at the start of every turn: first a subsystem at 0%, then one below 20%, and once every system is above 20%, the hull.</li>
+            <li>Other ships can <b>repair manually</b> instead of firing (<kbd>R</kbd>): hull +20%, one subsystem +40% – even with destroyed weapons, as long as the reactor works. The enemy may also decide to repair.</li>
+            <li>The station's defence grid does not fire at ships with destroyed weapons.</li>
+          </ul>
           <h3>Abilities</h3>
           <ul>${abil}</ul>
           <h3>Scoring & shop</h3>
@@ -332,6 +338,7 @@ function helpHtml(ctx) {
         <tr><td><kbd>Q</kbd> <kbd>E</kbd></td><td>Switch your ship</td></tr>
         <tr><td><kbd>A</kbd> <kbd>D</kbd> · <kbd>Tab</kbd></td><td>Switch target</td></tr>
         <tr><td><kbd>G</kbd></td><td>Select special weapon</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Repair instead of firing</td></tr>
         <tr><td><kbd>F</kbd></td><td>Arm special ability</td></tr>
         <tr><td><kbd>C</kbd></td><td>Capture / take command</td></tr>
         <tr><td><kbd>Space</kbd></td><td>End turn</td></tr>
@@ -374,6 +381,12 @@ function helpHtml(ctx) {
             <li>Minden hajónak van <b>elsődleges fegyvere</b> (minden körben lőhet), és a legtöbbnek egy <b>különleges fegyvere</b> is: erősebb, de lövés után néhány körig töltődik (<kbd>G</kbd>).</li>
             <li>Például a Fehércsillag szárnyágyúi impulzusokban lőnek, az orr fő ágyúja folytonos zöld sugárral; a földi hajók nehézlézere vörös sugár.</li>
           </ul>
+          <h3>Javítás</h3>
+          <ul>
+            <li>A <b>Minbari</b>, a <b>Fehércsillag</b> és az <b>Árny</b> hajók minden kör elején maguktól javulnak: először a 0%-ra lőtt alrendszert, aztán a 20% alattit, ha pedig minden rendszer 20% felett van, a testet.</li>
+            <li>A többi hajó <b>kézzel javíthat</b> lövés helyett (<kbd>R</kbd>): a test +20%, egy alrendszer +40% – akkor is, ha a fegyverzete kilőve, csak a reaktora működjön. Az ellenség is dönthet úgy, hogy javít.</li>
+            <li>Az állomás védelmi rácsa nem lő fegyvertelen hajóra.</li>
+          </ul>
           <h3>Képességek</h3>
           <ul>${abil}</ul>
           <h3>Pontozás és bolt</h3>
@@ -392,6 +405,7 @@ function helpHtml(ctx) {
         <tr><td><kbd>Q</kbd> <kbd>E</kbd></td><td>Saját hajó váltása</td></tr>
         <tr><td><kbd>A</kbd> <kbd>D</kbd> · <kbd>Tab</kbd></td><td>Célpont váltása</td></tr>
         <tr><td><kbd>G</kbd></td><td>Különleges fegyver kiválasztása</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Javítás lövés helyett</td></tr>
         <tr><td><kbd>F</kbd></td><td>Különleges képesség élesítése</td></tr>
         <tr><td><kbd>C</kbd></td><td>Elfoglalás / átvétel</td></tr>
         <tr><td><kbd>Space</kbd></td><td>Kör vége</td></tr>

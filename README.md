@@ -42,6 +42,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   (melléjük Drazi és kalóz társulhat); vannak tiszta kalózhullámok is. Nehéz típusból legfeljebb 2 jön egy hullámban.
 - **Kalózok:** Delta-V vadász, gyors V alakú **elfogó**, toldozott **ágyúnaszád** rakétasortűzzel és a vadászrajt indító
   **csatahordozó** („Battlewagon”).
+- **Javítás:** a Minbari, a Fehércsillag és az Árny hajók minden kör elején maguktól javulnak (először a 0%-os,
+  majd a 20% alatti alrendszert, végül a testet). A többi hajó lövés helyett kézzel javíthat (`R`: test +20%,
+  alrendszer +40%) – kilőtt fegyverzettel is, ha a reaktora működik; az ellenség is dönthet a javítás mellett.
+  A védelmi rács nem lő fegyvertelen hajóra.
 - **Kereskedő konvoj:** a 3. hullámtól ~15% eséllyel harc helyett kereskedők érkeznek (kék ugrópont): kreditet hoznak,
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.
 - **Gazdaság:** a kreditbevétel a hullámszámmal nő (képletek: `js/data.js` → `ECON`).
@@ -68,7 +72,7 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 ## Billentyűk
 
 `1–5` támadás (test / fegyverzet / szenzorok / hajtómű / reaktor) · `Q`/`E` saját hajó ·
-`A`/`D`/`Tab` célpont · `G` különleges fegyver · `F` képesség · `C` elfoglalás · `Space` kör vége · `L` napló lenyitása · `Esc` menü
+`A`/`D`/`Tab` célpont · `G` különleges fegyver · `R` javítás · `F` képesség · `C` elfoglalás · `Space` kör vége · `L` napló lenyitása · `Esc` menü
 
 ## Felépítés
 

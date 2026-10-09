@@ -214,6 +214,19 @@ const MAX_SHIP_LEVEL = 5;
 // Pontok: elpusztításért a típus 'points' értéke, elfoglalásért annak 1,5-szerese
 const SCORE = { captureMult: 1.5, wave: 50 };
 
+// Javítás. A REGEN típusok (Minbari, Fehércsillag, Árny) passzívan, minden kör elején
+// önjavítanak: először a 0%-os alrendszert (fegyverzet → reaktor → hajtómű → szenzor),
+// ha nincs ilyen, a 20% alattit, ha minden alrendszer 20% felett van, a testet.
+// Az értékeket szimulációval állítottuk be: 1 támadó nem tudja tartósan lefogni,
+// 2–3 összpontosító hajó igen. A többi hajó kézzel javíthat, lövés helyett.
+const REGEN = {
+  whitestar: { sys: 0.2, hull: 0.05 },
+  minbari: { sys: 0.2, hull: 0.05 },
+  shadow: { sys: 0.18, hull: 0.04 },
+  shadowscout: { sys: 0.18, hull: 0.04 },
+};
+const REPAIR = { sys: 0.4, hull: 0.2 };   // kézi javítás egy akcióval (a maximum aránya)
+
 // Gazdaság – a hullámszámmal arányosan nő (n = hullám száma)
 const ECON = {
   kill: (threat, n) => (50 + threat * 50) * (1 + 0.05 * (n - 1)),        // elpusztított hajóért
