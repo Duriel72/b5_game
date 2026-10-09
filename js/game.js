@@ -142,7 +142,7 @@ const Game = (() => {
       const d = rand(70, 140) * (R.layout ? R.layout.unit : 1);
       to = { x: to.x + Math.cos(ang) * d, y: to.y + Math.sin(ang) * d };
     }
-    SFX.play(WEAPON_SOUND[def.kind] || 'laser', att === STATION ? 3 : (att.id % 3));
+    SFX.play('weapon', att === STATION ? 'station' : att.type, def.kind, !!special, def.shots || 1);
     const playerSide = att !== STATION && att.side === 'player';
     if (playerSide) S.stats.shots++;
     if (special) {
@@ -723,8 +723,8 @@ const Game = (() => {
       const allies = list.filter(s => s.side === 'ally');
       const boss = list.find(s => s.type === 'shadow' || s.type === 'shadowscout');
       hooks.log(t('g.wave', { w: S.wave, n: list.filter(s => s.side === 'enemy').length }), 'warn');
-      if (S.shadowFleet) { hooks.log(t('g.shadowFleet'), 'bad'); SFX.play('alarm'); }
-      else if (boss) { hooks.log(t('g.shadow'), 'bad'); SFX.play('alarm'); }
+      if (S.shadowFleet) { hooks.log(t('g.shadowFleet'), 'bad'); SFX.play('scream'); }
+      else if (boss) { hooks.log(t('g.shadow'), 'bad'); SFX.play('scream'); }
       for (const a of allies) hooks.log(t('g.allyArr', { n: NM(a.name), t: D(SHIP_TYPES[a.type].name) }), 'ally');
       await wait(500);
       startRound();

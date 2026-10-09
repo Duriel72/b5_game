@@ -278,4 +278,3 @@ const WEAPON_DEFS = {
   },
 };
 const STATION_WEAPON = { name: 'Védelmi rács', kind: 'pulse', color: '#ffd166', shots: 3 };
-const WEAPON_SOUND = { pulse: 'laser', bolt: 'laser', beam: 'beam', plasma: 'plasma', missile: 'missile', swarm: 'laser' };

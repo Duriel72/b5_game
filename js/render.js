@@ -1428,7 +1428,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
   }
 
   function jumpPoint(x, y, holdFor = 1.6, blue = false) {
-    SFX.play('jump');
+    SFX.play('jump', blue);
     return new Promise(resolve => {
       addEffect({
         t: 0, open: 0.6, hold: holdFor, close: 0.6, resolved: false,
