@@ -899,6 +899,8 @@ const Game = (() => {
       else if (boss) { hooks.log(t('g.shadow'), 'bad'); SFX.play('scream'); }
       for (const a of allies) hooks.log(t('g.allyArr', { n: NM(a.name), t: D(SHIP_TYPES[a.type].name) }), 'ally');
       await wait(500);
+      // ha az aknák minden beugró ellenséget megsemmisítettek, a hullám rögtön véget ér
+      if (!hostiles().length) { await waveComplete(); return; }
       startRound();
     } finally {
       busy = false;

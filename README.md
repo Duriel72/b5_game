@@ -127,5 +127,7 @@ Nem kereskedelmi rajongói projekt. A Babylon 5 a Warner Bros. védjegye.
 
 Kiadáskor a `js/version.js` `APP_VERSION` értékét és vele együtt a `sw.js` `VERSION`-ját (`b5dts-v<szám>`) is növelni kell,
 különben a telepített változat nem frissül.
+Fejlesztői segédek (a játék oldalán, a böngésző konzoljában futnak, leírás a fájlok elején): `tools/autoplay.js` – automata
+játékos, végigjátssza a játékot gyorsítva és ellenőrzi az állapotot; `tools/wave-stats.js` – hullámerő; `tools/duel-sim.js` – célzási párbajok.
 Az alkalmazásikonok újragenerálása: `node serve.js`, majd http://localhost:5500/tools/icon.html – a képek alatti linkekkel
 letölthetők, és az `icons/` mappába kerülnek (a játék saját állomásrajzolójával készülnek).
