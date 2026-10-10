@@ -51,7 +51,7 @@ const STRINGS = {
     'shop.autorep': 'A hajók automatikusan kijavították a sérülések egy részét, a pajzs félig visszatöltődött.', 'shop.gift': 'A Narn Rezsim küldött egy cirkálót: {name}!',
     'shop.credits': 'Kredit', 'shop.fleet': 'Flotta ({a}/{b})', 'shop.intact': 'Ép', 'shop.rep50': 'Javítás 50%', 'shop.fullIntact': 'Teljesen ép',
     'shop.full': 'Teljes', 'shop.upTitle': '+12% tűzerő, +10% test és alrendszerek', 'shop.max': 'Max. szint', 'shop.up': 'Fejlesztés',
-    'shop.scrapTitle': 'A hajó kivétele a flottából kreditért (nem semmisül meg)', 'shop.scrap': 'Leszerelés', 'shop.cmd': 'Flotta: max. {n} hajó', 'shop.station': 'Babylon 5 állomás', 'shop.lsReady': '· Utolsó esély: elérhető', 'shop.lsWait': '· Utolsó esély: {n} hullám múlva', 'shop.structure': 'Szerkezet: {a} / {b}', 'shop.shield': 'Pajzs: {a}',
+    'shop.scrapTitle': 'A hajó kivétele a flottából kreditért (nem semmisül meg)', 'shop.scrap': 'Leszerelés', 'shop.cmd': 'Flotta: max. {n} hajó', 'shop.mineCap': 'Aknamező: {n} akna', 'shop.mineDmg': 'Aknánként ~{d} sebzés', 'shop.minesNow': 'Telepítve: {a}/{b} akna', 'shop.needLayer': 'Aknatelepítő kell', 'shop.minesFull': 'Teljes', 'shop.deploy': 'Telepítés', 'f.mine': 'AKNA −{d}', 'g.mines': 'Aknamező: {n} találat, összesen {d} sebzés (maradt {left} akna).', 'shop.station': 'Babylon 5 állomás', 'shop.lsReady': '· Utolsó esély: elérhető', 'shop.lsWait': '· Utolsó esély: {n} hullám múlva', 'shop.structure': 'Szerkezet: {a} / {b}', 'shop.shield': 'Pajzs: {a}',
     'shop.grid': 'Sebzés: {d} · {n} lövés/kör', 'shop.maxStruct': 'Max. szerkezet: {a}', 'shop.maximum': 'Maximum', 'shop.buy': 'Vásárlás',
     'shop.yard': 'Hajógyár', 'shop.yardInfo': '{cls} · test {h} · tűzerő {f} · {ab}', 'shop.save': 'Mentés', 'shop.menu': 'Főmenü',
     'shop.next': '{n}. hullám indítása ▶', 'scrap.title': 'Leszerelés', 'scrap.text': 'Leszereled és kiveszed a flottából: {name}? Kapsz érte {c} kreditet.',
@@ -123,7 +123,7 @@ const STRINGS = {
     'shop.autorep': 'Your ships automatically repaired part of their damage; shields recharged halfway.', 'shop.gift': 'The Narn Regime sent you a cruiser: {name}!',
     'shop.credits': 'Credits', 'shop.fleet': 'Fleet ({a}/{b})', 'shop.intact': 'Intact', 'shop.rep50': 'Repair 50%', 'shop.fullIntact': 'Fully intact',
     'shop.full': 'Full', 'shop.upTitle': '+12% firepower, +10% hull and subsystems', 'shop.max': 'Max level', 'shop.up': 'Upgrade',
-    'shop.scrapTitle': 'Remove the ship from your fleet for credits (it is not destroyed)', 'shop.scrap': 'Decommission', 'shop.cmd': 'Fleet: max. {n} ships', 'shop.station': 'Babylon 5 station', 'shop.lsReady': '· Last chance: available', 'shop.lsWait': '· Last chance: in {n} waves', 'shop.structure': 'Structure: {a} / {b}', 'shop.shield': 'Shields: {a}',
+    'shop.scrapTitle': 'Remove the ship from your fleet for credits (it is not destroyed)', 'shop.scrap': 'Decommission', 'shop.cmd': 'Fleet: max. {n} ships', 'shop.mineCap': 'Minefield: {n} mines', 'shop.mineDmg': '~{d} damage per mine', 'shop.minesNow': 'Deployed: {a}/{b} mines', 'shop.needLayer': 'Needs a minelayer', 'shop.minesFull': 'Full', 'shop.deploy': 'Deploy', 'f.mine': 'MINE −{d}', 'g.mines': 'Minefield: {n} hits, {d} total damage ({left} mines left).', 'shop.station': 'Babylon 5 station', 'shop.lsReady': '· Last chance: available', 'shop.lsWait': '· Last chance: in {n} waves', 'shop.structure': 'Structure: {a} / {b}', 'shop.shield': 'Shields: {a}',
     'shop.grid': 'Damage: {d} · {n} shots/turn', 'shop.maxStruct': 'Max structure: {a}', 'shop.maximum': 'Maxed', 'shop.buy': 'Buy',
     'shop.yard': 'Shipyard', 'shop.yardInfo': '{cls} · hull {h} · firepower {f} · {ab}', 'shop.save': 'Save', 'shop.menu': 'Main menu',
     'shop.next': 'Launch wave {n} ▶', 'scrap.title': 'Decommission', 'scrap.text': 'Decommission {name} and remove it from your fleet? You get {c} credits.',
@@ -212,6 +212,9 @@ const DATA_EN = {
   'Állomás javítása': 'Station repair', '+30% szerkezeti integritás': '+30% structural integrity',
   'Páncélzat': 'Armour plating', '+250 max. szerkezet (és javítás)': '+250 max structure (and repair)',
   'Pajzsgenerátor': 'Shield generator', '+50 max. pajzs, gyorsabb töltődés': '+50 max shields, faster recharge',
+  'Aknatelepítő': 'Minelayer', 'Aknamező az ugrókapu körül; szintenként +1 akna': 'Minefield around the jump gate; +1 mine per level',
+  'Aknatöltet': 'Mine charge', 'Erősebb aknák: +15 sebzés szintenként': 'Stronger mines: +15 damage per level',
+  'Aknák telepítése': 'Deploy mines', 'Feltölti az aknamezőt; a felrobbant aknákat újra meg kell venni': 'Refills the minefield; detonated mines must be bought again',
   'Védelmi rács': 'Defence grid', '+5 sebzés; 3. és 6. szinten +1 lövés': '+5 damage; +1 shot at levels 3 and 6',
   // fegyverek
   'Szárnyágyúk': 'Wing cannons', 'Fő fúziós ágyú': 'Main fusion cannon', 'az orr fő ágyújának folytonos zöld sugara': 'continuous green beam from the main bow gun',
@@ -321,6 +324,8 @@ function helpHtml(ctx) {
             <li><b>Fighter</b>-class ships (Starfury, Drazi Sunhawk, raider fighters) cannot repair.</li>
             <li>The more damaged a ship is, the less effective repairs are (about 45% for a nearly wrecked ship) – this also applies to self-repair.</li>
             <li>The station's defence grid does not fire at ships with destroyed weapons.</li>
+            <li><b>Minefield</b> (shop → station): the <b>minelayer</b> sets how many mines fit around the jump gate (2–6), the <b>mine charge</b> how hard they hit (30–105). Mines must be <b>deployed</b> for credits; each enemy ship jumping in sets off one mine (in order of arrival) until they run out. Unused mines stay for the next wave.</li>
+            <li>Races differ: <b>Shadows</b>, <b>Minbari</b> and the <b>White Star</b> aim best, then Centauri and Earth; Narn ships are tough, raiders are weak and inaccurate but come in large swarms. The catalogue shows each ship's accuracy bonus.</li>
           </ul>
           <h3>Abilities</h3>
           <ul>${abil}</ul>
@@ -391,6 +396,8 @@ function helpHtml(ctx) {
             <li>A <b>vadász</b> osztályú hajók (Starfury, Drazi napsólyom, kalóz vadászok) nem tudnak javítani.</li>
             <li>Minél sérültebb egy hajó, annál kevésbé hatékony a javítás (szinte szétlőtt hajónál kb. 45%) – ez az önjavításra is igaz.</li>
             <li>Az állomás védelmi rácsa nem lő fegyvertelen hajóra.</li>
+            <li><b>Aknamező</b> (bolt → állomás): az <b>Aknatelepítő</b> szintje adja, hány akna fér az ugrókapu köré (2–6), az <b>Aknatöltet</b> pedig az erejüket (30–105 sebzés). Az aknákat kreditért <b>telepíteni</b> kell; minden beugró ellenséges hajó felrobbant egyet (érkezési sorrendben), amíg el nem fogynak. A fel nem robbant aknák a következő hullámra is megmaradnak.</li>
+            <li>A fajok különböznek: az <b>Árnyak</b>, a <b>Minbarik</b> és a <b>Fehércsillag</b> céloznak a legjobban, utánuk a Centauri és a Föld; a Narn hajók strapabíróak, a kalózok gyengék és pontatlanok, viszont nagy rajokban jönnek. A katalógusban látszik a hajók célzási bónusza.</li>
           </ul>
           <h3>Képességek</h3>
           <ul>${abil}</ul>

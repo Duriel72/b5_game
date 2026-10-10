@@ -91,10 +91,11 @@ const Game = (() => {
 
   function hitChance(att, tgt, subKey = 'hull') {
     const { sens } = attStats(att);
-    if (tgt === STATION) return clamp(0.6 + 0.37 * sens, 0.3, 0.97);
+    const facAcc = att === STATION ? 0 : FACTION_ACC[SHIP_TYPES[att.type].faction] || 0;
+    if (tgt === STATION) return clamp(0.6 + 0.37 * sens + facAcc, 0.3, 0.97);
     // egyes hajók (pl. Fehércsillag) pontosabbak, és a célpont kitérésének egy részét is „átlátják”
     const AT = att === STATION ? {} : SHIP_TYPES[att.type];
-    let c = 0.6 + 0.35 * sens - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt) * (1 - (AT.evasionPierce || 0)) + (AT.accBonus || 0);
+    let c = 0.6 + 0.35 * sens - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt) * (1 - (AT.evasionPierce || 0)) + facAcc + (AT.accBonus || 0);
     if (isDisabled(tgt)) c += 0.25;
     if (att === STATION) c = 0.85 - evasion(tgt) * 0.5;
     return clamp(c, 0.05, 0.97);
@@ -729,7 +730,9 @@ const Game = (() => {
       S.waveTheme = pickRandom(themes.length ? themes : ['raiders']);
       const pool = Object.keys(SHIP_TYPES).filter(k => usable(k) && THEMES[S.waveTheme].includes(SHIP_TYPES[k].faction));
       let guard = 0;
-      while (budget > 0.6 && list.length < 9 && guard++ < 50) {
+      const maxShips = S.waveTheme === 'raiders' ? 12 : 10;
+      let spent = 0;
+      while (budget > 0.5 && list.length < maxShips && guard++ < 60) {
         // nehéz hajóból (pl. csatahordozó) legfeljebb 2 egy hullámban – változatosabb flották
         const fits = pool.filter(k => SHIP_TYPES[k].threat <= budget + 0.4 && (SHIP_TYPES[k].threat < 3.5 || list.filter(s => s.type === k).length < 2));
         if (!fits.length) break;
@@ -741,6 +744,18 @@ const Game = (() => {
         for (let i = 0; i < fits.length; i++) { r -= weights[i]; if (r <= 0) { k = fits[i]; break; } }
         list.push(makeShip(k, 'enemy', { hpMul, dmgMul }));
         budget -= SHIP_TYPES[k].threat;
+        spent += SHIP_TYPES[k].threat;
+      }
+      // kései kalózraj: ha a hajószám-korlát miatt keret maradt, a kalózok edzettebbek lesznek
+      // (test, alrendszerek és tűzerő legfeljebb 1,3×), hogy a raj ne gyengüljön el túlságosan
+      if (S.waveTheme === 'raiders' && budget > 0.5 && spent > 0 && list.length >= maxShips) {
+        const f = Math.min(1.3, (spent + budget) / spent);
+        for (const sh of list) {
+          if (sh.type === 'minbari') continue;
+          sh.maxHull = sh.hull = Math.round(sh.maxHull * f);
+          for (const k of SYS_KEYS) sh.maxSys[k] = sh.sys[k] = Math.round(sh.maxSys[k] * f);
+          sh.firepower = +(sh.firepower * f).toFixed(1);
+        }
       }
     }
 
@@ -756,8 +771,6 @@ const Game = (() => {
         const reserved = ALLY_ONLY_NAMES[type];
         const taken = reserved && [...S.player, ...S.enemies, ...list].some(s => s.name === reserved);
         const ally = makeShip(type, 'ally', reserved && !taken ? { name: reserved } : {});
-        for (const k of SYS_KEYS) ally.sys[k] = Math.round(ally.maxSys[k] * rand(0.6, 1));
-        ally.hull = Math.round(ally.maxHull * rand(0.55, 0.95));
         list.push(ally);
       }
       S.lastAllyWave = n;
@@ -850,6 +863,7 @@ const Game = (() => {
         hooks.update();
         await wait(170);
       }
+      await triggerMines(foes);
       // szövetségesek: kék ugrópont közvetlenül az állomás mellett
       for (const s of list.filter(x => x.side === 'ally')) {
         await wait(400);
@@ -871,6 +885,33 @@ const Game = (() => {
       busy = false;
       hooks.update();
     }
+  }
+
+  // ------------------------------------------------------------ aknamező
+  // Az ugrókapu körüli aknák a beérkező ellenséges hajókat sebzik, érkezési sorrendben hajónként egy.
+  async function triggerMines(foes) {
+    const st = S.station;
+    if (!(st.mines > 0) || !foes.length) return;
+    await wait(350);
+    let hits = 0, total = 0;
+    for (const s of foes) {
+      if (!(st.mines > 0) || S.phase !== 'battle') break;
+      if (!alive(s) || !S.enemies.includes(s)) continue;
+      st.mines--;
+      const p = R.shipPoint(s, false);
+      R.explosion(p.x, p.y, 0.7);
+      SFX.play('explosion');
+      const dmg = Math.round(MINES.dmgOf(st) * (0.85 + Math.random() * 0.3));
+      s.hull = Math.max(0, s.hull - dmg);
+      const k = pickRandom(SYS_KEYS);
+      s.sys[k] = Math.max(0, s.sys[k] - Math.round(dmg * MINES.sysShare));
+      R.floatText(p.x, p.y - 22, t('f.mine', { d: dmg }), '#fbbf24');
+      hits++; total += dmg;
+      hooks.update();
+      await wait(280);
+      if (s.hull <= 0) await destroyShip(s);
+    }
+    if (hits) hooks.log(t('g.mines', { n: hits, d: total, left: st.mines }), 'good');
   }
 
   async function waveComplete() {
@@ -966,6 +1007,8 @@ const Game = (() => {
       const st = S.station;
       const def = STATION_UPGRADES.find(u => u.key === key);
       if (def.max && def.lvl(st) >= def.max) return;
+      if (def.req && !def.req(st)) return;
+      if (key === 'mines' && MINES.deployCost(st) <= 0) return;
       if (key === 'repair' && st.hull >= st.maxHull) return;
       if (!spend(def.cost(st))) return;
       if (key === 'repair') st.hull = Math.min(st.maxHull, st.hull + st.maxHull * 0.3);
@@ -973,6 +1016,9 @@ const Game = (() => {
       if (key === 'shield') { st.shieldLvl++; st.maxShield += 50; st.shield = Math.min(st.maxShield, st.shield + 50); }
       if (key === 'grid') { st.gridLvl++; st.grid += 5; }
       if (key === 'command') st.cmdLvl = (st.cmdLvl || 0) + 1;
+      if (key === 'minelayer') st.mineLvl = (st.mineLvl || 0) + 1;
+      if (key === 'minepower') st.minePow = (st.minePow || 0) + 1;
+      if (key === 'mines') { st.mines = MINES.capOf(st); SFX.play('coin'); }
       st.hull = Math.round(st.hull);
       hooks.update();
     },

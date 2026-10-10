@@ -242,7 +242,7 @@ const UI = (() => {
           <span>${t('cat.sysHp')}</span><span>${Math.round(T.sys * SYS_HP_MUL)}</span>
           <span>${t('cat.hull')}</span><span>${T.hull}</span>
           <span>${t('cat.fp')}</span><span>${T.firepower}</span>
-          <span>${t('cat.acc')}</span><span>${T.sys * 10}</span>
+          <span>${t('cat.acc')}</span><span>${(a => a > 0 ? '+' + Math.round(a * 100) + '%' : a < 0 ? '−' + Math.round(-a * 100) + '%' : '±0%')(FACTION_ACC[T.faction] || 0)}</span>
           <span>${t('cat.primary')}</span><span>${esc(D(W.primary.name))}</span>
           <span>${t('cat.special')}</span><span>${W.special ? esc(t('cat.specialVal', { name: D(W.special.name), m: W.special.mult, cd: W.special.cd })) : '—'}</span>
           <span>${t('cat.ability')}</span><span>${esc(D(ab.name))}</span>
@@ -722,14 +722,18 @@ const UI = (() => {
       <div class="st-grid">${STATION_UPGRADES.map(u => {
         const cost = u.cost(st);
         const maxed = u.max && u.lvl(st) >= u.max;
-        const full = u.key === 'repair' && st.hull >= st.maxHull;
+        const need = u.req && !u.req(st);
+        const full = (u.key === 'repair' && st.hull >= st.maxHull) || (u.key === 'mines' && !need && cost <= 0);
         const extra = u.key === 'repair' ? t('shop.structure', { a: fmt(st.hull), b: fmt(st.maxHull) })
           : u.key === 'shield' ? t('shop.shield', { a: fmt(st.maxShield) })
           : u.key === 'grid' ? t('shop.grid', { d: st.grid, n: 1 + (st.gridLvl >= 3) + (st.gridLvl >= 6) })
           : u.key === 'command' ? t('shop.cmd', { n: Game.fleetCap() })
+          : u.key === 'minelayer' ? t('shop.mineCap', { n: MINES.capOf(st) })
+          : u.key === 'minepower' ? t('shop.mineDmg', { d: MINES.dmgOf(st) })
+          : u.key === 'mines' ? t('shop.minesNow', { a: st.mines || 0, b: MINES.capOf(st) })
           : t('shop.maxStruct', { a: fmt(st.maxHull) });
         return `<div class="st-item"><b>${esc(D(u.name))}</b><small>${esc(D(u.desc))}<br>${esc(extra)}</small>${u.max ? pips(u.lvl(st), u.max) : ''}
-          <button class="btn small" data-shop="st:${u.key}" ${maxed || full || cost > S.credits ? 'disabled' : ''}>${maxed ? t('shop.maximum') : full ? t('shop.intact') : `${t('shop.buy')} <span class="cost">${cost}¢</span>`}</button></div>`;
+          <button class="btn small" data-shop="st:${u.key}" ${maxed || full || need || cost > S.credits ? 'disabled' : ''}>${maxed ? t('shop.maximum') : need ? t('shop.needLayer') : full ? (u.key === 'mines' ? t('shop.minesFull') : t('shop.intact')) : `${t(u.key === 'mines' ? 'shop.deploy' : 'shop.buy')} <span class="cost">${cost}¢</span>`}</button></div>`;
       }).join('')}</div>
       <h3>${t('shop.yard')}</h3>
       <div class="st-grid">${PLAYER_BUYABLE.map(k => {

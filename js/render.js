@@ -1800,6 +1800,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
       }
     } else {
       if (cine) drawStationBreaking(); else drawStation(layout.station, game);
+      if (game && game.station && game.station.mines > 0) drawMines(game.station.mines);
       if (game) {
         const all = [...game.player, ...game.enemies, ...(game.visitors || [])];
         for (const s of all) { const v = visuals.get(s.id); if (v) drawShip(s, v, game); }
@@ -1886,6 +1887,24 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
     drawStationBody(null, null);
     ctx.restore();
     ctx = old;
+  }
+
+  // telepített aknák az ellenséges ugrókapu (W*0.8, a csatatér közepe) körül, villogó jelzőfénnyel
+  function drawMines(n) {
+    const cx = W * 0.8, cy = layout.cy, u = layout.unit;
+    for (let i = 0; i < n; i++) {
+      const a = i / 6 * TAU + 0.4;
+      const x = cx + Math.cos(a) * 70 * u, y = cy + Math.sin(a) * 46 * u, r = 4.5 * u + 1.5;
+      ctx.strokeStyle = '#6b7080'; ctx.lineWidth = 1;
+      for (let k = 0; k < 4; k++) {
+        const b = k / 4 * TAU + time * 0.3;
+        ctx.beginPath(); ctx.moveTo(x + Math.cos(b) * r, y + Math.sin(b) * r); ctx.lineTo(x + Math.cos(b) * r * 1.7, y + Math.sin(b) * r * 1.7); ctx.stroke();
+      }
+      const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 0.5, x, y, r);
+      g.addColorStop(0, '#9aa0b4'); g.addColorStop(1, '#2a2d38');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+      glow(x, y, 3 * u + 1, '#ff4040', Math.sin(time * 3 + i * 1.7) > 0.4 ? 0.9 : 0.15);
+    }
   }
 
   function renderPreview(cv, type, face = 1) {

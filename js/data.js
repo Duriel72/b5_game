@@ -28,88 +28,88 @@ const SHIP_TYPES = {
   whitestar: {
     name: 'Fehércsillag', cls: 'cirkáló', sys: 30, hull: 120, firepower: 25,
     points: 220,
-    beam: '#cbb2ff', ability: 'precision', threat: 3, price: 650,
-    accBonus: 0.1, evasionPierce: 0.6,   // fejlett célzás: +10% találat, a célpont kitérésének 60%-át figyelmen kívül hagyja
+    beam: '#cbb2ff', ability: 'precision', price: 650,
+    evasionPierce: 0.6,   // fejlett célzás: a célpont kitérésének 60%-át figyelmen kívül hagyja (+ a faj célzási bónusza)
     faction: 'Csillagvédelmi Szövetség',
     desc: 'Fürge, modern cirkáló. Az állomás első védelmi vonala – a kezdőhajód.',
     names: ['Fehércsillag', 'Fehércsillag-2', 'Fehércsillag-7', 'Fehércsillag-9', 'Fehércsillag-14', 'Fehércsillag-16'],
   },
   minbari: {
-    name: 'Minbari csatahajó', cls: 'csatahajó', sys: 40, hull: 160, firepower: 35,
-    points: 320,
-    beam: '#a8f0ff', ability: 'barrage', threat: 5.5, price: 900, minWave: 7,
+    name: 'Minbari csatahajó', cls: 'csatahajó', sys: 42, hull: 180, firepower: 37,
+    points: 360,
+    beam: '#a8f0ff', ability: 'barrage', threat: 6, fixedThreat: true, price: 900, minWave: 7,
     faction: 'Minbari Föderáció',
     desc: 'Hatalmas, kristályos páncélú csatahajó. Ritka és rendkívül veszélyes.',
     names: ['Valen fénye', 'Néma Ének', 'Csillagtűz', 'Hajnalpír', 'Szürke Tanács'],
   },
   narn: {
-    name: 'Narn cirkáló', cls: 'cirkáló', sys: 20, hull: 80, firepower: 18,
-    points: 110,
-    beam: '#ffb347', ability: 'overload', threat: 2, price: 350, minWave: 1,
+    name: 'Narn cirkáló', cls: 'cirkáló', sys: 20, hull: 96, firepower: 21,
+    points: 125,
+    beam: '#ffb347', ability: 'overload', price: 350, minWave: 1,
     faction: 'Narn Rezsim',
     desc: 'Nehézkes, de kemény ütésű cirkáló. Nem válogat az eszközökben.',
     names: ["G'Kar dühe", "Na'Toth", 'Vörös Homok', "Th'Rok", "G'Quan pengéje", 'Narn Hamva'],
   },
   centauri: {
-    name: 'Centauri Primus cirkáló', cls: 'cirkáló', sys: 22, hull: 88, firepower: 23,
-    points: 130,
-    beam: '#ffcf7a', ability: 'precision', threat: 2.4, price: 420, minWave: 2,
+    name: 'Centauri Primus cirkáló', cls: 'cirkáló', sys: 24, hull: 92, firepower: 23,
+    points: 140,
+    beam: '#ffcf7a', ability: 'precision', price: 420, minWave: 2,
     faction: 'Centauri Köztársaság',
     desc: 'Primus-osztályú csatacirkáló: hosszú, szegmentált test, pontos lövegek a Köztársaság dicsőségére.',
     names: ['Valerius', 'Primus Rex', 'Arany Sas', 'Cartagia', 'Mollari büszkesége', 'Vindicator'],
   },
   earth: {
-    name: 'Földi Omega romboló', cls: 'csatahajó', sys: 25, hull: 100, firepower: 20,
-    points: 150,
-    beam: '#ff9a4d', ability: 'barrage', threat: 2.8, price: 480, minWave: 3,
+    name: 'Földi Omega romboló', cls: 'csatahajó', sys: 27, hull: 120, firepower: 21,
+    points: 165,
+    beam: '#ff9a4d', ability: 'barrage', price: 480, minWave: 3,
     faction: 'Földi Szövetség',
     desc: 'Omega-osztályú romboló forgó gravitációs gyűrűvel. Stabil, megbízható.',
     names: ['Churchill', 'Nimrod', 'Pollux', 'Titans', 'Excalibur', 'Furies'],
   },
   vorchan: {
-    name: 'Centauri Vorchan', cls: 'cirkáló', scale: 0.85, sys: 18, hull: 70, firepower: 21,
-    points: 90,
-    beam: '#ffcf7a', ability: 'overload', threat: 1.8, price: 380, minWave: 2,
+    name: 'Centauri Vorchan', cls: 'cirkáló', scale: 0.85, sys: 18, hull: 64, firepower: 22,
+    points: 95,
+    beam: '#ffcf7a', ability: 'overload', price: 380, minWave: 2,
     faction: 'Centauri Köztársaság',
     desc: 'Gyors, lándzsa testű hadihajó hatalmas félhold-szárnnyal és plazmagyorsítóval.',
     names: ['Ragesh', 'Morado', 'Coriana', 'Imperio', 'Lustrum', 'Talia'],
   },
   altarian: {
-    name: 'Centauri Altarian romboló', cls: 'cirkáló', sys: 24, hull: 96, firepower: 22,
-    points: 140,
-    beam: '#ffcf7a', ability: 'barrage', threat: 2.7, price: 500, minWave: 4,
+    name: 'Centauri Altarian romboló', cls: 'cirkáló', sys: 25, hull: 100, firepower: 22,
+    points: 145,
+    beam: '#ffcf7a', ability: 'barrage', price: 500, minWave: 4,
     faction: 'Centauri Köztársaság',
     desc: 'Keskeny elülső törzs, hátul széles kereszt alakú blokk. Megbízható vonalhajó.',
     names: ['Dominus', 'Severus', 'Aurelia', 'Pax Centauri', 'Altarian'],
   },
   centcarrier: {
-    name: 'Centauri csatahordozó', cls: 'csatahajó', scale: 1.2, sys: 36, hull: 190, firepower: 31,
-    points: 380,
-    beam: '#ffcf7a', ability: 'barrage', threat: 6, minWave: 9,
+    name: 'Centauri csatahordozó', cls: 'csatahajó', scale: 1.2, sys: 38, hull: 210, firepower: 32,
+    points: 400,
+    beam: '#ffcf7a', ability: 'barrage', minWave: 9,
     faction: 'Centauri Köztársaság',
     desc: 'Óriási hordozó két félhold-szárnnyal és három nehézlöveggel. A késői hullámok réme.',
     names: ['Imperatrix', 'Gloria Centauri', 'Regina', 'Vindex'],
   },
   hyperion: {
-    name: 'Hyperion nehézcirkáló', cls: 'cirkáló', sys: 26, hull: 104, firepower: 24,
-    points: 160,
-    beam: '#ffa860', ability: 'precision', threat: 3, price: 540, minWave: 5,
+    name: 'Hyperion nehézcirkáló', cls: 'cirkáló', sys: 27, hull: 108, firepower: 24,
+    points: 170,
+    beam: '#ffa860', ability: 'precision', price: 540, minWave: 5,
     faction: 'Földi Szövetség',
     desc: 'A Földi Erők régi igáslova: bézs törzs kék sávokkal, rácsos gerinc, erős lövegek.',
     names: ['Cortez', 'Lexington', 'Pournelle', 'Nemesis', 'Juno', 'Hydra'],
   },
   nova: {
-    name: 'Nova csatahajó', cls: 'csatahajó', sys: 32, hull: 150, firepower: 28,
-    points: 260,
-    beam: '#ff9a4d', ability: 'barrage', threat: 4.6, price: 780, minWave: 8,
+    name: 'Nova csatahajó', cls: 'csatahajó', sys: 35, hull: 175, firepower: 29,
+    points: 290,
+    beam: '#ff9a4d', ability: 'barrage', price: 780, minWave: 8,
     faction: 'Földi Szövetség',
     desc: 'Lövegtornyokkal teletűzdelt nehéz csatahajó – forgó gyűrű nélkül, csak tűzerő.',
     names: ['Schwarzkopf', 'Gorgon', 'Alexander', 'Medusa', 'Pallas'],
   },
   starfury: {
-    name: 'Starfury vadász', cls: 'vadász', scale: 0.85, sys: 14, hull: 50, firepower: 14,
-    points: 45,
-    beam: '#ffb070', ability: 'evade', threat: 0.9, price: 180, minWave: 2,
+    name: 'Starfury vadász', cls: 'vadász', scale: 0.85, sys: 14, hull: 52, firepower: 14,
+    points: 50,
+    beam: '#ffb070', ability: 'evade', price: 180, minWave: 2,
     faction: 'Földi Szövetség',
     desc: 'Az ikonikus négyszárnyú vadász. Olcsó, fürge, rajban veszélyes.',
     names: ['Alfa 1', 'Alfa 2', 'Béta 4', 'Zéta 3', 'Delta 7', 'Omega 9'],
@@ -117,68 +117,92 @@ const SHIP_TYPES = {
   merchant: {
     name: 'Kereskedő teherhajó', cls: 'cirkáló', scale: 0.9, sys: 10, hull: 60, firepower: 0,
     points: 0, civilian: true,
-    beam: '#ffffff', ability: 'evade', threat: 0,
+    beam: '#ffffff', ability: 'evade',
     faction: 'Szabad kereskedők',
     desc: 'Békés teherhajó. Kereskedő konvojként érkezik: kreditet hoz, javít, majd harc nélkül továbbáll.',
     names: ['Ikarus', 'Sárga Csillag', 'Ceti Kereskedő', 'Babylon Expressz', 'Vén Teknős', 'Arany Rakomány'],
   },
   raidergunship: {
-    name: 'Kalóz ágyúnaszád', cls: 'cirkáló', scale: 0.85, sys: 18, hull: 86, firepower: 18,
-    points: 100,
-    beam: '#ff6b4a', ability: 'overload', threat: 2, minWave: 2,
+    name: 'Kalóz ágyúnaszád', cls: 'cirkáló', scale: 0.85, sys: 14, hull: 66, firepower: 13,
+    points: 70,
+    beam: '#ff6b4a', ability: 'overload', minWave: 2,
     faction: 'Kalózok',
     desc: 'Felfegyverzett, toldozott-foltozott teherhajó ráhegesztett lövegekkel és rakétákkal.',
     names: ['Rozsdás Szög', 'Zsákmány', 'Csempész', 'Vasmacska', 'Sötét Rakomány', 'Kalózhajó'],
   },
   raiderinterceptor: {
-    name: 'Kalóz elfogó', cls: 'vadász', scale: 0.95, sys: 16, hull: 58, firepower: 16,
-    points: 65,
-    beam: '#ff4d5e', ability: 'evade', threat: 1.3, minWave: 3,
+    name: 'Kalóz elfogó', cls: 'vadász', scale: 0.95, sys: 12, hull: 42, firepower: 11,
+    points: 45,
+    beam: '#ff4d5e', ability: 'evade', minWave: 3,
     faction: 'Kalózok',
     desc: 'Gyors, ikertörzsű, V alakú vadász. Lecsap és elsuhan.',
     names: ['Villám', 'Darázs', 'Késpenge', 'Sólyomszem', 'Vörös Árny', 'Fenevad'],
   },
   raiderwagon: {
-    name: 'Kalóz csatahordozó', cls: 'csatahajó', scale: 1.1, sys: 26, hull: 145, firepower: 20,
-    points: 190,
-    beam: '#ffa060', ability: 'barrage', threat: 3.6, minWave: 4,
+    name: 'Kalóz csatahordozó', cls: 'csatahajó', scale: 1.1, sys: 22, hull: 115, firepower: 15,
+    points: 135,
+    beam: '#ffa060', ability: 'barrage', minWave: 4,
     faction: 'Kalózok',
     desc: 'A kalózok anyahajója („Battlewagon”): rozsdás, nehéz hordozó, amely vadászrajokat indít.',
     names: ['Vén Bárka', 'Kalózkirály', 'Vasököl', 'Fekete Lobogó', 'Tolvajfészek'],
   },
   raider: {
-    name: 'Kalóz vadász', cls: 'vadász', sys: 15, hull: 60, firepower: 13,
-    points: 50,
-    beam: '#ff4d5e', ability: 'evade', threat: 1, price: 200, minWave: 1,
+    name: 'Kalóz vadász', cls: 'vadász', sys: 11, hull: 36, firepower: 9,
+    points: 30,
+    beam: '#ff4d5e', ability: 'evade', price: 200, minWave: 1,
     faction: 'Kalózok',
     desc: 'Olcsó, gyors delta-szárnyú vadász. Rajokban támad.',
     names: ['Vörös Vipera', 'Hiéna', 'Rozsdafog', 'Sakál', 'Fekete Vitorla', 'Csontváz', 'Kobra', 'Varjú'],
   },
   drazi: {
-    name: 'Drazi napsólyom', cls: 'vadász', sys: 17, hull: 66, firepower: 15,
+    name: 'Drazi napsólyom', cls: 'vadász', sys: 16, hull: 60, firepower: 15,
     points: 70,
-    beam: '#c4ff4d', ability: 'evade', threat: 1.4, price: 260, minWave: 4,
+    beam: '#c4ff4d', ability: 'evade', price: 260, minWave: 4,
     faction: 'Drazi Szabadság',
     desc: 'Agresszív, harcias vadász. Zöld vagy lila? A Drazik ezen is összevesznek.',
     names: ['Zöld Karom', 'Napsólyom', 'Viharszárny', 'Dühös Drazi', 'Sas-szem'],
   },
   shadowscout: {
-    name: 'Árny felderítő', cls: 'ősi', scale: 0.62, sys: 34, hull: 170, firepower: 24,
+    name: 'Árny felderítő', cls: 'ősi', scale: 0.62, sys: 34, hull: 170, firepower: 22,
     points: 320,
-    beam: '#c060ff', ability: 'evade', threat: 4.5, noCapture: true, shadowOnly: true, minWave: 10,
+    beam: '#c060ff', ability: 'evade', threat: 4.5, fixedThreat: true, noCapture: true, shadowOnly: true, minWave: 10,
     faction: 'Árnyékok',
     desc: 'Kisebb, fürgébb Árny hajó tüskés, sejtmintás testtel. Csak az Árnyékflotta tagjaként tűnik fel. Nem foglalható el.',
     names: ['Árnyékfog', 'Éjtüske', 'Sötét Karom', 'Csend', 'Üresség', 'Hamvas Tövis'],
   },
   shadow: {
-    name: 'Árny cirkáló', cls: 'ősi', sys: 60, hull: 420, firepower: 42,
+    name: 'Árny cirkáló', cls: 'ősi', sys: 60, hull: 420, firepower: 40,
     points: 800,
-    beam: '#d65cff', ability: 'barrage', threat: 12, boss: true, noCapture: true, minWave: 5,
+    beam: '#d65cff', ability: 'barrage', threat: 12, fixedThreat: true, boss: true, noCapture: true, minWave: 5,
     faction: 'Árnyékok',
     desc: 'Ősi, élő hajó a peremvidékről. Minden ötödik hullámban érkezik. Elfoglalni lehetetlen.',
     names: ['Árnyék', 'A Sötétség', 'Éjszaka Pókja', 'Ősi Ellenség'],
   },
 };
+
+// Fajonkénti célzás: a találati esélyhez adódik (az állomás elleni lövésnél is).
+// A fejlettebb fajok pontosabbak, a kalózok pontatlanok – cserébe sokan jönnek, olcsó hajókkal.
+const FACTION_ACC = {
+  'Árnyékok': 0.15,
+  'Minbari Föderáció': 0.12,
+  'Csillagvédelmi Szövetség': 0.10,
+  'Centauri Köztársaság': 0.06,
+  'Földi Szövetség': 0.04,
+  'Narn Rezsim': 0,
+  'Drazi Szabadság': -0.05,
+  'Kalózok': -0.12,
+};
+
+// Fenyegetettség (threat): a hullám-költségvetés egysége, és ebből számol a jutalom is.
+// Erőindex = √(test / (1 − osztálykitérés) × tűzerő × (0,88 + fajcélzás) / 0,88), osztva 19-cel.
+// Így a sok gyenge kalóz és a kevés erős Földi hajó egy hullámon belül nagyjából azonos erőt ad.
+// Kivétel (fixedThreat): a Minbari és az Árny hajók – önjavítók, és külön hullámlogikájuk van.
+for (const T of Object.values(SHIP_TYPES)) {
+  if (T.civilian) { T.threat = 0; continue; }
+  if (T.fixedThreat) continue;
+  const ev = CLASSES[T.cls].evasion, acc = FACTION_ACC[T.faction] || 0;
+  T.threat = +(Math.sqrt(T.hull / (1 - ev) * T.firepower * (0.88 + acc) / 0.88) / 19).toFixed(2);
+}
 
 const ABILITIES = {
   precision: { name: 'Célzott lövés', desc: 'Biztos találat a kijelölt részre, +25% sebzés.', cooldown: 3 },
@@ -204,8 +228,21 @@ const STATION_UPGRADES = [
   { key: 'armor',  name: 'Páncélzat',        desc: '+250 max. szerkezet (és javítás)', cost: s => 220 + s.armorLvl * 140, max: 8, lvl: s => s.armorLvl },
   { key: 'shield', name: 'Pajzsgenerátor',   desc: '+50 max. pajzs, gyorsabb töltődés', cost: s => 200 + s.shieldLvl * 130, max: 8, lvl: s => s.shieldLvl },
   { key: 'command', name: 'Irányító központ', desc: '+1 hajóhely a flottában', cost: s => 400 + (s.cmdLvl || 0) * 260, max: 4, lvl: s => s.cmdLvl || 0 },
+  { key: 'minelayer', name: 'Aknatelepítő', desc: 'Aknamező az ugrókapu körül; szintenként +1 akna', cost: s => 240 + (s.mineLvl || 0) * 150, max: 5, lvl: s => s.mineLvl || 0 },
+  { key: 'minepower', name: 'Aknatöltet', desc: 'Erősebb aknák: +15 sebzés szintenként', cost: s => 160 + (s.minePow || 0) * 110, max: 5, lvl: s => s.minePow || 0, req: s => (s.mineLvl || 0) > 0 },
+  { key: 'mines', name: 'Aknák telepítése', desc: 'Feltölti az aknamezőt; a felrobbant aknákat újra meg kell venni', cost: s => MINES.deployCost(s), req: s => (s.mineLvl || 0) > 0 },
   { key: 'grid',   name: 'Védelmi rács',     desc: '+5 sebzés; 3. és 6. szinten +1 lövés', cost: s => 180 + s.gridLvl * 120, max: 8, lvl: s => s.gridLvl },
 ];
+
+// Aknamező: a telepített aknák a hullám elején beugró ellenséges hajókat sebzik (érkezési
+// sorrendben hajónként egy akna), amíg el nem fogynak. A felrobbant aknákat a boltban kell pótolni.
+const MINES = {
+  capOf: st => ((st.mineLvl || 0) > 0 ? 1 + st.mineLvl : 0),          // Aknatelepítő 1–5. szint: 2–6 akna
+  dmgOf: st => 30 + 15 * (st.minePow || 0),                            // Aknatöltet 0–5. szint: 30–105 sebzés a testre
+  sysShare: 0.5,                                                        // ennek fele egy véletlen alrendszert is ér
+  unitCost: st => 25 + 7 * (st.minePow || 0),                          // egy akna telepítése
+  deployCost: st => Math.max(0, MINES.capOf(st) - (st.mines || 0)) * MINES.unitCost(st),
+};
 
 const PLAYER_BUYABLE = ['starfury', 'narn', 'vorchan', 'centauri', 'earth', 'hyperion', 'nova', 'whitestar'];
 const ALLY_TYPES = ['narn', 'centauri', 'vorchan', 'earth', 'hyperion', 'starfury', 'whitestar', 'drazi'];

@@ -28,6 +28,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   A szövetséges hajók azonnal átvehetők.
 - Hullámok között **bolt**: javítás, hajófejlesztés (5 szint), új hajók, **leszerelés** (a hajó kreditért kikerül a flottából,
   nem semmisül meg), állomásfejlesztések – köztük az **Irányító központ**, ami szintenként +1 hajóhelyet ad (6 → max. 10).
+- **Aknamező:** az Aknatelepítő (2–6 akna) és az Aknatöltet (30–105 sebzés) fejleszthető; az aknákat kreditért
+  kell telepíteni. A hullám elején minden beugró ellenséges hajó felrobbant egyet, amíg el nem fogynak.
 - **Fegyverek:** minden hajónak van elsődleges fegyvere (minden körben lő) és legtöbbjüknek különleges fegyvere
   (erősebb, de pár körig töltődik, `G`). Pl. a Fehércsillag szárnyágyúi impulzusokat, az orr fő ágyúja folytonos zöld
   sugarat lő; a földi hajók nehézlézere vörös sugár, a Vorchané plazmagömb, a Starfuryé rakéta, a csatahordozóé vadászraj.
@@ -39,10 +41,14 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   Az Árny hajók soha nem keverednek más fajjal: egy vagy több cirkáló, egy cirkáló felderítőkkel, vagy csak felderítők.
 - A 3. vagy 4. hullámban biztosan jön egy **ellenséges Minbari cirkáló** (ha konvoj jön helyette, a következő harci
   hullámban; ilyenkor az első Árny hullám is eltolódhat egyet); az első Árny hajó után a Minbarik már csak szövetségesként érkeznek.
-- **Szövetségesek** az 5. hullámtól, ~30% eséllyel érkeznek kék ugróponton az állomás mellé (ritkán kettő is).
+- **Szövetségesek** az 5. hullámtól, ~30% eséllyel érkeznek kék ugróponton az állomás mellé (ritkán kettő is), mindig teljes életerővel.
   Amíg nem veszed át őket, minden kör végén önállóan lőnek az ellenségre.
 - **Frakcióhullámok:** a földi hajók csak egymással jönnek; Narn és Centauri soha nem kerül egy ellenséges flottába
   (melléjük Drazi és kalóz társulhat); vannak tiszta kalózhullámok is. Nehéz típusból legfeljebb 2 jön egy hullámban.
+- **Fajok:** célzási bónusz: Árny +15%, Minbari +12%, Fehércsillag +10%, Centauri +6%, Föld +4%, Narn ±0, Drazi −5%,
+  kalóz −12%. A Földi hajók páncélosak, a Narnok strapabíróak és erősen ütnek, a kalózok gyengék, de rajokban (max. 12)
+  jönnek. A hajók „fenyegetettsége” (a hullám-költségvetés egysége) az életerőből, tűzerőből, célzásból és kitérésből
+  számolt erőindex, így a különböző fajú hullámok nagyjából egyforma erősek. Ellenőrzés: `tools/wave-stats.js`.
 - **Kalózok:** Delta-V vadász, gyors V alakú **elfogó**, toldozott **ágyúnaszád** rakétasortűzzel és a vadászrajt indító
   **csatahordozó** („Battlewagon”).
 - **Javítás:** a Minbari, a Fehércsillag és az Árny hajók maguktól javulnak, közvetlenül mielőtt lépnének – az ellenség az ellenséges kör
@@ -61,7 +67,7 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 - **Gazdaság:** a kreditbevétel a hullámszámmal nő (képletek: `js/data.js` → `ECON`).
 - **Árnyékflotta:** a 10. hullámtól időnként csak Árny hajók támadnak – Árny cirkálók és a kisebb, gyengébb **Árny felderítők**.
   Két Árny hullám sosem jön közvetlenül egymás után.
-- **Pontozás hajótípusonként:** 45 (Starfury) és 800 (Árny cirkáló) között – a pontos értékek a játék súgójában
+- **Pontozás hajótípusonként:** 30 (kalóz vadász) és 800 (Árny cirkáló) között – a pontos értékek a játék súgójában
   és a hajókatalógusban láthatók. Elfoglalásért ennek 1,5-szerese jár, plusz hullámbónusz – a nehézségi szorzóval.
 - Ha az állomás elesik: pusztulási jelenet, pontszám, ranglista.
 
