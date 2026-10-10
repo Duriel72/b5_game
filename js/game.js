@@ -389,10 +389,12 @@ const Game = (() => {
     }
   }
 
-  // Passzív önjavítás a kör elején: 0%-os alrendszer → 20% alatti → test
+  // Passzív önjavítás közvetlenül a hajó lépése előtt (saját hajóknál a kör elején, az ellenségnél és
+  // a szövetségeseknél az ellenséges kör elején): 0%-os alrendszer → 20% alatti → test.
+  // Így a hajó előbb javul, és csak utána dönt a gép arról, hogy tud-e támadni.
   function regenTick(s) {
     const rg = REGEN[s.type];
-    if (!rg || !alive(s)) return;
+    if (!rg || !alive(s)) return false;
     const order = ['weapons', 'reactor', 'engines', 'sensors'];
     const zero = order.find(k => s.sys[k] <= 0);
     const low = order.filter(k => s.sys[k] < s.maxSys[k] * 0.2).sort((x, y) => s.sys[x] / s.maxSys[x] - s.sys[y] / s.maxSys[y])[0];
@@ -402,6 +404,7 @@ const Game = (() => {
     if (k) n = applyRepair(s, k, Math.max(3, Math.round(s.maxSys[k] * rg.sys * eff)));
     else if (s.hull < s.maxHull) n = applyRepair(s, 'hull', Math.max(2, Math.round(s.maxHull * rg.hull * eff)));
     if (n > 0) showRepair(s, k || 'hull', n);
+    return n > 0;
   }
 
   // Ellenséges gépi döntés: javít vagy támad. Ha a fegyverzete 0, mindenképp javít
@@ -544,6 +547,9 @@ const Game = (() => {
     if (S.phase !== 'battle') return;
     hooks.hint(t('hint.enemy'));
     hooks.enemyTurn(true);
+    let healed = false;
+    for (const s of S.enemies) if (regenTick(s)) healed = true;
+    if (healed) { SFX.play('repair'); hooks.update(); await wait(500); }
     for (const e of hostiles().slice()) {
       if (S.phase !== 'battle') return;
       if (!alive(e) || e.acted || !canTakeAction(e)) continue;
@@ -643,7 +649,7 @@ const Game = (() => {
       if (s.cd > 0) s.cd--;
       if (s.wcd > 0) s.wcd--;
       if (s.rcd > 0) s.rcd--;
-      regenTick(s);
+      if (s.side === 'player') regenTick(s);
     }
     const st = S.station;
     st.shield = Math.min(st.maxShield, st.shield + st.maxShield * 0.05 + st.shieldLvl * 3);

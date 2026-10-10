@@ -371,7 +371,8 @@ const UI = (() => {
     return `<div class="sb-bar"><i style="width:${r * 100}%;background:${col}"></i><span>${Math.max(0, Math.round(cur))}/${max}</span></div>`;
   }
 
-  // ------------------------------------------------------------ hajóinfó a csatatéren (fekvő telefonon)
+  // ------------------------------------------------------------ hajóinfó a csatatéren
+  // (fekvő telefonon koppintásra, asztalon a hajó fölé víve az egeret)
   // Hajóra koppintva ~3 mp-ig látszik a hajó mellett (nyomva tartva addig, amíg el nem engeded):
   // név, típus, életerő és a fontos állapotok – a kártyák helyett, amelyek mobilon rejtve vannak.
   let infoId = null, infoHold = false, infoTimer = 0, infoX = null, infoY = null;
@@ -391,8 +392,8 @@ const UI = (() => {
     return `<div class="si-name">${esc(NM(s.name))}</div><div class="si-sub">${esc(sub)}</div>${shipBars(s)}
       <div class="si-badges">${b.map(([c, x]) => `<span class="badge ${c}">${esc(x)}</span>`).join('')}</div>`;
   }
-  function showShipInfo(s, hold) {
-    if (!s || !compactMQ.matches || R.mode !== 'battle') return;
+  function showShipInfo(s, hold, hover) {
+    if (!s || !(compactMQ.matches || hover) || R.mode !== 'battle') return;
     const el = $('#ship-info');
     if (infoId !== s.id) { infoX = infoY = null; }
     infoId = s.id; infoHold = !!hold;
@@ -411,7 +412,7 @@ const UI = (() => {
   function renderShipInfo() {
     if (infoId === null) return;
     const s = Game.state && Game.byId(infoId);
-    if (!s || s.hull <= 0 || !compactMQ.matches || R.mode !== 'battle') { hideShipInfo(); return; }
+    if (!s || s.hull <= 0 || R.mode !== 'battle') { hideShipInfo(); return; }
     const el = $('#ship-info');
     el.className = 'side-' + s.side + (el.classList.contains('fade') ? ' fade' : '');
     el.innerHTML = shipInfoHtml(s);

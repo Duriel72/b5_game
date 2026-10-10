@@ -316,7 +316,7 @@ function helpHtml(ctx) {
           </ul>
           <h3>Repairs</h3>
           <ul>
-            <li><b>Minbari</b>, <b>White Star</b> and <b>Shadow</b> ships repair themselves at the start of every turn: first a subsystem at 0%, then one below 20%, and once every system is above 20%, the hull.</li>
+            <li><b>Minbari</b>, <b>White Star</b> and <b>Shadow</b> ships repair themselves right before they act (yours at the start of the turn, enemy and allied ships at the start of the enemy phase – so they repair first and only then is it decided whether they can attack): first a subsystem at 0%, then one below 20%, and once every system is above 20%, the hull.</li>
             <li>Other ships can <b>repair manually</b> instead of firing (<kbd>R</kbd>) – even with destroyed weapons. On your own ships the crew can repair even without a reactor, so a captured ship can be repaired back into service from the next turn; if an enemy ship's reactor is shot out, its repair recharge restarts at full length plus 2 more turns – it cannot patch itself up at once, but it is not crippled for good either. Afterwards they cannot repair again for a few turns. Races repair differently: <b>Centauri</b> (subsystem +45%, hull +22%, 2 turns) › <b>Earth</b> (+40/+20%, 2 turns) › <b>Narn</b> (+35/+17%, 3 turns) › <b>Drazi</b> (+30/+15%, 3 turns) › <b>raiders</b> (+25/+12%, 4 turns). The enemy may also decide to repair.</li>
             <li><b>Fighter</b>-class ships (Starfury, Drazi Sunhawk, raider fighters) cannot repair.</li>
             <li>The more damaged a ship is, the less effective repairs are (about 45% for a nearly wrecked ship) – this also applies to self-repair.</li>
@@ -386,7 +386,7 @@ function helpHtml(ctx) {
           </ul>
           <h3>Javítás</h3>
           <ul>
-            <li>A <b>Minbari</b>, a <b>Fehércsillag</b> és az <b>Árny</b> hajók minden kör elején maguktól javulnak: először a 0%-ra lőtt alrendszert, aztán a 20% alattit, ha pedig minden rendszer 20% felett van, a testet.</li>
+            <li>A <b>Minbari</b>, a <b>Fehércsillag</b> és az <b>Árny</b> hajók maguktól javulnak, mielőtt lépnének (a sajátjaid a kör elején, az ellenséges és szövetséges hajók az ellenség körének elején – tehát előbb javulnak, és csak utána dől el, tudnak-e támadni): először a 0%-ra lőtt alrendszert, aztán a 20% alattit, ha pedig minden rendszer 20% felett van, a testet.</li>
             <li>A többi hajó <b>kézzel javíthat</b> lövés helyett (<kbd>R</kbd>) – akkor is, ha a fegyverzete kilőve. A saját hajóidon a legénység reaktor nélkül is javíthat, így egy elfoglalt hajót a következő körtől üzemképessé javíthatsz; ha egy ellenséges hajó reaktorát kilövöd, a javítási töltésideje teljes hosszra áll vissza, és még 2 kör hozzáadódik – így nem javíthatja meg azonnal, de végleg sem bénul meg. Utána néhány körig nem javíthat újra. A fajok eltérően javítanak: <b>Centauri</b> (alrendszer +45%, test +22%, 2 kör) › <b>Földi</b> (+40/+20%, 2 kör) › <b>Narn</b> (+35/+17%, 3 kör) › <b>Drazi</b> (+30/+15%, 3 kör) › <b>kalóz</b> (+25/+12%, 4 kör). Az ellenség is dönthet úgy, hogy javít.</li>
             <li>A <b>vadász</b> osztályú hajók (Starfury, Drazi napsólyom, kalóz vadászok) nem tudnak javítani.</li>
             <li>Minél sérültebb egy hajó, annál kevésbé hatékony a javítás (szinte szétlőtt hajónál kb. 45%) – ez az önjavításra is igaz.</li>

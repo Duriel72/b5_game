@@ -45,7 +45,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   (melléjük Drazi és kalóz társulhat); vannak tiszta kalózhullámok is. Nehéz típusból legfeljebb 2 jön egy hullámban.
 - **Kalózok:** Delta-V vadász, gyors V alakú **elfogó**, toldozott **ágyúnaszád** rakétasortűzzel és a vadászrajt indító
   **csatahordozó** („Battlewagon”).
-- **Javítás:** a Minbari, a Fehércsillag és az Árny hajók minden kör elején maguktól javulnak (először a 0%-os,
+- **Javítás:** a Minbari, a Fehércsillag és az Árny hajók maguktól javulnak, közvetlenül mielőtt lépnének – az ellenség az ellenséges kör
+  elején, így előbb javul, és csak utána dönti el a gép, hogy tud-e támadni (először a 0%-os,
   majd a 20% alatti alrendszert, végül a testet). A többi hajó lövés helyett kézzel javíthat (`R`) – kilőtt fegyverzettel
   vagy reaktorral is –, utána töltési idő következik. Ha egy ellenséges hajó reaktorát kilövöd, a töltési ideje
   teljes hosszra áll vissza, és még 2 kör hozzáadódik (pl. 3 körös töltésnél 5 kör múlva javíthat). Fajonként: Centauri (+45%/+22%, 2 kör) › Földi (+40/+20%, 2)

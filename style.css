@@ -83,7 +83,7 @@ kbd { font-family: var(--hud); font-size: 9px; padding: 1px 5px; border: 1px sol
 
 /* ---------- HUD alsó ---------- */
 #hud-bottom {
-  bottom: 0; display: grid; grid-template-columns: minmax(250px, 1fr) minmax(360px, 1.35fr) minmax(250px, 1fr); gap: 10px; padding: 10px;
+  bottom: 0; display: grid; grid-template-columns: minmax(210px, 0.6fr) minmax(480px, 2fr) minmax(210px, 0.6fr); gap: 10px; padding: 10px;
   background: linear-gradient(0deg, rgba(4, 6, 16, 0.95), rgba(4, 6, 16, 0.55)); border-top: 1px solid var(--line);
 }
 .card, .actions { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; backdrop-filter: blur(6px); min-width: 0; }
@@ -135,6 +135,14 @@ kbd { font-family: var(--hud); font-size: 9px; padding: 1px 5px; border: 1px sol
 .sub-btn .sb-top { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13.5px; }
 .sub-btn .sb-k { font-family: var(--hud); font-size: 9px; color: var(--muted); }
 .sub-btn .sb-stat { font-size: 11.5px; color: #fecaca; margin-top: 2px; white-space: nowrap; }
+/* név és esély/sebzés egy sorban (ha nem fér ki, a szám új sorba törik), alatta az életcsík */
+.sub-btn { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; }
+.sub-btn .sb-top { flex: 0 0 auto; gap: 6px; }
+.sub-btn .sb-stat { flex: 1 0 auto; text-align: right; margin-top: 0; }
+.sub-btn .sb-bar { flex: 0 0 100%; height: 14px; }
+.sub-btn .sb-bar span { line-height: 14px; font-size: 11px; }
+/* a hajók rendszereinek listája a gombokon / a hajóinfóban látszik, a kártyákban nem kell */
+.card .bars { display: none; }
 /* életerő-csík a rendszergombon, benne „aktuális/max” */
 .sub-btn .sb-bar { position: relative; height: 13px; background: rgba(255, 255, 255, 0.08); margin-top: 4px; border-radius: 3px; overflow: hidden; }
 .sub-btn .sb-bar i { position: absolute; left: 0; top: 0; bottom: 0; opacity: 0.75; }
@@ -372,13 +380,8 @@ input { -webkit-user-select: text; user-select: text; }
   .card-kicker span:last-child { display: none; }
   .wbtn { min-height: 26px; padding: 2px 7px; }
   .sub-btn { min-height: 34px; padding: 3px 5px; }
-  .sub-btn .sb-bar { margin-top: 3px; height: 14px; }
-  .sub-btn .sb-bar span { line-height: 14px; font-size: 11px; }
-  /* név és esély/sebzés egy sorban, alatta a csík */
-  .sub-btn { display: grid; grid-template-columns: auto 1fr; column-gap: 6px; align-items: center; }
-  .sub-btn .sb-top { white-space: nowrap; overflow: hidden; }
-  .sub-btn .sb-stat { margin-top: 0; text-align: right; overflow: hidden; }
-  .sub-btn .sb-bar { grid-column: 1 / -1; }
+  .sub-btn .sb-bar { margin-top: 3px; }
+  .sub-btn { column-gap: 6px; }
   /* mobilon nincs külön hajókártya: a hajókat a csatatéren választod ki, nevük és életük ott látszik */
   #hud-bottom { grid-template-columns: 1fr; }
   #hud-bottom .card { display: none; }
@@ -436,3 +439,10 @@ body.hud-auto-min .act-row .btn { min-height: 30px; }
 #ship-info .bars { gap: 0 5px; line-height: 12px; }
 #ship-info .bar { height: 5px; }
 #ship-info .si-badges .badge { line-height: 11px; }
+/* célzógombok: a billentyű-szám a csík bal sarkában, hogy a név és az esély/sebzés egy sorba férjen (a tömör, fekvő telefonos HUD-ot nem érinti) */
+@media (min-height: 561px), (orientation: portrait) {
+  .sub-btn { position: relative; padding: 6px 7px; column-gap: 6px; }
+  .sub-btn .sb-top { font-size: 12.5px; }
+  .sub-btn .sb-stat { font-size: 11px; }
+  .sub-btn .sb-k { position: absolute; left: 11px; bottom: 6px; z-index: 1; line-height: 14px; font-size: 9px; color: rgba(255, 255, 255, 0.7); }
+}

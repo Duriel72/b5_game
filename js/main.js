@@ -51,23 +51,31 @@
   requestAnimationFrame(loop);
 
   // ------------------------------------------------------------ egér a csatatéren
-  cv.addEventListener('mousemove', e => {
+  let hoverShip = null;
+  cv.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
     R.setHover(s ? s.id : null);
     cv.style.cursor = s ? 'pointer' : 'default';
+    // egérrel a hajó fölött: a hajóinfó addig látszik, amíg rajta van, utána elhalványul
+    if ((s && s.id) !== hoverShip) {
+      hoverShip = s ? s.id : null;
+      if (s && !UI.stackSize) UI.showShipInfo(s, true, true); else UI.releaseShipInfo();
+    }
   });
+  cv.addEventListener('pointerleave', () => { if (hoverShip !== null) { hoverShip = null; R.setHover(null); UI.releaseShipInfo(); } });
   cv.addEventListener('click', e => {
     if (UI.stackSize) return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
-    if (s) { UI.disarm(); Game.select(s); UI.expandHud(); } else UI.hideShipInfo();
+    if (s) { UI.disarm(); Game.select(s); UI.expandHud(); } else if (hoverShip === null) UI.hideShipInfo();
   });
   // hajóinfó: koppintásra megjelenik, nyomva tartva kint marad
   cv.addEventListener('pointerdown', e => {
-    if (UI.stackSize) return;
+    if (UI.stackSize || e.pointerType === 'mouse') return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
     if (s) UI.showShipInfo(s, true);
   });
-  window.addEventListener('pointerup', () => UI.releaseShipInfo());
+  window.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') UI.releaseShipInfo(); });
   window.addEventListener('pointercancel', () => UI.releaseShipInfo());
   cv.addEventListener('contextmenu', e => e.preventDefault());
   cv.addEventListener('dblclick', e => {
