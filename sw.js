@@ -2,7 +2,7 @@
 // Kiadáskor a VERSION-t növelni kell (a js/version.js APP_VERSION-jával együtt): az oldal
 // rendszeresen rákérdez az új service workerre, ami friss fájlokkal tölti fel a saját
 // gyorsítótárát, átveszi az irányítást, és az oldal ekkor újratölt (vagy felajánlja).
-const VERSION = 'b5dts-v7';
+const VERSION = 'b5dts-v8';
 const ASSETS = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
   'js/version.js', 'js/i18n.js', 'js/data.js', 'js/audio.js', 'js/render.js', 'js/game.js', 'js/ui.js', 'js/main.js',

@@ -69,14 +69,22 @@
     const s = R.pick(e.clientX, e.clientY, Game.state);
     if (s) { UI.disarm(); Game.select(s); UI.expandHud(); } else if (hoverShip === null) UI.hideShipInfo();
   });
-  // hajóinfó: koppintásra megjelenik, nyomva tartva kint marad
+  // hajóinfó érintőképernyőn: csak hosszú nyomásra (~0,45 mp) jelenik meg, a sima koppintás csak kiválaszt
+  let pressTimer = 0, pressAt = null;
+  const cancelPress = () => { clearTimeout(pressTimer); pressAt = null; };
   cv.addEventListener('pointerdown', e => {
     if (UI.stackSize || e.pointerType === 'mouse') return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
-    if (s) UI.showShipInfo(s, true);
+    cancelPress();
+    if (!s) return;
+    pressAt = { x: e.clientX, y: e.clientY };
+    pressTimer = setTimeout(() => { pressAt = null; UI.showShipInfo(s, true); }, 450);
   });
-  window.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') UI.releaseShipInfo(); });
-  window.addEventListener('pointercancel', () => UI.releaseShipInfo());
+  cv.addEventListener('pointermove', e => {
+    if (pressAt && Math.hypot(e.clientX - pressAt.x, e.clientY - pressAt.y) > 12) cancelPress();
+  });
+  window.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { cancelPress(); UI.releaseShipInfo(); } });
+  window.addEventListener('pointercancel', () => { cancelPress(); UI.releaseShipInfo(); });
   cv.addEventListener('contextmenu', e => e.preventDefault());
   cv.addEventListener('dblclick', e => {
     // dupla kattintás ellenséges hajóra: testre lövés

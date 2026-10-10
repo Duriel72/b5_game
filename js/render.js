@@ -1857,6 +1857,37 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
   }
 
   // Bolt előnézet: egy hajó kirajzolása egy kis vászonra
+  // Alkalmazásikon (tools/icon.html): űr, Epsilon III és előtte, átlósan a Babylon 5 állomás.
+  // Az állomás a középső 80%-os körön belül marad, hogy a kerekre vágott (maskable) ikonon is látszódjon.
+  function renderIcon(cv, size) {
+    cv.width = cv.height = size;
+    const c = cv.getContext('2d');
+    const g = c.createLinearGradient(0, 0, size, size);
+    g.addColorStop(0, '#060818'); g.addColorStop(1, '#151033');
+    c.fillStyle = g; c.fillRect(0, 0, size, size);
+    const neb = c.createRadialGradient(size * 0.8, size * 0.2, 0, size * 0.8, size * 0.2, size * 0.55);
+    neb.addColorStop(0, 'rgba(110,70,210,0.35)'); neb.addColorStop(1, 'rgba(110,70,210,0)');
+    c.fillStyle = neb; c.fillRect(0, 0, size, size);
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < 55; i++) {
+      c.fillStyle = `rgba(230,235,255,${0.35 + 0.6 * rnd()})`;
+      c.beginPath(); c.arc(rnd() * size, rnd() * size, (0.4 + rnd() * 0.9) * size / 256, 0, TAU); c.fill();
+    }
+    const oldDpr = DPR; DPR = 1;
+    drawPlanet(c, size * 0.24, size * 0.8, size * 0.5);
+    DPR = oldDpr;
+    const old = ctx; ctx = c;
+    ctx.save();
+    ctx.translate(size * 0.5, size * 0.47);
+    ctx.rotate(-0.5);
+    const s = size * 0.8 / 420;
+    ctx.scale(s, s);
+    drawStationBody(null, null);
+    ctx.restore();
+    ctx = old;
+  }
+
   function renderPreview(cv, type, face = 1) {
     const c = cv.getContext('2d');
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1880,7 +1911,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
     setHover(id) { hoverId = id; },
     visualFor, spawnFrom, allyPoint, shot, fire, weaponOrigins, burst, explosion, shieldFlash, floatText, jumpPoint,
     shake, flash, hitFlash, setLeaving, stationPoint, shipPoint, shipAnchor,
-    playStationDestruction, skipCinematic, renderPreview,
+    playStationDestruction, skipCinematic, renderPreview, renderIcon,
     get layout() { return layout; },
     get W() { return W; }, get H() { return H; },
     get inCinematic() { return !!cine; },

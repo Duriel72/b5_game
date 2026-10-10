@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ikonkészítő</title>
+<style>
+  body { margin: 0; padding: 20px; background: #0b0f1e; color: #dfe6f5; font: 14px system-ui, sans-serif; }
+  .row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+  figure { margin: 0; text-align: center; }
+  canvas { display: block; border-radius: 18%; box-shadow: 0 4px 20px #000; }
+  canvas.round { border-radius: 50%; }
+  a { color: #7cc7ff; }
+</style>
+</head>
+<body>
+<h1>Babylon 5 – alkalmazásikon</h1>
+<p>Az ikon a játék saját rajzolójával készül (R.renderIcon). A képek alá kattintva letölthetők,
+  majd az <code>icons/</code> mappába kerülnek <code>icon-&lt;méret&gt;.png</code> néven. Kiadáskor növeld a verziót is.</p>
+<div class="row" id="row"></div>
+<script src="../js/i18n.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/render.js"></script>
+<script>
+  const row = document.getElementById('row');
+  for (const size of [512, 192, 180, 512]) {
+    const round = row.children.length === 3;
+    const fig = document.createElement('figure');
+    const cv = document.createElement('canvas');
+    R.renderIcon(cv, size);
+    cv.style.width = cv.style.height = Math.min(size, 256) + 'px';
+    if (round) cv.className = 'round';
+    const a = document.createElement('a');
+    a.textContent = round ? 'kerekre vágva (maskable előnézet)' : `icon-${size}.png`;
+    if (!round) { a.download = `icon-${size}.png`; a.href = cv.toDataURL('image/png'); }
+    fig.append(cv, a);
+    row.append(fig);
+  }
+</script>
+</body>
+</html>

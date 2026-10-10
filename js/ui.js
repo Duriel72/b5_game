@@ -13,8 +13,8 @@ const UI = (() => {
   let weapon = 'primary';   // a kijelölt fegyver: elsődleges vagy különleges
   let stack = [];
   let settings = Storage.settings();
-  // fekvő telefon (alacsony képernyő) – ugyanaz, mint a style.css tömör HUD-ja
-  const compactMQ = window.matchMedia('(max-height: 560px) and (orientation: landscape)');
+  // mobilos elrendezés: fekvő telefon (alacsony képernyő) VAGY érintőképernyő (pl. kinyitott Z Fold, tablet)
+  const compactMQ = window.matchMedia('(max-height: 560px) and (orientation: landscape), (pointer: coarse)');
   let toastTimer = null;
   let selDiff = 'normal';
   let lastRank = null;
@@ -373,7 +373,8 @@ const UI = (() => {
 
   // ------------------------------------------------------------ hajóinfó a csatatéren
   // (fekvő telefonon koppintásra, asztalon a hajó fölé víve az egeret)
-  // Hajóra koppintva ~3 mp-ig látszik a hajó mellett (nyomva tartva addig, amíg el nem engeded):
+  // Érintőképernyőn a hajót hosszan nyomva jelenik meg (elengedés után még ~1 mp-ig látszik), a sima
+  // koppintás csak kiválaszt; asztalon az egérrel a hajó fölé víve látszik.
   // név, típus, életerő és a fontos állapotok – a kártyák helyett, amelyek mobilon rejtve vannak.
   let infoId = null, infoHold = false, infoTimer = 0, infoX = null, infoY = null;
   function shipInfoHtml(s) {
@@ -403,11 +404,11 @@ const UI = (() => {
     placeShipInfo();
     if (!infoHold) armInfoHide();
   }
-  function armInfoHide() {
+  function armInfoHide(ms = 3000) {
     clearTimeout(infoTimer);
-    infoTimer = setTimeout(() => { $('#ship-info').classList.add('fade'); infoTimer = setTimeout(hideShipInfo, 400); }, 3000);
+    infoTimer = setTimeout(() => { $('#ship-info').classList.add('fade'); infoTimer = setTimeout(hideShipInfo, 400); }, ms);
   }
-  function releaseShipInfo() { if (infoHold) { infoHold = false; armInfoHide(); } }
+  function releaseShipInfo() { if (infoHold) { infoHold = false; armInfoHide(1200); } }
   function hideShipInfo() { infoId = null; clearTimeout(infoTimer); $('#ship-info').classList.add('hidden'); }
   function renderShipInfo() {
     if (infoId === null) return;

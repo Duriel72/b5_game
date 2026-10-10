@@ -446,3 +446,11 @@ body.hud-auto-min .act-row .btn { min-height: 30px; }
   .sub-btn .sb-stat { font-size: 11px; }
   .sub-btn .sb-k { position: absolute; left: 11px; bottom: 6px; z-index: 1; line-height: 14px; font-size: 9px; color: rgba(255, 255, 255, 0.7); }
 }
+
+/* ---------- érintőképernyő (pl. kinyitott Z Fold, tablet): mobilos elrendezés nagyobb kijelzőn is ---------- */
+@media (pointer: coarse) {
+  #hud-bottom { grid-template-columns: 1fr; }
+  #hud-bottom .card { display: none; }
+  #hud-bottom .actions { width: min(100%, 860px); justify-self: center; order: 0; grid-column: auto; }
+  #log.collapsed #log-lines { display: none; }
+}
