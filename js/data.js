@@ -244,6 +244,34 @@ const MINES = {
   deployCost: st => Math.max(0, MINES.capOf(st) - (st.mines || 0)) * MINES.unitCost(st),
 };
 
+// Történeti korszakok – a Babylon 5 sorozat íve: előbb csetepaték a határvidéken (kalózok, Narn,
+// Centauri, Drazi), aztán az Árnyékháború (gyakoribb Árnyékflotta, fogyó Narn/Centauri/Drazi, megjelenő
+// földi hajók), végül a földi polgárháború (szinte csak földi és Árny hajók, néha kalózok).
+// THEME_CURVE: hullámszám → a frakciótémák súlya; a pontok között lineárisan változik, a végén az utolsó marad.
+// A Drazi kísérők a Narn/Centauri súlyával együtt fogynak el.
+const ERAS = [
+  { from: 1, name: 'Csetepaték a határvidéken' },
+  { from: 11, name: 'Az Árnyékháború' },
+  { from: 21, name: 'A földi polgárháború' },
+];
+const THEME_CURVE = [
+  [1,  { raiders: 1,    narn: 1,    centauri: 1,    earth: 0 }],
+  [10, { raiders: 1,    narn: 1,    centauri: 1,    earth: 0 }],
+  [14, { raiders: 0.7,  narn: 0.65, centauri: 0.65, earth: 0.25 }],
+  [20, { raiders: 0.45, narn: 0.1,  centauri: 0.1,  earth: 1.2 }],
+  [21, { raiders: 0.35, narn: 0,    centauri: 0,    earth: 2 }],
+];
+// Árnyékflotta (nem 5-tel osztható hullámban) esélye korszakonként
+const SHADOW_FLEET_CHANCE = n => (n < 10 ? 0 : n <= 20 ? 0.35 : 0.25);
+function themeWeights(n) {
+  let a = THEME_CURVE[0], b = THEME_CURVE[THEME_CURVE.length - 1];
+  if (n >= b[0]) return { ...b[1] };
+  for (let i = 0; i < THEME_CURVE.length - 1; i++) if (n >= THEME_CURVE[i][0] && n <= THEME_CURVE[i + 1][0]) { a = THEME_CURVE[i]; b = THEME_CURVE[i + 1]; break; }
+  const f = b[0] === a[0] ? 0 : (n - a[0]) / (b[0] - a[0]);
+  return Object.fromEntries(Object.keys(a[1]).map(k => [k, a[1][k] + (b[1][k] - a[1][k]) * f]));
+}
+const eraOf = n => ERAS.filter(e => n >= e.from).pop();
+
 const PLAYER_BUYABLE = ['starfury', 'narn', 'vorchan', 'centauri', 'earth', 'hyperion', 'nova', 'whitestar'];
 const ALLY_TYPES = ['narn', 'centauri', 'vorchan', 'earth', 'hyperion', 'starfury', 'whitestar', 'drazi'];
 const MAX_FLEET = 6;            // alap flottaméret; az Irányító központ szintenként +1

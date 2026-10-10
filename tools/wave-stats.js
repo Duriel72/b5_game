@@ -15,7 +15,7 @@
   G.S = JSON.parse(JSON.stringify(base));
   const ws = { type: 'whitestar', side: 'player', hull: 120, maxHull: 120, sys: { weapons: 45, sensors: 45, engines: 45, reactor: 45 }, maxSys: { weapons: 45, sensors: 45, engines: 45, reactor: 45 }, firepower: 25, level: 1 };
   const out = {};
-  for (const n of [1, 3, 6, 9, 12, 16, 21]) {
+  for (const n of [1, 4, 9, 12, 14, 17, 19, 22, 26]) {
     const acc = {};
     for (let i = 0; i < 600; i++) {
       G.S = JSON.parse(JSON.stringify(base)); G.S.player = [ws]; G.S.lastShadowWave = n - 1;
@@ -25,7 +25,7 @@
       a.k++; a.cnt += list.length;
       for (const s of list) { a.hull += s.maxHull; a.fp += s.firepower; a.hit += Game.hitChance(s, ws); }
     }
-    out[n] = Object.fromEntries(Object.entries(acc).map(([th, a]) => [th, `${(a.cnt / a.k).toFixed(1)} hajó, HP ${Math.round(a.hull / a.k)}, tűzerő ${Math.round(a.fp / a.k)}, találat ${Math.round(a.hit / a.cnt * 100)}%`]));
+    out[n] = Object.fromEntries(Object.entries(acc).map(([th, a]) => [th, `${Math.round(a.k / 6)}% · ${(a.cnt / a.k).toFixed(1)} hajó, HP ${Math.round(a.hull / a.k)}, tűzerő ${Math.round(a.fp / a.k)}, találat ${Math.round(a.hit / a.cnt * 100)}%`]));
   }
   window.__waveStats = out;
   console.table(out);

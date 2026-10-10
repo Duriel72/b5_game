@@ -698,7 +698,7 @@ const Game = (() => {
     let boss = n % 5 === 0 || !!S.shadowPending;
     if (boss && minbariDue) { S.shadowPending = true; boss = false; }
     else if (boss) S.shadowPending = false;
-    const fleet = !boss && !minbariDue && n >= 10 && S.lastShadowWave !== n - 1 && (n + 1) % 5 !== 0 && Math.random() < 0.3;
+    const fleet = !boss && !minbariDue && S.lastShadowWave !== n - 1 && (n + 1) % 5 !== 0 && Math.random() < SHADOW_FLEET_CHANCE(n);
     const shadowWave = boss || fleet;
     S.shadowFleet = fleet;
     if (shadowWave) {
@@ -724,13 +724,23 @@ const Game = (() => {
         return !T.boss && !T.shadowOnly && !T.civilian && T.minWave && T.minWave <= n && k !== 'minbari';
       };
       const minbariHere = list.some(s => s.type === 'minbari');
-      const themes = Object.keys(THEMES).filter(th =>
+      // a téma a történeti korszak szerinti súllyal kerül kiválasztásra (ld. THEME_CURVE)
+      // a polgárháború felé szinte csak (teljes keretet kihasználó) földi hullám jön, a korábban a hajószám-korlátba
+      // ütköző Narn/kalóz hullámok helyett – a nehézség ne ugorjon meg: a keret a 14. hullámtól fokozatosan 12%-kal csökken
+      budget *= 1 - 0.12 * clamp((n - 14) / 6, 0, 1);
+      const tw = themeWeights(n);
+      const drazi = Math.max(tw.narn, tw.centauri);          // a Drazi kísérők a Narn/Centauri korral fogynak el
+      const usableHere = k => usable(k) && !(SHIP_TYPES[k].faction === 'Drazi Szabadság' && drazi <= 0);
+      const themes = Object.keys(THEMES).filter(th => tw[th] > 0 &&
         !(th === 'earth' && minbariHere) &&
-        Object.keys(SHIP_TYPES).some(k => usable(k) && THEMES[th].includes(SHIP_TYPES[k].faction)));
-      S.waveTheme = pickRandom(themes.length ? themes : ['raiders']);
-      const pool = Object.keys(SHIP_TYPES).filter(k => usable(k) && THEMES[S.waveTheme].includes(SHIP_TYPES[k].faction));
+        Object.keys(SHIP_TYPES).some(k => usableHere(k) && THEMES[th].includes(SHIP_TYPES[k].faction)));
+      if (!themes.length) themes.push('raiders');
+      let tr = Math.random() * themes.reduce((a, th) => a + (tw[th] || 1), 0);
+      S.waveTheme = themes[themes.length - 1];
+      for (const th of themes) { tr -= tw[th] || 1; if (tr <= 0) { S.waveTheme = th; break; } }
+      const pool = Object.keys(SHIP_TYPES).filter(k => usableHere(k) && THEMES[S.waveTheme].includes(SHIP_TYPES[k].faction));
       let guard = 0;
-      const maxShips = S.waveTheme === 'raiders' ? 12 : 10;
+      const maxShips = S.waveTheme === 'raiders' ? 12 : 9;
       let spent = 0;
       while (budget > 0.5 && list.length < maxShips && guard++ < 60) {
         // nehéz hajóból (pl. csatahordozó) legfeljebb 2 egy hullámban – változatosabb flották
@@ -738,7 +748,7 @@ const Game = (() => {
         if (!fits.length) break;
         // nagyobb hajók esélyesebbek, ahogy nő a hullámszám
         // a téma fő faja kétszeres súllyal: a Drazi és kalóz hajók csak kísérők
-        const weights = fits.map(k => (1 + SHIP_TYPES[k].threat * Math.min(1, n / 10)) * (SHIP_TYPES[k].faction === THEMES[S.waveTheme][0] ? 2 : 1));
+        const weights = fits.map(k => (1 + SHIP_TYPES[k].threat * Math.min(1, n / 10)) * (SHIP_TYPES[k].faction === THEMES[S.waveTheme][0] ? 2 : 1) * (SHIP_TYPES[k].faction === 'Drazi Szabadság' ? Math.min(1, drazi) : 1));
         let r = Math.random() * weights.reduce((a, b) => a + b, 0);
         let k = fits[0];
         for (let i = 0; i < fits.length; i++) { r -= weights[i]; if (r <= 0) { k = fits[i]; break; } }
@@ -851,7 +861,11 @@ const Game = (() => {
       S.enemies = [];
       hooks.update();
       const shadowNow = list.some(s => s.type === 'shadow' || s.type === 'shadowscout');
-      hooks.waveStart(S.wave, shadowNow, S.shadowFleet ? { main: t('banner.wave', { n: S.wave }), sub: t('banner.shadowFleet'), boss: true } : null);
+      const era = eraOf(S.wave), newEra = era.from === S.wave || (S.era && S.era !== era.from);
+      S.era = era.from;
+      hooks.waveStart(S.wave, shadowNow, S.shadowFleet ? { main: t('banner.wave', { n: S.wave }), sub: t('banner.shadowFleet'), boss: true }
+        : newEra ? { main: t('banner.wave', { n: S.wave }), sub: D(era.name).toUpperCase(), boss: shadowNow } : null);
+      if (newEra) hooks.log(t('g.era', { e: D(era.name) }), 'warn');
       await wait(1300);
       const L = R.layout;
       const jx = R.W * 0.8, jy = L ? L.cy : R.H / 2;

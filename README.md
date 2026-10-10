@@ -45,6 +45,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   Amíg nem veszed át őket, minden kör végén önállóan lőnek az ellenségre.
 - **Frakcióhullámok:** a földi hajók csak egymással jönnek; Narn és Centauri soha nem kerül egy ellenséges flottába
   (melléjük Drazi és kalóz társulhat); vannak tiszta kalózhullámok is. Nehéz típusból legfeljebb 2 jön egy hullámban.
+- **Korszakok (a B5 története):** 1–10. hullám *csetepaték a határvidéken* (kalózok, Narn, Centauri, Drazi; földi
+  ellenség nincs), 11–20. *az Árnyékháború* (Árnyékflotta 35% eséllyel, a Narn/Centauri/Drazi fokozatosan eltűnik,
+  a 14. körül megjelennek a földi hajók), 21.-től *a földi polgárháború* (földi és Árny hajók, néha kalózok).
+  A súlyok a `js/data.js` `THEME_CURVE` táblájában állíthatók.
 - **Fajok:** célzási bónusz: Árny +15%, Minbari +12%, Fehércsillag +10%, Centauri +6%, Föld +4%, Narn ±0, Drazi −5%,
   kalóz −12%. A Földi hajók páncélosak, a Narnok strapabíróak és erősen ütnek, a kalózok gyengék, de rajokban (max. 12)
   jönnek. A hajók „fenyegetettsége” (a hullám-költségvetés egysége) az életerőből, tűzerőből, célzásból és kitérésből

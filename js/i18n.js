@@ -60,7 +60,7 @@ const STRINGS = {
     'over.destroyed': 'elpusztított hajó', 'over.captured': 'elfoglalt hajó', 'over.waves': 'visszavert hullám', 'over.acc': 'találati arány',
     'over.dmg': 'okozott sebzés', 'over.lost': 'elvesztett hajó',
     'banner.wave': '{n}. HULLÁM', 'banner.shadow': 'ÁRNY CIRKÁLÓ ÉRKEZIK', 'banner.jump': 'UGRÓPONT NYÍLIK',
-    'banner.shadowFleet': 'ÁRNYÉKFLOTTA ÉRKEZIK', 'g.shadowFleet': 'FIGYELEM: Árnyékflotta! Ebben a hullámban csak Árny hajók (cirkálók és felderítők) támadnak.', 'banner.merchant': 'KERESKEDŐ KONVOJ', 'banner.merchantSub': 'BÉKÉS LÁTOGATÓK – NINCS HARC', 'g.merchantArr': '{n} kereskedő hajó érkezett a kék ugróponton. Kereskednek és javítanak, harc nélkül.', 'g.merchantTrade': 'Kereskedés: +{c} kredit. A hajók 50%-ot, az állomás {h} szerkezeti pontot javult, a pajzs feltöltve.', 'g.merchantLeft': 'A kereskedők továbbálltak.', 'f.repair': '+{n} JAVÍTÁS', 'shop.merchant': 'Kereskedő konvoj', 'shop.merchantSum': 'A kereskedők +{c} kreditet hoztak, a hajóidat 50%-ban, az állomást +{h} ponttal javították. ', 'g.plusCredits': '+{c} kredit.', 'banner.last': 'UTOLSÓ ESÉLY', 'banner.lastSub': 'ERŐSÍTÉS: {t}',
+    'banner.shadowFleet': 'ÁRNYÉKFLOTTA ÉRKEZIK', 'g.era': 'Új korszak kezdődik: {e}.', 'g.shadowFleet': 'FIGYELEM: Árnyékflotta! Ebben a hullámban csak Árny hajók (cirkálók és felderítők) támadnak.', 'banner.merchant': 'KERESKEDŐ KONVOJ', 'banner.merchantSub': 'BÉKÉS LÁTOGATÓK – NINCS HARC', 'g.merchantArr': '{n} kereskedő hajó érkezett a kék ugróponton. Kereskednek és javítanak, harc nélkül.', 'g.merchantTrade': 'Kereskedés: +{c} kredit. A hajók 50%-ot, az állomás {h} szerkezeti pontot javult, a pajzs feltöltve.', 'g.merchantLeft': 'A kereskedők továbbálltak.', 'f.repair': '+{n} JAVÍTÁS', 'shop.merchant': 'Kereskedő konvoj', 'shop.merchantSum': 'A kereskedők +{c} kreditet hoztak, a hajóidat 50%-ban, az állomást +{h} ponttal javították. ', 'g.plusCredits': '+{c} kredit.', 'banner.last': 'UTOLSÓ ESÉLY', 'banner.lastSub': 'ERŐSÍTÉS: {t}',
     // játékesemények
     'g.station': 'Babylon 5', 'f.miss': 'MELLÉ', 'f.crit': 'KRIT! ', 'g.miss': '{a} lövése célt tévesztett.',
     'g.hitStation': '{a} eltalálta az állomást: {d} sebzés{s}.', 'g.shieldPart': ' (pajzs: {n})',
@@ -132,7 +132,7 @@ const STRINGS = {
     'over.destroyed': 'ships destroyed', 'over.captured': 'ships captured', 'over.waves': 'waves repelled', 'over.acc': 'hit rate',
     'over.dmg': 'damage dealt', 'over.lost': 'ships lost',
     'banner.wave': 'WAVE {n}', 'banner.shadow': 'SHADOW CRUISER INBOUND', 'banner.jump': 'JUMP POINT OPENING',
-    'banner.shadowFleet': 'SHADOW FLEET INBOUND', 'g.shadowFleet': 'WARNING: Shadow fleet! Only Shadow ships (cruisers and scouts) attack in this wave.', 'banner.merchant': 'MERCHANT CONVOY', 'banner.merchantSub': 'PEACEFUL VISITORS – NO COMBAT', 'g.merchantArr': '{n} merchant ships arrived through the blue jump point. They trade and repair – no combat.', 'g.merchantTrade': 'Trade: +{c} credits. Ships repaired by 50%, station by {h} structure points, shields recharged.', 'g.merchantLeft': 'The merchants have moved on.', 'f.repair': '+{n} REPAIRED', 'shop.merchant': 'Merchant convoy', 'shop.merchantSum': 'The merchants brought +{c} credits, repaired your ships by 50% and the station by +{h} points. ', 'g.plusCredits': '+{c} credits.', 'banner.last': 'LAST CHANCE', 'banner.lastSub': 'REINFORCEMENTS: {t}',
+    'banner.shadowFleet': 'SHADOW FLEET INBOUND', 'g.era': 'A new era begins: {e}.', 'g.shadowFleet': 'WARNING: Shadow fleet! Only Shadow ships (cruisers and scouts) attack in this wave.', 'banner.merchant': 'MERCHANT CONVOY', 'banner.merchantSub': 'PEACEFUL VISITORS – NO COMBAT', 'g.merchantArr': '{n} merchant ships arrived through the blue jump point. They trade and repair – no combat.', 'g.merchantTrade': 'Trade: +{c} credits. Ships repaired by 50%, station by {h} structure points, shields recharged.', 'g.merchantLeft': 'The merchants have moved on.', 'f.repair': '+{n} REPAIRED', 'shop.merchant': 'Merchant convoy', 'shop.merchantSum': 'The merchants brought +{c} credits, repaired your ships by 50% and the station by +{h} points. ', 'g.plusCredits': '+{c} credits.', 'banner.last': 'LAST CHANCE', 'banner.lastSub': 'REINFORCEMENTS: {t}',
     'g.station': 'Babylon 5', 'f.miss': 'MISS', 'f.crit': 'CRIT! ', 'g.miss': "{a}'s shot missed.",
     'g.hitStation': '{a} hit the station: {d} damage{s}.', 'g.shieldPart': ' (shields: {n})',
     'g.hit': '{a} → {t}{w}: {d} damage{c}{x}.', 'g.crit': ' – CRITICAL!', 'g.extra': ', {s} also damaged',
@@ -212,6 +212,7 @@ const DATA_EN = {
   'Állomás javítása': 'Station repair', '+30% szerkezeti integritás': '+30% structural integrity',
   'Páncélzat': 'Armour plating', '+250 max. szerkezet (és javítás)': '+250 max structure (and repair)',
   'Pajzsgenerátor': 'Shield generator', '+50 max. pajzs, gyorsabb töltődés': '+50 max shields, faster recharge',
+  'Csetepaték a határvidéken': 'Border skirmishes', 'Az Árnyékháború': 'The Shadow War', 'A földi polgárháború': 'The Earth Civil War',
   'Aknatelepítő': 'Minelayer', 'Aknamező az ugrókapu körül; szintenként +1 akna': 'Minefield around the jump gate; +1 mine per level',
   'Aknatöltet': 'Mine charge', 'Erősebb aknák: +15 sebzés szintenként': 'Stronger mines: +15 damage per level',
   'Aknák telepítése': 'Deploy mines', 'Feltölti az aknamezőt; a felrobbant aknákat újra meg kell venni': 'Refills the minefield; detonated mines must be bought again',
@@ -325,6 +326,7 @@ function helpHtml(ctx) {
             <li>The more damaged a ship is, the less effective repairs are (about 45% for a nearly wrecked ship) – this also applies to self-repair.</li>
             <li>The station's defence grid does not fire at ships with destroyed weapons.</li>
             <li><b>Minefield</b> (shop → station): the <b>minelayer</b> sets how many mines fit around the jump gate (2–6), the <b>mine charge</b> how hard they hit (30–105). Mines must be <b>deployed</b> for credits; each enemy ship jumping in sets off one mine (in order of arrival) until they run out. Unused mines stay for the next wave.</li>
+            <li>The waves follow the <b>story of Babylon 5</b>: first <b>border skirmishes</b> (waves 1–10: raiders, Narn, Centauri, Drazi), then <b>the Shadow War</b> (11–20: Shadow fleets come more often, the Narn, Centauri and Drazi gradually disappear and Earth ships show up), finally <b>the Earth Civil War</b> (21+: almost only Earth and Shadow ships, sometimes raiders).</li>
             <li>Races differ: <b>Shadows</b>, <b>Minbari</b> and the <b>White Star</b> aim best, then Centauri and Earth; Narn ships are tough, raiders are weak and inaccurate but come in large swarms. The catalogue shows each ship's accuracy bonus.</li>
           </ul>
           <h3>Abilities</h3>
@@ -397,6 +399,7 @@ function helpHtml(ctx) {
             <li>Minél sérültebb egy hajó, annál kevésbé hatékony a javítás (szinte szétlőtt hajónál kb. 45%) – ez az önjavításra is igaz.</li>
             <li>Az állomás védelmi rácsa nem lő fegyvertelen hajóra.</li>
             <li><b>Aknamező</b> (bolt → állomás): az <b>Aknatelepítő</b> szintje adja, hány akna fér az ugrókapu köré (2–6), az <b>Aknatöltet</b> pedig az erejüket (30–105 sebzés). Az aknákat kreditért <b>telepíteni</b> kell; minden beugró ellenséges hajó felrobbant egyet (érkezési sorrendben), amíg el nem fogynak. A fel nem robbant aknák a következő hullámra is megmaradnak.</li>
+            <li>A hullámok a <b>Babylon 5 történetét</b> követik: előbb <b>csetepaték a határvidéken</b> (1–10. hullám: kalózok, Narn, Centauri, Drazi), aztán <b>az Árnyékháború</b> (11–20.: gyakoribb Árnyékflotta, fokozatosan eltűnnek a Narn, Centauri és Drazi hajók, megjelennek a földiek), végül <b>a földi polgárháború</b> (21.-től: szinte csak földi és Árny hajók, néha kalózok).</li>
             <li>A fajok különböznek: az <b>Árnyak</b>, a <b>Minbarik</b> és a <b>Fehércsillag</b> céloznak a legjobban, utánuk a Centauri és a Föld; a Narn hajók strapabíróak, a kalózok gyengék és pontatlanok, viszont nagy rajokban jönnek. A katalógusban látszik a hajók célzási bónusza.</li>
           </ul>
           <h3>Képességek</h3>
