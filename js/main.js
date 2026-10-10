@@ -11,8 +11,18 @@
   UI.showMenu();
 
   // Offline működés / telepíthetőség (csak http(s) alatt; fájlból megnyitva nincs rá szükség)
+  // A telepített alkalmazás ritkán töltődik újra, ezért előtérbe kerüléskor és félóránként
+  // rákérdezünk az új verzióra; ha új service worker veszi át az irányítást, frissítünk.
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) UI.updateReady(); });
+    window.addEventListener('load', async () => {
+      let reg;
+      try { reg = await navigator.serviceWorker.register('sw.js'); } catch (e) { return; }
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+      setInterval(check, 30 * 60 * 1000);
+    });
   }
 
   // Háttérbe kerüléskor (másik app, lezárt képernyő) a hang szünetel, visszatéréskor folytatódik
@@ -34,6 +44,7 @@
     // egy rajzolási hiba se állíthassa le a játékot
     requestAnimationFrame(loop);
     try { R.frame(dt, Game.state); } catch (e) { console.error(e); }
+    UI.placeShipInfo();
     skipBtn.classList.toggle('hidden', !R.inCinematic);
     document.body.classList.toggle('cine', R.inCinematic);
   }
@@ -48,8 +59,17 @@
   cv.addEventListener('click', e => {
     if (UI.stackSize) return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
-    if (s) { UI.disarm(); Game.select(s); UI.expandHud(); }
+    if (s) { UI.disarm(); Game.select(s); UI.expandHud(); } else UI.hideShipInfo();
   });
+  // hajóinfó: koppintásra megjelenik, nyomva tartva kint marad
+  cv.addEventListener('pointerdown', e => {
+    if (UI.stackSize) return;
+    const s = R.pick(e.clientX, e.clientY, Game.state);
+    if (s) UI.showShipInfo(s, true);
+  });
+  window.addEventListener('pointerup', () => UI.releaseShipInfo());
+  window.addEventListener('pointercancel', () => UI.releaseShipInfo());
+  cv.addEventListener('contextmenu', e => e.preventDefault());
   cv.addEventListener('dblclick', e => {
     // dupla kattintás ellenséges hajóra: testre lövés
     if (UI.stackSize) return;

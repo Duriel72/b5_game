@@ -1355,6 +1355,14 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
     return { x: st.x + (lx * c - ly * s) * st.s, y: st.y + (lx * s + ly * c) * st.s };
   }
 
+  // a hajó látható középpontja és a kijelölő gyűrű sugara (véletlen szórás nélkül)
+  function shipAnchor(ship) {
+    const v = visuals.get(ship.id);
+    if (!v) return null;
+    const s = shipScale(ship, layout.unit);
+    return { x: v.x, y: v.y + Math.sin(time * 0.8 + v.seed) * 4 * layout.unit, r: 52 * s };
+  }
+
   function shipPoint(ship, front = false) {
     const v = visuals.get(ship.id);
     if (!v) return { x: W / 2, y: H / 2 };
@@ -1871,7 +1879,7 @@ ctx.fillStyle = 'rgba(52,26,24,0.9)';
     setShake(on) { shakeOn = on; },
     setHover(id) { hoverId = id; },
     visualFor, spawnFrom, allyPoint, shot, fire, weaponOrigins, burst, explosion, shieldFlash, floatText, jumpPoint,
-    shake, flash, hitFlash, setLeaving, stationPoint, shipPoint,
+    shake, flash, hitFlash, setLeaving, stationPoint, shipPoint, shipAnchor,
     playStationDestruction, skipCinematic, renderPreview,
     get layout() { return layout; },
     get W() { return W; }, get H() { return H; },

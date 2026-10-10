@@ -7,6 +7,9 @@ Körökre osztott űrcsatás védekezős játék. Az eredeti egyetemi projekt (C
 
 - **Online / mobilon:** https://duriel72.github.io/b5_game/ ; telefonon a böngésző menüjéből „Hozzáadás a kezdőképernyőhöz”
   → teljes képernyős, offline is futó alkalmazás. Fekvő tájolásban a legkényelmesebb.
+  A telepített alkalmazás magától frissül: előtérbe kerüléskor és félóránként ellenőrzi az új verziót; a menüben
+  azonnal újratölt, játék közben „Frissítés” gombot kínál (az állást elmenti). A verziószám a főmenü jobb alsó sarkában látszik.
+  Fekvő telefonon a hajóra koppintva rövid infódoboz mutatja a hajó adatait (nyomva tartva kint marad).
 - **Asztali gépen:** dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra). dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra).
 - **Szerverrel (opcionális):** `node serve.js`, majd http://localhost:5500
 
@@ -106,5 +109,6 @@ Nem kereskedelmi rajongói projekt. A Babylon 5 a Warner Bros. védjegye.
 3. A tárolóban: **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`** → Save.
 4. Pár perc múlva elérhető: `https://duriel72.github.io/b5_game/`
 
-Frissítéskor a `sw.js`-ben érdemes növelni a `VERSION` értékét, hogy a telepített változat is frissüljön.
+Kiadáskor a `js/version.js` `APP_VERSION` értékét és vele együtt a `sw.js` `VERSION`-ját (`b5dts-v<szám>`) is növelni kell,
+különben a telepített változat nem frissül.
 Az alkalmazásikonok újragenerálása: `node tools/make-icons.js`.

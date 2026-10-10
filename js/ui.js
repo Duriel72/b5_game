@@ -13,6 +13,8 @@ const UI = (() => {
   let weapon = 'primary';   // a kijelölt fegyver: elsődleges vagy különleges
   let stack = [];
   let settings = Storage.settings();
+  // fekvő telefon (alacsony képernyő) – ugyanaz, mint a style.css tömör HUD-ja
+  const compactMQ = window.matchMedia('(max-height: 560px) and (orientation: landscape)');
   let toastTimer = null;
   let selDiff = 'normal';
   let lastRank = null;
@@ -82,6 +84,8 @@ const UI = (() => {
   }
 
   function showMenu() {
+    if (updatePending) { location.reload(); return; }
+    hideShipInfo();
     stack.forEach(id => $('#' + id).classList.remove('open'));
     stack = [];
     Game.end();
@@ -367,13 +371,86 @@ const UI = (() => {
     return `<div class="sb-bar"><i style="width:${r * 100}%;background:${col}"></i><span>${Math.max(0, Math.round(cur))}/${max}</span></div>`;
   }
 
+  // ------------------------------------------------------------ hajóinfó a csatatéren (fekvő telefonon)
+  // Hajóra koppintva ~3 mp-ig látszik a hajó mellett (nyomva tartva addig, amíg el nem engeded):
+  // név, típus, életerő és a fontos állapotok – a kártyák helyett, amelyek mobilon rejtve vannak.
+  let infoId = null, infoHold = false, infoTimer = 0, infoX = null, infoY = null;
+  function shipInfoHtml(s) {
+    const T = SHIP_TYPES[s.type], W = WEAPON_DEFS[s.type] || {}, ab = ABILITIES[T.ability];
+    const sub = s.side === 'player' ? `${D(T.name)} · ${D(T.cls)} · ${'★'.repeat(s.level || 1)}` : `${D(T.name)} · ${D(T.faction)}`;
+    const b = [];
+    if (Game.isDisabled(s)) b.push(['red', t('badge.disabled')]);
+    if (s.side === 'ally') b.push(['green', t('badge.ally')]);
+    else if (s.side === 'enemy' && Game.capturable(s)) b.push(['', `${t('badge.capt')} ${Math.round(Game.captureChance(s) * 100)}%`]);
+    if (s.evade) b.push(['', t('r.evade')]);
+    if (ab) b.push(['', `${D(ab.name)}: ${s.cd ? t('card.turns', { n: s.cd }) : t('card.ready')}`]);
+    if (W.special) b.push(['', `${D(W.special.name)}: ${s.wcd > 0 ? t('card.turns', { n: s.wcd }) : t('card.ready')}`]);
+    if (Game.hasRegen(s)) b.push(['green', t('badge.regen')]);
+    else if (T.cls !== 'vadász' && !T.civilian) b.push([s.rcd > 0 ? '' : 'green', s.rcd > 0 ? t('info.repairIn', { n: s.rcd }) : t('info.repairReady')]);
+    if (s.side !== 'player') b.push(['red', `${t('card.fp')} ${Math.round(Game.expectedDamage(s))}`]);
+    return `<div class="si-name">${esc(NM(s.name))}</div><div class="si-sub">${esc(sub)}</div>${shipBars(s)}
+      <div class="si-badges">${b.map(([c, x]) => `<span class="badge ${c}">${esc(x)}</span>`).join('')}</div>`;
+  }
+  function showShipInfo(s, hold) {
+    if (!s || !compactMQ.matches || R.mode !== 'battle') return;
+    const el = $('#ship-info');
+    if (infoId !== s.id) { infoX = infoY = null; }
+    infoId = s.id; infoHold = !!hold;
+    clearTimeout(infoTimer);
+    el.classList.remove('hidden', 'fade');
+    renderShipInfo();
+    placeShipInfo();
+    if (!infoHold) armInfoHide();
+  }
+  function armInfoHide() {
+    clearTimeout(infoTimer);
+    infoTimer = setTimeout(() => { $('#ship-info').classList.add('fade'); infoTimer = setTimeout(hideShipInfo, 400); }, 3000);
+  }
+  function releaseShipInfo() { if (infoHold) { infoHold = false; armInfoHide(); } }
+  function hideShipInfo() { infoId = null; clearTimeout(infoTimer); $('#ship-info').classList.add('hidden'); }
+  function renderShipInfo() {
+    if (infoId === null) return;
+    const s = Game.state && Game.byId(infoId);
+    if (!s || s.hull <= 0 || !compactMQ.matches || R.mode !== 'battle') { hideShipInfo(); return; }
+    const el = $('#ship-info');
+    el.className = 'side-' + s.side + (el.classList.contains('fade') ? ' fade' : '');
+    el.innerHTML = shipInfoHtml(s);
+  }
+  // minden képkockában: a doboz a hajó mellé, a csatatér közepe felé kerül, a HUD-ok közé szorítva
+  function placeShipInfo() {
+    if (infoId === null) return;
+    const s = Game.state && Game.byId(infoId);
+    const p = s && R.shipAnchor(s);
+    if (!p) return;
+    const el = $('#ship-info');
+    const w = el.offsetWidth, h = el.offsetHeight;
+    const top = $('#hud-top').offsetHeight + 6, bottom = $('#hud-bottom').getBoundingClientRect().top - 6;
+    let x = s.side === 'player' ? p.x + p.r + 10 : p.x - p.r - 10 - w;
+    // ha arra nem fér el, a másik oldalra kerül
+    if (x < 6 || x + w > innerWidth - 6) x = s.side === 'player' ? p.x - p.r - 10 - w : p.x + p.r + 10;
+    x = clamp(x, 6, innerWidth - w - 6);
+    const y = clamp(p.y - h / 2, top, Math.max(top, bottom - h));
+    infoX = infoX === null ? x : infoX + (x - infoX) * 0.3;
+    infoY = infoY === null ? y : infoY + (y - infoY) * 0.3;
+    el.style.transform = `translate(${Math.round(infoX)}px, ${Math.round(infoY)}px)`;
+  }
+
+  // ------------------------------------------------------------ új verzió
+  // Az új service worker átvette az irányítást: a menüben azonnal újratöltünk,
+  // játék közben felajánljuk (a gomb előbb elmenti az állást).
+  let updatePending = false;
+  function updateReady() {
+    updatePending = true;
+    if (R.mode === 'menu' && !stack.length) { location.reload(); return; }
+    $('#upd-bar').classList.remove('hidden');
+  }
+
   // irányítópult összecsukása (több hely a csatatérnek); hajóra koppintva magától kinyílik
   function setHudMin(on) {
     document.body.classList.toggle('hud-min', on);
     measure();
   }
   function toggleHud() { setHudMin(!document.body.classList.contains('hud-min')); SFX.play('click'); }
-  const compactMQ = window.matchMedia('(max-height: 560px) and (orientation: landscape)');
   function enemyTurn(on) {
     const want = on && compactMQ.matches;
     if (document.body.classList.contains('hud-auto-min') === want) return;
@@ -564,6 +641,7 @@ const UI = (() => {
     else if (tg && tg.side === 'ally') sub = t('act.ally');
     else if (a && tg) sub = `${NM(a.name)} → ${NM(tg.name)}`;
     $('#act-sub').textContent = sub;
+    renderShipInfo();
     if (S.phase !== 'battle') enemyTurn(false);
     requestAnimationFrame(measure);
   }
@@ -735,6 +813,8 @@ const UI = (() => {
     $('#btn-pause').onclick = openPause;
     $('#log-toggle').onclick = toggleLog;
     $('#hud-toggle').onclick = toggleHud;
+    $('#upd-btn').onclick = () => { try { Game.autosave(); } catch (e) { /* nincs futó játék */ } location.reload(); };
+    $('#app-ver').textContent = 'v' + APP_VERSION;
     $('#btn-start').onclick = startNew;
     $('#in-name').addEventListener('keydown', e => { if (e.key === 'Enter') startNew(); });
     $('#btn-clear-scores').onclick = () => confirm(t('scores.clear'), t('scores.clearText'), () => { Storage.clearScores(); close('scr-scores'); openScores(); });
@@ -760,7 +840,8 @@ const UI = (() => {
   };
 
   return {
-    bind, showMenu, update, toggleLog, toggleHud, expandHud, open, close, back, top, openPause, toggleArm, attack, applySettings, toast, measure, setLang,
+    bind, showMenu, update, toggleLog, toggleHud, expandHud, updateReady,
+    showShipInfo, releaseShipInfo, hideShipInfo, placeShipInfo, open, close, back, top, openPause, toggleArm, attack, applySettings, toast, measure, setLang,
     get stackSize() { return stack.length; },
     get settings() { return settings; },
     disarm() { armed = false; weapon = 'primary'; },

@@ -1,15 +1,16 @@
 // Service worker: a játék offline is fut, és a kezdőképernyőre telepíthető.
-// Frissítéskor a VERSION-t érdemes növelni; a fájlokat a háttérben is frissíti
-// (stale-while-revalidate), így a következő indításkor már az új verzió fut.
-const VERSION = 'b5dts-v5';
+// Kiadáskor a VERSION-t növelni kell (a js/version.js APP_VERSION-jával együtt): az oldal
+// rendszeresen rákérdez az új service workerre, ami friss fájlokkal tölti fel a saját
+// gyorsítótárát, átveszi az irányítást, és az oldal ekkor újratölt (vagy felajánlja).
+const VERSION = 'b5dts-v6';
 const ASSETS = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
-  'js/i18n.js', 'js/data.js', 'js/audio.js', 'js/render.js', 'js/game.js', 'js/ui.js', 'js/main.js',
+  'js/version.js', 'js/i18n.js', 'js/data.js', 'js/audio.js', 'js/render.js', 'js/game.js', 'js/ui.js', 'js/main.js',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png',
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(ASSETS.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {

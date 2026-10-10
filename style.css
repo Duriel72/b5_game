@@ -413,3 +413,26 @@ body.hud-auto-min .act-sub { white-space: nowrap; overflow: hidden; text-overflo
 body.hud-auto-min .act-row { display: block; margin: 0; }
 body.hud-auto-min .act-row .btn { min-height: 30px; }
 .weap-row { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ---------- hajóinfó a csatatéren (fekvő telefon) ---------- */
+#ship-info { position: fixed; left: 0; top: 0; z-index: 4; width: 196px; pointer-events: none; background: rgba(5, 8, 20, 0.9); border: 1px solid var(--line-strong);
+  border-radius: 8px; padding: 6px 8px; font-size: 11px; opacity: 1; transition: opacity 0.35s; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5); }
+#ship-info.hidden { display: none; }
+#ship-info.fade { opacity: 0; }
+#ship-info.side-player { border-color: rgba(92, 207, 255, 0.55); }
+#ship-info.side-enemy { border-color: rgba(248, 113, 113, 0.55); }
+#ship-info.side-ally { border-color: rgba(74, 222, 128, 0.55); }
+#ship-info .si-name { font-family: var(--hud); font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#ship-info .si-sub { color: var(--muted); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#ship-info .bars { grid-template-columns: 58px 1fr 40px; gap: 2px 5px; margin-top: 4px; font-size: 10px; }
+#ship-info .si-badges { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+#ship-info .badge { font-size: 8.5px; padding: 1px 4px; letter-spacing: 0.05em; }
+
+/* ---------- új verzió / verziószám ---------- */
+#upd-bar { position: fixed; left: 50%; top: 52px; transform: translateX(-50%); z-index: 35; display: flex; gap: 10px; align-items: center; background: var(--panel-solid);
+  border: 1px solid var(--cyan); border-radius: 10px; padding: 6px 8px 6px 14px; font-size: 13px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+#upd-bar.hidden { display: none; }
+.app-ver { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); font-family: var(--hud); font-size: 10px; letter-spacing: 0.15em; color: var(--muted); opacity: 0.7; }
+#ship-info .bars { gap: 0 5px; line-height: 12px; }
+#ship-info .bar { height: 5px; }
+#ship-info .si-badges .badge { line-height: 11px; }

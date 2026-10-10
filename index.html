@@ -46,6 +46,8 @@
     <div id="log-lines"></div>
   </div>
   <div id="hint" class="hidden"></div>
+  <div id="ship-info" class="hidden"></div>
+  <div id="upd-bar" class="hidden"><span data-i18n="upd.ready">Új verzió érhető el</span><button class="btn small primary" id="upd-btn" data-i18n="upd.btn">Frissítés ⟳</button></div>
 
   <!-- ===== Alsó harci panel ===== -->
   <footer id="hud-bottom" class="hud hidden">
@@ -78,6 +80,7 @@
         <div class="logo-sub" data-i18n="logo.sub">„Az utolsó, legjobb reményünk a békére.”</div>
       </div>
       <nav class="menu-btns" id="menu-btns"></nav>
+      <div class="app-ver" id="app-ver"></div>
       <div class="menu-foot">
         <span data-i18n="foot.1">Eredeti egyetemi projekt: Tóth Gábor András (C#, x86) · Modern kiadás: HTML5 Canvas, offline is fut</span><br>
         <span class="muted" data-i18n="foot.2">Nem kereskedelmi rajongói projekt. A Babylon 5 a Warner Bros. védjegye.</span>
@@ -167,6 +170,7 @@
     </div>
   </div>
 
+  <script src="js/version.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/data.js"></script>
   <script src="js/audio.js"></script>
