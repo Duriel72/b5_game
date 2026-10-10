@@ -48,7 +48,7 @@
   cv.addEventListener('click', e => {
     if (UI.stackSize) return;
     const s = R.pick(e.clientX, e.clientY, Game.state);
-    if (s) { UI.disarm(); Game.select(s); }
+    if (s) { UI.disarm(); Game.select(s); UI.expandHud(); }
   });
   cv.addEventListener('dblclick', e => {
     // dupla kattintás ellenséges hajóra: testre lövés
@@ -77,6 +77,7 @@
     else if (k === 'd' || k === 'tab') { e.preventDefault(); UI.disarm(); Game.cycle('enemy', e.shiftKey ? -1 : 1); }
     else if (k === 'f') UI.toggleArm();
     else if (k === 'l') UI.toggleLog();
+    else if (k === 'h') UI.toggleHud();
     else if (k === 'g') UI.toggleWeapon();
     else if (k === 'r') UI.toggleRepair();
     else if (k === 'c') Game.capture();

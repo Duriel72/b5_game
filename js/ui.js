@@ -360,6 +360,21 @@ const UI = (() => {
     box.scrollTop = box.scrollHeight;
   }
 
+  // életerő-csík a rendszergombokon: kitöltés + „aktuális/max” felirat
+  function hpBar(cur, max) {
+    const r = max > 0 ? clamp(cur / max, 0, 1) : 0;
+    const col = r > 0.6 ? '#4ade80' : r > 0.3 ? '#facc15' : '#f87171';
+    return `<div class="sb-bar"><i style="width:${r * 100}%;background:${col}"></i><span>${Math.max(0, Math.round(cur))}/${max}</span></div>`;
+  }
+
+  // irányítópult összecsukása (több hely a csatatérnek); hajóra koppintva magától kinyílik
+  function setHudMin(on) {
+    document.body.classList.toggle('hud-min', on);
+    measure();
+  }
+  function toggleHud() { setHudMin(!document.body.classList.contains('hud-min')); SFX.play('click'); }
+  function expandHud() { if (document.body.classList.contains('hud-min')) setHudMin(false); }
+
   function toggleLog() {
     const l = $('#log');
     l.classList.toggle('collapsed');
@@ -501,19 +516,20 @@ const UI = (() => {
         const add = Math.min(max - cur, Game.repairAmount(a, sub.key));
         return `<button class="sub-btn fix" data-sub="${sub.key}" ${need ? '' : 'disabled'} title="${esc(t('rep.part', { p: D(sub.label) }))}">
           <div class="sb-top"><span>${sub.icon} ${esc(D(sub.label))}</span><span class="sb-k">${i + 1}</span></div>
-          <div class="sb-stat">${Math.round(cur)}/${max}${need ? ` · +${Math.round(add)}` : ''}</div><div class="sb-chance"><i style="width:${cur / max * 100}%"></i></div></button>`;
+          <div class="sb-stat">${need ? `+${Math.round(add)}` : '✓'}</div>${hpBar(cur, max)}</button>`;
       }
-      let stat = '—', ch = 0, dis = !canAtk;
+      let stat = '—', ch = 0, dis = !canAtk, bar = '<div class="sb-bar"></div>';
       if (a && tg && tg.side === 'enemy' && a.side === 'player') {
         ch = armed && SHIP_TYPES[a.type].ability === 'precision' ? 1 : Game.hitChance(a, tg, sub.key);
         const mult = (armed ? ({ precision: 1.25, overload: 1.8, barrage: 0.45, evade: 1 })[SHIP_TYPES[a.type].ability] : 1) * (weapon === 'special' && wdefs.special ? wdefs.special.mult : 1);
-        const hp = sub.key === 'hull' ? `${Math.round(tg.hull)}/${tg.maxHull}` : `${Math.round(tg.sys[sub.key])}/${tg.maxSys[sub.key]}`;
-        stat = `<span class="sb-hp">♥ ${hp}</span> ${Math.round(ch * 100)}% · ~${Math.round(Game.expectedDamage(a, sub.key, mult))}`;
+        stat = `${Math.round(ch * 100)}% · ~${Math.round(Game.expectedDamage(a, sub.key, mult))}`;
         if (sub.key !== 'hull' && tg.sys[sub.key] <= 0) { dis = true; stat = t('sub.destroyed'); }
       }
+      // a kijelölt célpont adott részének élete (szövetségesnél is)
+      if (tg && tg.side !== 'player') bar = sub.key === 'hull' ? hpBar(tg.hull, tg.maxHull) : hpBar(tg.sys[sub.key], tg.maxSys[sub.key]);
       return `<button class="sub-btn" data-sub="${sub.key}" ${dis ? 'disabled' : ''} title="${esc(t('sub.attack', { sub: D(sub.label), k: i + 1 }))}">
         <div class="sb-top"><span>${sub.icon} ${esc(D(sub.label))}</span><span class="sb-k">${i + 1}</span></div>
-        <div class="sb-stat">${stat}</div><div class="sb-chance"><i style="width:${ch * 100}%"></i></div></button>`;
+        <div class="sb-stat">${stat}</div>${bar}</button>`;
     }).join('');
 
     const abBtn = $('#btn-ability');
@@ -710,6 +726,7 @@ const UI = (() => {
     $('#btn-end').onclick = () => { armed = false; Game.passRound(); };
     $('#btn-pause').onclick = openPause;
     $('#log-toggle').onclick = toggleLog;
+    $('#hud-toggle').onclick = toggleHud;
     $('#btn-start').onclick = startNew;
     $('#in-name').addEventListener('keydown', e => { if (e.key === 'Enter') startNew(); });
     $('#btn-clear-scores').onclick = () => confirm(t('scores.clear'), t('scores.clearText'), () => { Storage.clearScores(); close('scr-scores'); openScores(); });
@@ -734,7 +751,7 @@ const UI = (() => {
   };
 
   return {
-    bind, showMenu, update, toggleLog, open, close, back, top, openPause, toggleArm, attack, applySettings, toast, measure, setLang,
+    bind, showMenu, update, toggleLog, toggleHud, expandHud, open, close, back, top, openPause, toggleArm, attack, applySettings, toast, measure, setLang,
     get stackSize() { return stack.length; },
     get settings() { return settings; },
     disarm() { armed = false; weapon = 'primary'; },

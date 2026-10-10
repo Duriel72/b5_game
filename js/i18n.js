@@ -36,7 +36,7 @@ const STRINGS = {
     'confirm.title': 'Biztos?', 'confirm.no': 'Mégse', 'confirm.yes': 'Igen',
     'hud.wave': 'Hullám', 'hud.round': 'Kör', 'hud.station': 'Babylon 5 állomás', 'hud.score': 'Pontszám', 'hud.credits': 'Kredit',
     'hud.shield': 'Pajzs {a} / {b}', 'hud.hull': 'Szerkezet {a} / {b}', 'hud.menu': 'Menü (Esc)',
-    'log.toggle': 'Napló', 'log.title': 'Napló lenyitása / becsukása (L)',
+    'log.toggle': 'Napló', 'log.title': 'Napló lenyitása / becsukása (L)', 'hud.toggle': 'Irányítópult elrejtése / megjelenítése (H)',
     'act.title': 'Támadás célpontja', 'btn.capture': 'Elfoglalás', 'btn.takeover': 'Átvétel', 'btn.end': 'Kör vége', 'btn.ability': 'Képesség',
     'cine.skip': 'Átugrás ▶▶',
     'own.title': 'Saját flotta', 'own.none': 'Nincs hajód. Az állomás egyedül védekezik.', 'own.ready': '{n} hajó lőhet',
@@ -108,7 +108,7 @@ const STRINGS = {
     'confirm.title': 'Are you sure?', 'confirm.no': 'Cancel', 'confirm.yes': 'Yes',
     'hud.wave': 'Wave', 'hud.round': 'Turn', 'hud.station': 'Babylon 5 station', 'hud.score': 'Score', 'hud.credits': 'Credits',
     'hud.shield': 'Shields {a} / {b}', 'hud.hull': 'Structure {a} / {b}', 'hud.menu': 'Menu (Esc)',
-    'log.toggle': 'Log', 'log.title': 'Expand / collapse the log (L)',
+    'log.toggle': 'Log', 'log.title': 'Expand / collapse the log (L)', 'hud.toggle': 'Hide / show the control panel (H)',
     'act.title': 'Target', 'btn.capture': 'Capture', 'btn.takeover': 'Take command', 'btn.end': 'End turn', 'btn.ability': 'Ability',
     'cine.skip': 'Skip ▶▶',
     'own.title': 'Your fleet', 'own.none': 'No ships left. The station defends itself alone.', 'own.ready': '{n} ready to fire',
@@ -345,6 +345,7 @@ function helpHtml(ctx) {
         <tr><td><kbd>C</kbd></td><td>Capture / take command</td></tr>
         <tr><td><kbd>Space</kbd></td><td>End turn</td></tr>
         <tr><td><kbd>L</kbd></td><td>Expand / collapse the combat log</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Hide / show the control panel (▾ button above it; tapping a ship opens it again)</td></tr>
         <tr><td><kbd>Esc</kbd></td><td>Menu / back</td></tr>
       </table>
       <div class="panel-btns"><button class="btn primary" data-back>${t('btn.ok')}</button></div>`;
@@ -414,6 +415,7 @@ function helpHtml(ctx) {
         <tr><td><kbd>C</kbd></td><td>Elfoglalás / átvétel</td></tr>
         <tr><td><kbd>Space</kbd></td><td>Kör vége</td></tr>
         <tr><td><kbd>L</kbd></td><td>Harci napló lenyitása / becsukása</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Irányítópult elrejtése / megjelenítése (▾ gomb fölötte; hajóra koppintva újra kinyílik)</td></tr>
         <tr><td><kbd>Esc</kbd></td><td>Menü / vissza</td></tr>
       </table>
       <div class="panel-btns"><button class="btn primary" data-back>${t('btn.ok')}</button></div>`;

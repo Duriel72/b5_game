@@ -78,7 +78,7 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 ## Billentyűk
 
 `1–5` támadás (test / fegyverzet / szenzorok / hajtómű / reaktor) · `Q`/`E` saját hajó ·
-`A`/`D`/`Tab` célpont · `G` különleges fegyver · `R` javítás · `F` képesség · `C` elfoglalás · `Space` kör vége · `L` napló lenyitása · `Esc` menü
+`A`/`D`/`Tab` célpont · `G` különleges fegyver · `R` javítás · `F` képesség · `C` elfoglalás · `Space` kör vége · `L` napló lenyitása · `H` irányítópult elrejtése · `Esc` menü
 
 ## Felépítés
 

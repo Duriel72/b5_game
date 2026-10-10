@@ -187,9 +187,9 @@ const R = (() => {
   // ---------------------------------------------------------------- layout
   function computeLayout(game) {
     const top = insetTop + 8, bottom = H - insetBottom - 8;
-    const fh = Math.max(200, bottom - top);
+    const fh = Math.max(120, bottom - top);
     const cy = top + fh * 0.5;
-    const unit = clamp(Math.min(W / 1500, fh / 560), 0.42, 1.35);
+    const unit = clamp(Math.min(W / 1500, fh / 560), 0.3, 1.35);
     const L = { top, bottom, fh, cy, unit, slots: new Map() };
     if (mode === 'menu') {
       const u = clamp(Math.min(W / 1100, H / 700), 0.5, 1.6);
@@ -199,6 +199,10 @@ const R = (() => {
     }
     L.station = { x: W * 0.175, y: cy + fh * 0.04, s: unit * 1.08, rot: -0.07 };
     if (!game) return L;
+    // a hajók középpontjai ebben a sávban maradnak: fölöttük a „elfoglalható” felirat,
+    // alattuk az életcsík és a név is kifér, így semmi nem csúszik a pult alá
+    const lo = top + 42 * unit + 14, hi = bottom - 52 * unit - 20;
+    const bandH = Math.max(30, hi - lo), bc = (lo + hi) / 2;
     const pl = game.player;
     const n = pl.length;
     const cols = n > 3 ? 2 : 1;
@@ -207,9 +211,9 @@ const R = (() => {
       const c = cols === 1 ? 0 : i % 2;
       const k = cols === 1 ? i : Math.floor(i / 2);
       const cnt = cols === 1 ? n : (c === 0 ? Math.ceil(n / 2) : Math.floor(n / 2));
-      const step = Math.min(fh / (perCol + 0.4), 135 * unit);
+      const step = Math.min(bandH / Math.max(1, perCol - 0.5), 135 * unit);
       const x = W * (cols === 1 ? 0.4 : (c === 0 ? 0.36 : 0.44));
-      const y = cy + (k - (cnt - 1) / 2) * step + (c === 1 ? step * 0.25 : 0);
+      const y = bc + (k - (cnt - 1) / 2) * step + (c === 1 ? step * 0.25 : 0);
       L.slots.set(s.id, { x, y, face: 1 });
     });
     const allies = [...game.enemies.filter(s => s.side === 'ally'), ...(game.visitors || [])];
@@ -224,10 +228,10 @@ const R = (() => {
     en.forEach((s, i) => {
       const c = Math.floor(i / rows), k = i % rows;
       const cnt = Math.min(rows, m - c * rows);
-      const step = Math.min(fh / (rows + 0.3), 125 * unit);
+      const step = Math.min(bandH / Math.max(1, rows - 0.4), 125 * unit);
       const xStep = Math.min(W * 0.085, 135 * unit);
       const x = W * 0.86 - (ecols - 1 - c) * xStep - (c % 2) * 0 - (ecols > 1 ? 0 : W * 0.04);
-      const y = cy + (k - (cnt - 1) / 2) * step + (c % 2 ? step * 0.3 : 0);
+      const y = bc + (k - (cnt - 1) / 2) * step + (c % 2 ? step * 0.3 : 0);
       L.slots.set(s.id, { x: x - c * 0, y, face: -1 });
     });
     return L;
