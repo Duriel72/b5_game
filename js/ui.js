@@ -373,6 +373,13 @@ const UI = (() => {
     measure();
   }
   function toggleHud() { setHudMin(!document.body.classList.contains('hud-min')); SFX.play('click'); }
+  const compactMQ = window.matchMedia('(max-height: 560px) and (orientation: landscape)');
+  function enemyTurn(on) {
+    const want = on && compactMQ.matches;
+    if (document.body.classList.contains('hud-auto-min') === want) return;
+    document.body.classList.toggle('hud-auto-min', want);
+    measure();
+  }
   function expandHud() { if (document.body.classList.contains('hud-min')) setHudMin(false); }
 
   function toggleLog() {
@@ -557,6 +564,7 @@ const UI = (() => {
     else if (tg && tg.side === 'ally') sub = t('act.ally');
     else if (a && tg) sub = `${NM(a.name)} → ${NM(tg.name)}`;
     $('#act-sub').textContent = sub;
+    if (S.phase !== 'battle') enemyTurn(false);
     requestAnimationFrame(measure);
   }
 
@@ -743,6 +751,7 @@ const UI = (() => {
   Game.hooks.log = log;
   Game.hooks.toast = toast;
   Game.hooks.hint = hint;
+  Game.hooks.enemyTurn = enemyTurn;
   Game.hooks.shop = showShop;
   Game.hooks.gameOver = showGameOver;
   Game.hooks.waveStart = (n, boss, custom) => {

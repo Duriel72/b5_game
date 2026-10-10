@@ -44,7 +44,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   **csatahordozó** („Battlewagon”).
 - **Javítás:** a Minbari, a Fehércsillag és az Árny hajók minden kör elején maguktól javulnak (először a 0%-os,
   majd a 20% alatti alrendszert, végül a testet). A többi hajó lövés helyett kézzel javíthat (`R`) – kilőtt fegyverzettel
-  is, ha a reaktora működik –, utána töltési idő következik. Fajonként: Centauri (+45%/+22%, 2 kör) › Földi (+40/+20%, 2)
+  vagy reaktorral is –, utána töltési idő következik. Ha egy ellenséges hajó reaktorát kilövöd, a töltési ideje
+  teljes hosszra áll vissza, és még 2 kör hozzáadódik (pl. 3 körös töltésnél 5 kör múlva javíthat). Fajonként: Centauri (+45%/+22%, 2 kör) › Földi (+40/+20%, 2)
   › Narn (+35/+17%, 3) › Drazi (+30/+15%, 3) › kalóz (+25/+12%, 4). Minél sérültebb a hajó, annál kevésbé hatékony
   a javítás (kb. 45%-ig); ez az önjavításra is igaz. Az ellenség is dönthet a javítás mellett.
   A vadász osztályú hajók (Starfury, Drazi, kalóz vadászok) nem javíthatnak.

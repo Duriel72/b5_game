@@ -367,6 +367,8 @@ input { -webkit-user-select: text; user-select: text; }
 }
 @media (max-height: 560px) and (orientation: landscape) {
   .act-title { display: none; }
+  /* napló: összecsukva csak a gomb látszik, az utolsó sor nem foglal helyet a csatatéren */
+  #log.collapsed #log-lines { display: none; }
   .card-kicker span:last-child { display: none; }
   .wbtn { min-height: 26px; padding: 2px 7px; }
   .sub-btn { min-height: 34px; padding: 3px 5px; }
@@ -402,4 +404,12 @@ body.hud-min .act-title { display: flex !important; flex: 1; min-width: 0; margi
 body.hud-min .act-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 body.hud-min .act-row { display: block; margin: 0; }
 body.hud-min .act-row .btn { min-height: 30px; }
+/* ellenséges kör alatt (fekvő telefonon) magától összecsukva */
+body.hud-auto-min #hud-bottom { grid-template-columns: 1fr; padding-top: 5px; padding-bottom: max(5px, env(safe-area-inset-bottom)); }
+body.hud-auto-min #hud-bottom .card, body.hud-auto-min .weap-row, body.hud-auto-min .sub-btns, body.hud-auto-min #btn-ability, body.hud-auto-min #btn-capture { display: none !important; }
+body.hud-auto-min #hud-bottom .actions { display: flex; align-items: center; gap: 10px; padding: 4px 10px; width: min(100%, 760px); justify-self: center; order: 0; }
+body.hud-auto-min .act-title { display: flex !important; flex: 1; min-width: 0; margin: 0; }
+body.hud-auto-min .act-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.hud-auto-min .act-row { display: block; margin: 0; }
+body.hud-auto-min .act-row .btn { min-height: 30px; }
 .weap-row { grid-template-columns: 1fr 1fr 1fr; }

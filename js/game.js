@@ -10,22 +10,23 @@ const STATION = 'station';
 const Game = (() => {
   let S = null;
   let busy = false;
-  const hooks = { update() {}, log() {}, toast() {}, waveStart() {}, shop() {}, gameOver() {}, hint() {} };
+  const hooks = { update() {}, log() {}, toast() {}, waveStart() {}, shop() {}, gameOver() {}, hint() {}, enemyTurn() {} };
 
   // ------------------------------------------------------------ segédek
   const DF = () => DIFFICULTIES[S.diff];
   const ratio = (s, k) => (s.maxSys[k] ? s.sys[k] / s.maxSys[k] : 0);
+  const REACTOR_KO_DELAY = 2;   // kilőtt reaktor után ennyi kör jön a teljes javítási töltésidőhöz
   const isDisabled = s => s.sys.reactor <= 0 || (s.sys.weapons <= 0 && s.sys.engines <= 0);
   const alive = s => s && s.hull > 0;
   const canAct = s => alive(s) && !isDisabled(s) && s.sys.weapons > 0;
   // javítás: önjavító (passzív) típusok, illetve kézi javítás – ehhez a reaktor kell
   const hasRegen = s => !!REGEN[s.type];
   const damaged = (s, k) => (k === 'hull' ? s.hull < s.maxHull : s.sys[k] < s.maxSys[k]);
-  // kézi javítás: a töltési idő (rcd) le kell teljen; ellenséges hajónak működő reaktor is kell,
-  // a saját hajókon (pl. elfoglalás után) a legénység reaktor nélkül is javíthat
+  // kézi javítás: a töltési idő (rcd) le kell teljen. Reaktor nélkül is lehet javítani, de ha egy
+  // ellenséges hajó reaktorát kilövik, a töltési ideje újraindul, és még REACTOR_KO_DELAY kör hozzáadódik.
   const repairStats = s => REPAIR_BY_FACTION[SHIP_TYPES[s.type].faction] || REPAIR_DEFAULT;
   // a vadász osztályú hajók nem tudnak javítani
-  const canManualRepair = s => alive(s) && !hasRegen(s) && SHIP_TYPES[s.type].cls !== 'vadász' && (s.sys.reactor > 0 || s.side === 'player') && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
+  const canManualRepair = s => alive(s) && !hasRegen(s) && SHIP_TYPES[s.type].cls !== 'vadász' && !(s.rcd > 0) && (damaged(s, 'hull') || SYS_KEYS.some(k => damaged(s, k)));
   // a hajó összállapota (0..1): test és a négy alrendszer átlaga
   const condition = s => (s.hull / s.maxHull + SYS_KEYS.reduce((a, k) => a + s.sys[k] / s.maxSys[k], 0)) / 5;
   const repairEff = s => REPAIR_MIN_EFF + (1 - REPAIR_MIN_EFF) * condition(s);
@@ -128,7 +129,10 @@ const Game = (() => {
       out.hull = Math.round(dmg * 0.3);
     }
     t.hull = Math.max(0, t.hull - out.hull);
+    const reactorWas = t.sys.reactor;
     if (out.sub) t.sys[out.sub] = Math.max(0, t.sys[out.sub] - out.subDmg);
+    // kilőtt reaktor: az ellenséges hajó nem javíthat azonnal – a töltési idő teljes hosszra áll, plusz késleltetés
+    if (t.side === 'enemy' && reactorWas > 0 && t.sys.reactor <= 0 && t.hull > 0 && !hasRegen(t) && SHIP_TYPES[t.type].cls !== 'vadász') t.rcd = repairStats(t).cd + REACTOR_KO_DELAY;
     out.destroyed = t.hull <= 0;
     out.newlyDisabled = !out.destroyed && !wasDisabled && isDisabled(t);
     return out;
@@ -406,6 +410,7 @@ const Game = (() => {
     if (!canManualRepair(e)) return null;
     const d = DF();
     const care = 0.6 + 0.8 * d.smart;
+    if (e.sys.reactor <= 0) return 'reactor';
     if (e.sys.weapons <= 0) return 'weapons';
     if (e.sys.engines <= 0 && e.sys.weapons <= 0) return 'engines';
     if (e.sys.reactor < e.maxSys.reactor * 0.25 && Math.random() < 0.45 * care) return 'reactor';
@@ -538,6 +543,7 @@ const Game = (() => {
   async function endRound() {
     if (S.phase !== 'battle') return;
     hooks.hint(t('hint.enemy'));
+    hooks.enemyTurn(true);
     for (const e of hostiles().slice()) {
       if (S.phase !== 'battle') return;
       if (!alive(e) || e.acted || !canTakeAction(e)) continue;
@@ -572,6 +578,7 @@ const Game = (() => {
     if (!hostiles().length) return waveComplete();
     await wait(250);
     startRound();
+    hooks.enemyTurn(false);
     hooks.hint('');
     await maybeLastStand();
     if (!S.player.some(s => canTakeAction(s))) {
