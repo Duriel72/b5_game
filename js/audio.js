@@ -10,7 +10,7 @@
 
 const SFX = (() => {
   let ctx = null, master = null, bus = null, revSend = null, musicGain = null, noiseBuf = null, musicNodes = null;
-  let volume = 0.6, musicOn = true;
+  let volume = 0.6, musicOn = true, hidden = false;
 
   function ensure() {
     if (ctx) return ctx;
@@ -45,8 +45,12 @@ const SFX = (() => {
 
   function unlock() {
     ensure();
-    if (ctx && ctx.state === 'suspended') ctx.resume();
+    if (ctx && ctx.state === 'suspended' && !hidden) ctx.resume();
   }
+
+  // ha az alkalmazás háttérbe kerül, az egész hangmotor szünetel (különben a zene „beragadhat”)
+  function suspend() { hidden = true; if (ctx && ctx.state === 'running') ctx.suspend().catch(() => {}); }
+  function resume() { hidden = false; if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); }
 
   // a jelet a fő buszra és (opcionálisan) a visszhangra küldi
   function out(node, rev = 0.5) {
@@ -313,7 +317,7 @@ const SFX = (() => {
   }
 
   return {
-    unlock,
+    unlock, suspend, resume,
     play(name, ...args) { try { if (ensure() && sfx[name]) sfx[name](...args); } catch (e) { if (window.__sfxDebug) throw e; /* hang nélkül is megy */ } },
     setVolume(v) { volume = v; if (master) master.gain.value = v; },
     setMusic(on) { musicOn = on; if (!ctx) return; on ? startMusic() : stopMusic(); },

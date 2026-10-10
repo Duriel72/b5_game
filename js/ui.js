@@ -507,7 +507,8 @@ const UI = (() => {
       if (a && tg && tg.side === 'enemy' && a.side === 'player') {
         ch = armed && SHIP_TYPES[a.type].ability === 'precision' ? 1 : Game.hitChance(a, tg, sub.key);
         const mult = (armed ? ({ precision: 1.25, overload: 1.8, barrage: 0.45, evade: 1 })[SHIP_TYPES[a.type].ability] : 1) * (weapon === 'special' && wdefs.special ? wdefs.special.mult : 1);
-        stat = `${Math.round(ch * 100)}% · ~${Math.round(Game.expectedDamage(a, sub.key, mult))}`;
+        const hp = sub.key === 'hull' ? `${Math.round(tg.hull)}/${tg.maxHull}` : `${Math.round(tg.sys[sub.key])}/${tg.maxSys[sub.key]}`;
+        stat = `<span class="sb-hp">♥ ${hp}</span> ${Math.round(ch * 100)}% · ~${Math.round(Game.expectedDamage(a, sub.key, mult))}`;
         if (sub.key !== 'hull' && tg.sys[sub.key] <= 0) { dis = true; stat = t('sub.destroyed'); }
       }
       return `<button class="sub-btn" data-sub="${sub.key}" ${dis ? 'disabled' : ''} title="${esc(t('sub.attack', { sub: D(sub.label), k: i + 1 }))}">

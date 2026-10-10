@@ -15,6 +15,11 @@
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
   }
 
+  // Háttérbe kerüléskor (másik app, lezárt képernyő) a hang szünetel, visszatéréskor folytatódik
+  document.addEventListener('visibilitychange', () => { document.hidden ? SFX.suspend() : SFX.resume(); });
+  window.addEventListener('pagehide', () => SFX.suspend());
+  window.addEventListener('pageshow', () => { if (!document.hidden) SFX.resume(); });
+
   // Böngészők csak felhasználói interakció után engedik a hangot
   const unlock = () => { SFX.unlock(); UI.applySettings(); };
   window.addEventListener('pointerdown', unlock, { once: true });

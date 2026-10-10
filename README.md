@@ -34,8 +34,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   Utána egyre hosszabb ideig nem jöhet újra (6, majd 8, 10… hullám); a boltban látszik, mikor lesz újra elérhető.
 - Minden 5. hullámban **Árny cirkáló** érkezik – az Árny hajókat soha nem lehet elfoglalni, csak elpusztítani.
   Az Árny hajók soha nem keverednek más fajjal: egy vagy több cirkáló, egy cirkáló felderítőkkel, vagy csak felderítők.
-- Az első öt hullám egyikében (3. vagy 4.) biztosan jön egy **ellenséges Minbari cirkáló**; az első Árny hajó után
-  a Minbarik már csak szövetségesként érkeznek.
+- A 3. vagy 4. hullámban biztosan jön egy **ellenséges Minbari cirkáló** (ha konvoj jön helyette, a következő harci
+  hullámban; ilyenkor az első Árny hullám is eltolódhat egyet); az első Árny hajó után a Minbarik már csak szövetségesként érkeznek.
 - **Szövetségesek** az 5. hullámtól, ~30% eséllyel érkeznek kék ugróponton az állomás mellé (ritkán kettő is).
   Amíg nem veszed át őket, minden kör végén önállóan lőnek az ellenségre.
 - **Frakcióhullámok:** a földi hajók csak egymással jönnek; Narn és Centauri soha nem kerül egy ellenséges flottába
@@ -55,6 +55,7 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.
 - **Gazdaság:** a kreditbevétel a hullámszámmal nő (képletek: `js/data.js` → `ECON`).
 - **Árnyékflotta:** a 10. hullámtól időnként csak Árny hajók támadnak – Árny cirkálók és a kisebb, gyengébb **Árny felderítők**.
+  Két Árny hullám sosem jön közvetlenül egymás után.
 - **Pontozás hajótípusonként:** 45 (Starfury) és 800 (Árny cirkáló) között – a pontos értékek a játék súgójában
   és a hajókatalógusban láthatók. Elfoglalásért ennek 1,5-szerese jár, plusz hullámbónusz – a nehézségi szorzóval.
 - Ha az állomás elesik: pusztulási jelenet, pontszám, ranglista.

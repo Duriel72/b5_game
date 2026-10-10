@@ -649,16 +649,16 @@ const Game = (() => {
   // ------------------------------------------------------------ hullámok
   // Árny hullám: csak Árny hajók, más fajjal nem keveredve. Három változat:
   // egy vagy több cirkáló / egy cirkáló felderítőkkel / csak felderítők.
-  function shadowGroup(n, budget, hpMul, dmgMul) {
+  function shadowGroup(n, budget, hpMul, dmgMul, boss = n % 5 === 0) {
     const out = [];
     const B = Math.max(SHIP_TYPES.shadow.threat, budget * 1.05);
     const C = SHIP_TYPES.shadow.threat, Sc = SHIP_TYPES.shadowscout.threat;
-    const bossMul = n % 5 === 0 ? 1 + (n / 5 - 1) * 0.25 : 1;     // a főellenséges hullámok cirkálói erősebbek
+    const bossMul = boss ? 1 + (Math.floor(n / 5) - 1) * 0.25 : 1;     // a főellenséges hullámok cirkálói erősebbek
     const cruiser = () => makeShip('shadow', 'enemy', { hpMul: hpMul * bossMul, dmgMul });
     const scout = () => makeShip('shadowscout', 'enemy', { hpMul, dmgMul });
     const opts = ['cruisers'];
     // a főellenséges (5-tel osztható) hullámokban mindig van legalább egy cirkáló
-    if (n >= 10) { if (B >= C + Sc) opts.push('mixed'); if (n % 5 !== 0) opts.push('scouts'); }
+    if (n >= 10) { if (B >= C + Sc) opts.push('mixed'); if (!boss) opts.push('scouts'); }
     const pick = pickRandom(opts);
     if (pick === 'cruisers') { const k = clamp(Math.round(B / C), 1, 3); for (let i = 0; i < k; i++) out.push(cruiser()); }
     else if (pick === 'mixed') { out.push(cruiser()); const k = clamp(Math.floor((B - C) / Sc), 1, 5); for (let i = 0; i < k; i++) out.push(scout()); }
@@ -675,17 +675,27 @@ const Game = (() => {
     const fleetThreat = S.player.reduce((a, s) => a + SHIP_TYPES[s.type].threat * (1 + (s.level - 1) * 0.15), 0);
     let budget = (1.8 + n * 1.45 + Math.max(0, fleetThreat - 3) * 0.45) * d.budget;
 
-    // Árny hullám: minden 5. hullám, illetve a 10.-től ~30% eséllyel „Árnyékflotta”
-    const shadowWave = n % 5 === 0 || (n >= 10 && Math.random() < 0.3);
-    S.shadowFleet = shadowWave && n % 5 !== 0;
+    // Árny hullám: minden 5. hullám (főellenség), illetve a 10.-től ~30% eséllyel „Árnyékflotta”.
+    // Két Árny hullám sosem jön közvetlenül egymás után, és főellenséges hullám előtt sincs Árnyékflotta.
+    // Az ellenséges Minbari cirkáló az első Árny hullám előtt mindenképp megérkezik: ha a kijelölt
+    // hullámát elvitte egy konvoj, a következő harci hullámban jön, és ha emiatt az 5. hullámra csúszna,
+    // az első Árny hullám egy hullámmal később érkezik.
+    const minbariDue = minbariPending() && n >= (S.minbariWave || 3);
+    let boss = n % 5 === 0 || !!S.shadowPending;
+    if (boss && minbariDue) { S.shadowPending = true; boss = false; }
+    else if (boss) S.shadowPending = false;
+    const fleet = !boss && !minbariDue && n >= 10 && S.lastShadowWave !== n - 1 && (n + 1) % 5 !== 0 && Math.random() < 0.3;
+    const shadowWave = boss || fleet;
+    S.shadowFleet = fleet;
     if (shadowWave) {
-      list.push(...shadowGroup(n, budget, hpMul, dmgMul));
+      list.push(...shadowGroup(n, budget, hpMul, dmgMul, boss));
       S.shadowSeen = true;
+      S.lastShadowWave = n;
     } else {
-      // az első 5 hullám egyikében biztosan jön egy ellenséges Minbari cirkáló
-      if (n === S.minbariWave && !S.shadowSeen) {
+      if (minbariDue) {
         list.push(makeShip('minbari', 'enemy', { hpMul, dmgMul: dmgMul * 0.9 }));
         budget = Math.max(0, budget - SHIP_TYPES.minbari.threat);
+        S.minbariDone = true;
       }
       // Frakciótéma: a földi hajók csak egymással jönnek; Narn és Centauri soha nem
       // kerül egy ellenséges flottába (melléjük Drazi és kalóz társulhat).
@@ -746,8 +756,12 @@ const Game = (() => {
   // ------------------------------------------------------------ kereskedő konvoj
   // Véletlen esemény: harc helyett békés kereskedők érkeznek, kreditet hoznak,
   // javítanak a flottán és az állomáson, majd továbbállnak.
+  // még várat magára az ellenséges Minbari (régi mentéseknél: ha még nem jött Árny, akkor sem jött)
+  function minbariPending() { return !S.minbariDone && !S.shadowSeen; }
+
+  // a konvoj nem foglalhatja el a (halasztott) Árny hullám helyét
   function rollMerchant(n) {
-    return n >= ECON.merchantMinWave && n % 5 !== 0 && S.lastMerchant !== n - 1 && Math.random() < ECON.merchantChance;
+    return n >= ECON.merchantMinWave && n % 5 !== 0 && !S.shadowPending && S.lastMerchant !== n - 1 && Math.random() < ECON.merchantChance;
   }
 
   async function merchantWave() {
