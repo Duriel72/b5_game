@@ -300,7 +300,7 @@ function helpHtml(ctx) {
             <li><b>Weapons</b> – damage drops with their condition (down to 15%); at zero the ship can't fire.</li>
             <li><b>Sensors</b> – aim gets worse with their condition (95% → 45% base hit chance) and fewer critical hits.</li>
             <li><b>Engines</b> – lower chance to evade, and a ship with damaged engines is easier to hit (up to +15%).</li>
-            <li><b>Reactor</b> – a damaged reactor weakens the weapons (down to 70%); shoot it out and the ship is disabled.</li>
+            <li><b>Reactor</b> – it powers every other system: as it gets damaged, weapons, sensors and engines all work worse (down to 70%); shoot it out and the ship is disabled. In exchange it is the hardest part to hit.</li>
             <li>So every hit on a subsystem counts – a <b>barrage</b>, hitting all four at once, wears the whole ship down. The ship info shows current / full firepower.</li>
             <li>Subsystems are harder to hit than the hull – the buttons show the hit chance.</li>
           </ul>
@@ -374,7 +374,7 @@ function helpHtml(ctx) {
             <li><b>Fegyverzet</b> – állapotával arányosan csökken a sebzés (15%-ig); 0-nál a hajó nem tud lőni.</li>
             <li><b>Szenzorok</b> – állapotukkal arányosan romlik a célzás (95% → 45% alap találati esély), és kevesebb a kritikus találat.</li>
             <li><b>Hajtómű</b> – kisebb kitérési esély, és a sérült hajtóművű hajót könnyebb eltalálni (+15%-ig).</li>
-            <li><b>Reaktor</b> – a sérült reaktor gyengíti a fegyvereket (70%-ig); ha kilövöd, a hajó megbénul.</li>
+            <li><b>Reaktor</b> – minden más rendszert táplál: ahogy sérül, a fegyverzet, a szenzorok és a hajtómű is gyengébben működik (70%-ig); ha kilövöd, a hajó megbénul. Cserébe ezt a legnehezebb eltalálni.</li>
             <li>Így minden rendszertalálat számít – a mind a négy rendszert sebző <b>sortűz</b> az egész hajót lerontja. A hajóinfóban a jelenlegi / teljes tűzerő látszik.</li>
             <li>Az alrendszert nehezebb eltalálni, mint a testet – a gombokon látod a találati esélyt.</li>
           </ul>

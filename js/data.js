@@ -9,7 +9,7 @@ const SUBSYSTEMS = [
   { key: 'weapons', label: 'Fegyverzet', short: 'FEGY', mod: 0.04, icon: '✶' },
   { key: 'sensors', label: 'Szenzorok',  short: 'SZEN', mod: 0.06, icon: '◎' },
   { key: 'engines', label: 'Hajtómű',    short: 'HAJT', mod: 0.07, icon: '➤' },
-  { key: 'reactor', label: 'Reaktor',    short: 'REAK', mod: 0.08, icon: '⚛' },
+  { key: 'reactor', label: 'Reaktor',    short: 'REAK', mod: 0.12, icon: '⚛' },   // minden rendszert táplál, ezért a legnehezebb eltalálni (tools/duel-sim.js)
 ];
 const SYS_KEYS = ['weapons', 'sensors', 'engines', 'reactor'];
 const SUB_BY_KEY = Object.fromEntries(SUBSYSTEMS.map(s => [s.key, s]));

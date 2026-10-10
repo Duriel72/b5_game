@@ -81,17 +81,20 @@ const Game = (() => {
 
   // ------------------------------------------------------------ harci számítások
   // Az alrendszerek állapotuk arányában hatnak (ép hajónál minden érték a régi):
-  //   fegyverzet – tűzerő 15–100% (0-nál nem lő) · reaktor – tűzerő 70–100% (0-nál béna)
-  //   szenzorok – célzás 45–95% · hajtómű – az osztálykitérés 30–100%-a, és a sérült hajtóművű
-  //   hajót könnyebb eltalálni (+15%-ig)
+  //   fegyverzet – tűzerő 15–100% (0-nál nem lő) · szenzorok – célzás 45–95%
+  //   hajtómű – az osztálykitérés 30–100%-a, és a sérült hajtóművű hajót könnyebb eltalálni (+15%-ig)
+  //   reaktor – minden rendszert táplál: a többi rendszer hatásfoka a reaktorral 70–100% között mozog
+  //   (0-nál a hajó béna). Cserébe a reaktort a legnehezebb eltalálni (SUBSYSTEMS mod).
+  const power = s => 0.7 + 0.3 * ratio(s, 'reactor');
+  const eff = (s, k) => ratio(s, k) * power(s);
   function attStats(att) {
     if (att === STATION) return { sens: 1, fp: S.station.grid };
-    return { sens: ratio(att, 'sensors'), fp: att.firepower * (0.15 + 0.85 * ratio(att, 'weapons')) * (0.7 + 0.3 * ratio(att, 'reactor')) };
+    return { sens: eff(att, 'sensors'), fp: att.firepower * (0.15 + 0.85 * eff(att, 'weapons')) };
   }
-  const sluggish = t => (t === STATION ? 0 : 0.15 * (1 - ratio(t, 'engines')));
+  const sluggish = t => (t === STATION ? 0 : 0.15 * (1 - eff(t, 'engines')));
 
   function evasion(t) {
-    return CLASSES[SHIP_TYPES[t.type].cls].evasion * (0.3 + 0.7 * ratio(t, 'engines')) + (t.evade ? 0.3 : 0);
+    return CLASSES[SHIP_TYPES[t.type].cls].evasion * (0.3 + 0.7 * eff(t, 'engines')) + (t.evade ? 0.3 : 0);
   }
 
   function hitChance(att, tgt, subKey = 'hull') {
