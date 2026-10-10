@@ -51,6 +51,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   A súlyok a `js/data.js` `THEME_CURVE` táblájában állíthatók.
 - **Bevétel:** pusztításért, elfoglalásért, visszavert hullámért és konvojtól; a nehézségi szint szorozza
   (Kadét ×1,3, Kapitány ×1, Admirális ×0,9, Rémálom ×0,75) – a nehézségválasztóban is látszik.
+- **Alrendszerek arányosan hatnak:** fegyverzet → tűzerő 15–100% (0-nál nem lő), reaktor → tűzerő 70–100% (0-nál béna),
+  szenzorok → célzás 45–95%, hajtómű → kitérés, és a sérült hajtóművű hajót +15%-ig könnyebb eltalálni.
 - **Fajok:** célzási bónusz: Árny +15%, Minbari +12%, Fehércsillag +10%, Centauri +6%, Föld +4%, Narn ±0, Drazi −5%,
   kalóz −12%. A Földi hajók páncélosak, a Narnok strapabíróak és erősen ütnek, a kalózok gyengék, de rajokban (max. 12)
   jönnek. A hajók „fenyegetettsége” (a hullám-költségvetés egysége) az életerőből, tűzerőből, célzásból és kitérésből

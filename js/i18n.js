@@ -297,10 +297,11 @@ function helpHtml(ctx) {
           </ul>
           <h3>Subsystems</h3>
           <ul>
-            <li><b>Weapons</b> – less damage; at zero the ship can't fire.</li>
-            <li><b>Sensors</b> – worse aim and fewer critical hits.</li>
-            <li><b>Engines</b> – lower chance to evade.</li>
-            <li><b>Reactor</b> – shoot it out and the ship is disabled.</li>
+            <li><b>Weapons</b> – damage drops with their condition (down to 15%); at zero the ship can't fire.</li>
+            <li><b>Sensors</b> – aim gets worse with their condition (95% → 45% base hit chance) and fewer critical hits.</li>
+            <li><b>Engines</b> – lower chance to evade, and a ship with damaged engines is easier to hit (up to +15%).</li>
+            <li><b>Reactor</b> – a damaged reactor weakens the weapons (down to 70%); shoot it out and the ship is disabled.</li>
+            <li>So every hit on a subsystem counts – a <b>barrage</b>, hitting all four at once, wears the whole ship down. The ship info shows current / full firepower.</li>
             <li>Subsystems are harder to hit than the hull – the buttons show the hit chance.</li>
           </ul>
         </div>
@@ -370,10 +371,11 @@ function helpHtml(ctx) {
           </ul>
           <h3>Alrendszerek</h3>
           <ul>
-            <li><b>Fegyverzet</b> – kevesebb sebzés; nullán nem tud lőni.</li>
-            <li><b>Szenzorok</b> – rosszabb célzás és kevesebb kritikus találat.</li>
-            <li><b>Hajtómű</b> – kisebb kitérési esély.</li>
-            <li><b>Reaktor</b> – ha kilövöd, a hajó megbénul.</li>
+            <li><b>Fegyverzet</b> – állapotával arányosan csökken a sebzés (15%-ig); 0-nál a hajó nem tud lőni.</li>
+            <li><b>Szenzorok</b> – állapotukkal arányosan romlik a célzás (95% → 45% alap találati esély), és kevesebb a kritikus találat.</li>
+            <li><b>Hajtómű</b> – kisebb kitérési esély, és a sérült hajtóművű hajót könnyebb eltalálni (+15%-ig).</li>
+            <li><b>Reaktor</b> – a sérült reaktor gyengíti a fegyvereket (70%-ig); ha kilövöd, a hajó megbénul.</li>
+            <li>Így minden rendszertalálat számít – a mind a négy rendszert sebző <b>sortűz</b> az egész hajót lerontja. A hajóinfóban a jelenlegi / teljes tűzerő látszik.</li>
             <li>Az alrendszert nehezebb eltalálni, mint a testet – a gombokon látod a találati esélyt.</li>
           </ul>
         </div>

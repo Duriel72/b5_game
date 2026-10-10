@@ -80,10 +80,15 @@ const Game = (() => {
   }
 
   // ------------------------------------------------------------ harci számítások
+  // Az alrendszerek állapotuk arányában hatnak (ép hajónál minden érték a régi):
+  //   fegyverzet – tűzerő 15–100% (0-nál nem lő) · reaktor – tűzerő 70–100% (0-nál béna)
+  //   szenzorok – célzás 45–95% · hajtómű – az osztálykitérés 30–100%-a, és a sérült hajtóművű
+  //   hajót könnyebb eltalálni (+15%-ig)
   function attStats(att) {
     if (att === STATION) return { sens: 1, fp: S.station.grid };
-    return { sens: ratio(att, 'sensors'), fp: att.firepower * (0.4 + 0.6 * ratio(att, 'weapons')) };
+    return { sens: ratio(att, 'sensors'), fp: att.firepower * (0.15 + 0.85 * ratio(att, 'weapons')) * (0.7 + 0.3 * ratio(att, 'reactor')) };
   }
+  const sluggish = t => (t === STATION ? 0 : 0.15 * (1 - ratio(t, 'engines')));
 
   function evasion(t) {
     return CLASSES[SHIP_TYPES[t.type].cls].evasion * (0.3 + 0.7 * ratio(t, 'engines')) + (t.evade ? 0.3 : 0);
@@ -92,12 +97,12 @@ const Game = (() => {
   function hitChance(att, tgt, subKey = 'hull') {
     const { sens } = attStats(att);
     const facAcc = att === STATION ? 0 : FACTION_ACC[SHIP_TYPES[att.type].faction] || 0;
-    if (tgt === STATION) return clamp(0.6 + 0.37 * sens + facAcc, 0.3, 0.97);
+    if (tgt === STATION) return clamp(0.47 + 0.5 * sens + facAcc, 0.3, 0.97);
     // egyes hajók (pl. Fehércsillag) pontosabbak, és a célpont kitérésének egy részét is „átlátják”
     const AT = att === STATION ? {} : SHIP_TYPES[att.type];
-    let c = 0.6 + 0.35 * sens - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt) * (1 - (AT.evasionPierce || 0)) + facAcc + (AT.accBonus || 0);
+    let c = 0.45 + 0.5 * sens + sluggish(tgt) - SUB_BY_KEY[subKey].mod * 3 - evasion(tgt) * (1 - (AT.evasionPierce || 0)) + facAcc + (AT.accBonus || 0);
     if (isDisabled(tgt)) c += 0.25;
-    if (att === STATION) c = 0.85 - evasion(tgt) * 0.5;
+    if (att === STATION) c = 0.85 - evasion(tgt) * 0.5 + sluggish(tgt);
     return clamp(c, 0.05, 0.97);
   }
 

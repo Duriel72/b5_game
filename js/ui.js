@@ -389,7 +389,7 @@ const UI = (() => {
     if (W.special) b.push(['', `${D(W.special.name)}: ${s.wcd > 0 ? t('card.turns', { n: s.wcd }) : t('card.ready')}`]);
     if (Game.hasRegen(s)) b.push(['green', t('badge.regen')]);
     else if (T.cls !== 'vadász' && !T.civilian) b.push([s.rcd > 0 ? '' : 'green', s.rcd > 0 ? t('info.repairIn', { n: s.rcd }) : t('info.repairReady')]);
-    if (s.side !== 'player') b.push(['red', `${t('card.fp')} ${Math.round(Game.expectedDamage(s))}`]);
+    b.push([s.side === 'player' ? '' : 'red', `${t('card.fp')} ${Math.round(Game.expectedDamage(s))}/${Math.round(s.firepower)}`]);
     return `<div class="si-name">${esc(NM(s.name))}</div><div class="si-sub">${esc(sub)}</div>${shipBars(s)}
       <div class="si-badges">${b.map(([c, x]) => `<span class="badge ${c}">${esc(x)}</span>`).join('')}</div>`;
   }
