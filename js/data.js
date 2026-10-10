@@ -212,10 +212,10 @@ const ABILITIES = {
 };
 
 const DIFFICULTIES = {
-  easy:      { name: 'Kadét',      desc: 'Gyengébb ellenség, több kredit. Ismerkedéshez.', enemyDmg: 0.7,  enemyHp: 0.85, stationBias: 0.65, smart: 0.0, scoreMult: 0.75, credMult: 1.25, budget: 0.85 },
+  easy:      { name: 'Kadét',      desc: 'Gyengébb ellenség, több kredit. Ismerkedéshez.', enemyDmg: 0.7,  enemyHp: 0.85, stationBias: 0.65, smart: 0.0, scoreMult: 0.75, credMult: 1.3, budget: 0.85 },
   normal:    { name: 'Kapitány',   desc: 'Az eredeti élmény. Kiegyensúlyozott kihívás.',   enemyDmg: 1.0,  enemyHp: 1.0,  stationBias: 0.6,  smart: 0.25, scoreMult: 1.0,  credMult: 1.0,  budget: 1.0 },
   hard:      { name: 'Admirális',  desc: 'Az ellenség okosan céloz és alrendszereket lő.', enemyDmg: 1.2,  enemyHp: 1.15, stationBias: 0.5,  smart: 0.55, scoreMult: 1.5,  credMult: 0.9,  budget: 1.15 },
-  nightmare: { name: 'Rémálom',    desc: 'Az utolsó, legjobb reményünk… nem elég. Csak bátraknak.', enemyDmg: 1.45, enemyHp: 1.3, stationBias: 0.45, smart: 0.8, scoreMult: 2.2, credMult: 0.8, budget: 1.3 },
+  nightmare: { name: 'Rémálom',    desc: 'Az utolsó, legjobb reményünk… nem elég. Csak bátraknak.', enemyDmg: 1.45, enemyHp: 1.3, stationBias: 0.45, smart: 0.8, scoreMult: 2.2, credMult: 0.75, budget: 1.3 },
 };
 
 const STATION_BASE = { hull: 1200, shield: 160, grid: 14 };
@@ -304,14 +304,15 @@ const REPAIR_DEFAULT = { sys: 0.3, hull: 0.15, cd: 3 };
 // minél sérültebb a hajó, annál kevésbé hatékony a javítás: hatékonyság = MIN + (1 − MIN) × állapot
 const REPAIR_MIN_EFF = 0.45;
 
-// Gazdaság – a hullámszámmal arányosan nő (n = hullám száma)
+// Gazdaság – a hullámszámmal arányosan nő (n = hullám száma). Az aknamező óta kb. 10–15%-kal bőkezűbb
+// (késői hullámoknál valamivel többel), hogy a fejlesztésekre is jusson; a nehézségi szint credMult-ja szoroz rá.
 const ECON = {
-  kill: (threat, n) => (50 + threat * 50) * (1 + 0.04 * (n - 1)),        // elpusztított hajóért
-  capture: (threat, n) => (40 + threat * 30) * (1 + 0.04 * (n - 1)),     // elfoglalt hajóért
-  waveBonus: n => 130 + 35 * n + 1.0 * n * n,                            // visszavert hullámért
+  kill: (threat, n) => (55 + threat * 55) * (1 + 0.045 * (n - 1)),       // elpusztított hajóért
+  capture: (threat, n) => (44 + threat * 33) * (1 + 0.045 * (n - 1)),    // elfoglalt hajóért
+  waveBonus: n => 150 + 39 * n + 1.15 * n * n,                           // visszavert hullámért
   repairHull: 0.75, repairSys: 1.2,                                        // javítás kredit/életpont
   merchantChance: 0.15, merchantMinWave: 3,                                // kereskedő konvoj esélye
-  merchantCredits: n => 180 + 50 * n + 1.6 * n * n,
+  merchantCredits: n => 200 + 55 * n + 1.8 * n * n,
 };
 
 // ---------------------------------------------------------------------------

@@ -725,9 +725,6 @@ const Game = (() => {
       };
       const minbariHere = list.some(s => s.type === 'minbari');
       // a téma a történeti korszak szerinti súllyal kerül kiválasztásra (ld. THEME_CURVE)
-      // a polgárháború felé szinte csak (teljes keretet kihasználó) földi hullám jön, a korábban a hajószám-korlátba
-      // ütköző Narn/kalóz hullámok helyett – a nehézség ne ugorjon meg: a keret a 14. hullámtól fokozatosan 12%-kal csökken
-      budget *= 1 - 0.12 * clamp((n - 14) / 6, 0, 1);
       const tw = themeWeights(n);
       const drazi = Math.max(tw.narn, tw.centauri);          // a Drazi kísérők a Narn/Centauri korral fogynak el
       const usableHere = k => usable(k) && !(SHIP_TYPES[k].faction === 'Drazi Szabadság' && drazi <= 0);

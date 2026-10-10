@@ -129,7 +129,7 @@ const UI = (() => {
     for (const [k, d] of Object.entries(DIFFICULTIES)) {
       const b = document.createElement('button');
       b.className = 'diff' + (k === selDiff ? ' sel' : '');
-      b.innerHTML = `<b>${esc(D(d.name))}</b><small>${esc(D(d.desc))}</small><span class="mult">${esc(t('new.mult', { m: d.scoreMult }))}</span>`;
+      b.innerHTML = `<b>${esc(D(d.name))}</b><small>${esc(D(d.desc))}</small><span class="mult">${esc(t('new.mult', { m: d.scoreMult }))} · ${esc(t('new.cred', { m: d.credMult }))}</span>`;
       b.onclick = () => { selDiff = k; grid.querySelectorAll('.diff').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); SFX.play('select'); };
       grid.appendChild(b);
     }
