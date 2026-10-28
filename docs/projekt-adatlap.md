@@ -20,7 +20,7 @@ Minden időpont helyi idő (CEST, UTC+2).
 | Időszak | 2026-10-09 08:53 (első üzenet) – 2026-10-10 23:17 (utolsó fejlesztési üzenet); utána csak kérdések: 10-17 18:30 (GitHub-összefoglaló), 10-28 (ez az adatlap) **[mért]** |
 | Állapot | Kész és élesben működik. Utolsó kiadás: **v11** (2026-10-10, commit `0e587bb` 23:10); az élő oldal 2026-10-28-án is v11-et szolgál ki **[mért: curl `js/version.js`]** |
 | Méret | **26 commit** · **5 208 sor** JavaScript a `js/` mappában (8 fájl; legnagyobb: `render.js` 1 946, `game.js` 1 114, `ui.js` 857) · + 456 sor CSS, 182 sor HTML, 33 sor service worker · eszközök: 286 sor (`tools/`: 3 JS + 1 HTML) · 23 verziókövetett fájl · README 133 sor **[mért, 2026-10-28]** |
-| Fő eredmények | (1) 18 hajótípus + civil kereskedő, sorozathű, kódból rajzolt animált hajókkal és állomással; (2) körökre osztott harc alrendszer-célzással (test, fegyverzet, szenzor, hajtómű, reaktor), elfoglalással, javítással, különleges fegyverekkel; (3) hullámrendszer a B5 történetét követő három korszakkal, Árny főellenséggel, kereskedő konvojjal, szövetségesekkel; (4) bolt (javítás, szintlépés, hajógyár, leszerelés, 7 állomásfejlesztés, köztük aknamező); (5) magyar/angol nyelv, 4 nehézségi szint, mentés, ranglista; (6) mobilra optimalizált PWA, amely magától frissül **[dokumentált: README, commitok]** |
+| Fő eredmények | (1) 18 hajótípus + civil kereskedő, sorozathű, kódból rajzolt animált hajókkal és állomással; (2) körökre osztott harc alrendszer-célzással (test, fegyverzet, szenzor, hajtómű, reaktor), elfoglalással, javítással, különleges fegyverekkel; (3) hullámrendszer a B5 történetét követő három korszakkal, Árny főellenséggel, kereskedő konvojjal, szövetségesekkel; (4) bolt (hajójavítás, szintlépés, hajógyár, leszerelés; állomásjavítás, 6 állomásfejlesztés – köztük aknatelepítő és aknatöltet – és aknatelepítés); (5) magyar/angol nyelv, 4 nehézségi szint, mentés, ranglista; (6) mobilra optimalizált PWA, amely magától frissül **[dokumentált: README, commitok]** |
 
 ---
 
@@ -350,11 +350,12 @@ A felhasználói üzeneteket, az eszközhívásokat, a push-okat és a tesztfutt
 - **A beszélgetés eleje a KOC-projektből indult:** a teljes napló a `C--B5-Defend-The-Station` mappában van, 08:53-tól. Hogy a KOC-naplókban maradt-e korábbi B5-rész, azt nem vizsgáltam. A `C--KOC-app` és a `C--claude-KOC-app` mappát nem mértem bele, a `--project B5-Defend` szűrés ezeket nem érinti.
 - **Effort szint és pontos modellverzió:** a naplóban csak „opus” szerepel.
 - **Falióra:** a szkript a teljes időszakot adja (10-09 08:53 – 10-10 23:17 = 38,4 óra). Ebben benne van az éjszaka és a 10-10 nappali szünet. A munkanaponkénti falióra (10,9 és 2,6 óra) számított.
-- **Ellentmondások a README-ben** (megfigyelés; ehhez az adatlaphoz nem javítottam):
+- **Ellentmondások a README-ben** (2026-10-28-án, az adatlap után a felhasználó kérésére javítva):
   - a „Fehércsillag: +10% találati esély” már a faji célzásból jön;
   - a „Típusfüggő pontérték (45–800)” helyesen 30–800;
-  - a „4 állomásfejlesztés” helyesen 7;
-  - a telepítési sorban duplikált szöveg van („dupla kattintás az `index.html`-re…”).
+  - a „4 állomásfejlesztés” helyesen 6 fejlesztés + állomásjavítás + aknatelepítés;
+  - a telepítési sorban duplikált szöveg volt („dupla kattintás az `index.html`-re…”);
+  - a felépítés-listából hiányzott a `version.js`, a `sw.js`, a PWA-fájlok, a `tools/` és a `docs/`.
 - **A 10-28-i költség (4,6+) ennek az adatlapnak az elkészítése, és a mérés pillanatában még tartott.** A fejlesztési számok ezt nem tartalmazzák.
 - **A robot-egyensúlymérés kis mintán futott** (3–9 játék szintenként, egyszerű stratégiával). Iránynak jó, pontos nehézségnek nem.
 - **A GitHub Pages bekapcsolását a felhasználó végezte a webes felületen.** Az időpontja a naplóból nem olvasható ki, csak az, hogy 15:52 után élt az oldal.

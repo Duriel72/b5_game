@@ -10,7 +10,7 @@ Körökre osztott űrcsatás védekezős játék. Az eredeti egyetemi projekt (C
   A telepített alkalmazás magától frissül: előtérbe kerüléskor és félóránként ellenőrzi az új verziót; a menüben
   azonnal újratölt, játék közben „Frissítés” gombot kínál (az állást elmenti). A verziószám a főmenü jobb alsó sarkában látszik.
   Fekvő telefonon a hajóra koppintva rövid infódoboz mutatja a hajó adatait (nyomva tartva kint marad).
-- **Asztali gépen:** dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra). dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra).
+- **Asztali gépen:** dupla kattintás az `index.html`-re (vagy az `Inditas.bat`-ra).
 - **Szerverrel (opcionális):** `node serve.js`, majd http://localhost:5500
 
 Mentések, ranglista és beállítások a böngésző helyi tárolójában (localStorage) maradnak meg.
@@ -69,7 +69,8 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
   a javítás (kb. 45%-ig); ez az önjavításra is igaz. Az ellenség is dönthet a javítás mellett.
   A vadász osztályú hajók (Starfury, Drazi, kalóz vadászok) nem javíthatnak.
   A védelmi rács nem lő fegyvertelen hajóra.
-- **Fehércsillag:** fejlett célzás – +10% találati esély, és a célpont kitérésének 60%-át figyelmen kívül hagyja.
+- **Fehércsillag:** fejlett célzás – a Csillagvédelmi Szövetség +10%-os faji célzási bónusza mellett a célpont kitérésének
+  60%-át is figyelmen kívül hagyja.
 - **Pajzs:** vékony réteg az állomás körvonala mentén; minél gyengébb, annál több helyen szakad meg.
 - **Kereskedő konvoj:** a 3. hullámtól ~15% eséllyel harc helyett kereskedők érkeznek (kék ugrópont): kreditet hoznak,
   50%-ot javítanak a hajókon, az állomás hiányzó szerkezetének 30%-át pótolják, majd harc nélkül továbbállnak.
@@ -86,10 +87,10 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 |---|---|
 | Statikus képek | A sorozatbeli hajók sziluettjeit követő, kódból rajzolt animált hajók (Fehércsillag, Sharlin, G'Quan, Primus, Vorchan, Altarian, csatahordozó, Omega, Nova, Hyperion, Starfury, Delta-V, Napsólyom, Árny cirkáló, Árny felderítő), lézerek, robbanások, ugrópontok |
 | Videó az állomás pusztulásáról | Valós idejű, kihagyható pusztulási jelenet |
-| 100 pont minden hajóért | Típusfüggő pontérték (45–800) |
+| 100 pont minden hajóért | Típusfüggő pontérték (30–800) |
 | Hajótípusok (6) | A doksi 6 típusa az eredeti értékekkel + Centauri Vorchan, Altarian romboló és csatahordozó, Földi Hyperion, Nova és Starfury, Drazi napsólyom, Árny cirkáló (főellenség), Árny felderítő és három új kalóztípus – 18 típus (+ civil kereskedő) |
 | Egyszerű MI (testre lő, inkább az állomásra) | Nehézségtől függő MI: célzott alrendszer-lövés, a leggyengébb hajó kiszemelése, képességek |
-| Javítás/fejlesztés gombok | Teljes bolt: részleges/teljes javítás, szintlépés, hajógyár, leszerelés, 4 állomásfejlesztés |
+| Javítás/fejlesztés gombok | Teljes bolt: részleges/teljes javítás, szintlépés, hajógyár, leszerelés, állomásjavítás, 6 állomásfejlesztés (páncélzat, pajzs, irányító központ, védelmi rács, aknatelepítő, aknatöltet) és aknatelepítés |
 | Mentés / betöltés | 3 mentési hely + automatikus mentés minden kör elején |
 | Ranglista | Top 15, nehézségi szint és dátum szerint |
 | — | 4 nehézségi szint, hajónkénti különleges képességek, kritikus találatok, kitérés |
@@ -106,12 +107,17 @@ Mentések, ranglista és beállítások a böngésző helyi tárolójában (loca
 index.html      felület váza
 style.css       megjelenés
 js/i18n.js      magyar és angol szövegek, nyelvváltás
-js/data.js      hajótípusok, nehézség, fejlesztések (a doksi alapértékei)
+js/version.js   alkalmazásverzió (a menüben látszik; a sw.js VERSION-jával együtt növelendő)
+js/data.js      hajótípusok, fajok, korszakok, nehézség, fejlesztések, aknák, gazdaság
 js/audio.js     WebAudio hangeffektek és zene
 js/render.js    Canvas grafika és effektek
 js/game.js      játéklogika, MI, hullámok, bolt, mentés
 js/ui.js        HUD és képernyők
 js/main.js      indítás, fő ciklus, bemenet
+sw.js           service worker (offline működés, automatikus frissítés)
+manifest.webmanifest, icons/   telepíthető alkalmazás (PWA)
+tools/          fejlesztői segédek: autoplay.js, wave-stats.js, duel-sim.js, icon.html
+docs/           projekt-adatlap
 serve.js        opcionális mini szerver
 ```
 
